@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuthStore } from '@/src/store/auth/auth.store';
 import { loginSchema, TypeLoginSchema } from '@/src/schemas/auth/login.schema';
+import { saveTokens } from '@/src/libs/auth/token-storage';
 import {
   LOGIN_MUTATION,
   type LoginData,
@@ -46,6 +47,12 @@ export function useLogin() {
       }
 
       if (result.user) {
+        if (result.accessToken && result.refreshToken) {
+          await saveTokens({
+            accessToken: result.accessToken,
+            refreshToken: result.refreshToken,
+          });
+        }
         setIsAuthenticated(true);
       }
     } catch (e: unknown) {

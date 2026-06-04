@@ -161,7 +161,7 @@ export default function TwoFactorScreen() {
               <View style={styles.pinField}>
                 <Text style={styles.fieldLabel}>Verification code</Text>
                 <TextInput
-                  style={styles.pinInput}
+                  style={[styles.pinInput, { color: COLORS.textPrimary }]}
                   value={pin}
                   onChangeText={v => setPin(v.replace(/\D/g, '').slice(0, 6))}
                   keyboardType="number-pad"
@@ -169,7 +169,6 @@ export default function TwoFactorScreen() {
                   placeholder="000000"
                   placeholderTextColor={COLORS.textMuted}
                   selectionColor={COLORS.accent}
-                  color={COLORS.textPrimary}
                 />
               </View>
             </View>

@@ -28,6 +28,7 @@ import {
 import { COLORS } from '@/src/libs/constants/colors';
 import { getMediaSource } from '@/src/libs/utils/get-media-source';
 import { useAuthStore } from '@/src/store/auth/auth.store';
+import { clearTokens } from '@/src/libs/auth/token-storage';
 import {
   FIND_MY_PROFILE,
   LOGOUT_MUTATION,
@@ -90,8 +91,15 @@ export default function ProfileScreen() {
     refetch();
   }, []));
 
+  const signOut = useCallback(async () => {
+    await clearTokens();
+    setIsAuthenticated(false);
+  }, [setIsAuthenticated]);
+
   const [logout, { loading: loggingOut }] = useMutation(LOGOUT_MUTATION, {
-    onCompleted: () => setIsAuthenticated(false),
+    // Clear local tokens whether or not the server call succeeds
+    onCompleted: signOut,
+    onError: signOut,
   });
 
   const user = data?.findProfile;

@@ -7,13 +7,15 @@ import {TokenType, User} from "@prisma/generated";
 import {getSessionMetadata} from "@/src/shared/utils/session-metadata.util";
 import {saveSession} from "@/src/shared/utils/session.util";
 import {generateToken} from "@/src/shared/utils/generate-token.util";
+import {TokenService} from "@/src/modules/auth/session/token.service";
 
 
 @Injectable()
 export class VerificationService {
     public constructor(
         private readonly prismaService: PrismaService,
-        private readonly mailService: MailService
+        private readonly mailService: MailService,
+        private readonly tokenService: TokenService
     ) {
     }
 
@@ -58,7 +60,7 @@ export class VerificationService {
 
         const metadata = getSessionMetadata(req, userAgent);
 
-        return saveSession(req, user, metadata);
+        return saveSession(req, user, metadata, this.tokenService);
     }
 
     public async sendVerificationToken(user: User){

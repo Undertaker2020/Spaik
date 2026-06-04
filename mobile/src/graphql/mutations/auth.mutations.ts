@@ -9,6 +9,17 @@ export const LOGIN_MUTATION = gql`
         username
       }
       message
+      accessToken
+      refreshToken
+    }
+  }
+`;
+
+export const REFRESH_TOKENS_MUTATION = gql`
+  mutation RefreshTokens($refreshToken: String!) {
+    refreshTokens(refreshToken: $refreshToken) {
+      accessToken
+      refreshToken
     }
   }
 `;
@@ -26,6 +37,8 @@ export const VERIFY_ACCOUNT_MUTATION = gql`
         username
       }
       message
+      accessToken
+      refreshToken
     }
   }
 `;
@@ -36,11 +49,24 @@ export interface LoginData {
   login: {
     user: { username: string } | null;
     message: string | null;
+    accessToken: string | null;
+    refreshToken: string | null;
   };
 }
 
 export interface LoginVars {
   data: { login: string; password: string; pin?: string };
+}
+
+export interface RefreshTokensData {
+  refreshTokens: {
+    accessToken: string;
+    refreshToken: string;
+  };
+}
+
+export interface RefreshTokensVars {
+  refreshToken: string;
 }
 
 export interface CreateUserData {

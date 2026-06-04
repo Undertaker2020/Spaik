@@ -53,7 +53,7 @@ export default function ChangeEmailScreen() {
           <View style={styles.field}>
             <Text style={styles.fieldLabel}>New email address</Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, { color: COLORS.textPrimary }]}
               value={email}
               onChangeText={setEmail}
               placeholder="you@example.com"
@@ -62,7 +62,6 @@ export default function ChangeEmailScreen() {
               autoCapitalize="none"
               autoCorrect={false}
               selectionColor={COLORS.accent}
-              color={COLORS.textPrimary}
             />
           </View>
         </View>

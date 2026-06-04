@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useMutation } from '@apollo/client';
 import { useRouter } from 'expo-router';
 import { useAuthStore } from '@/src/store/auth/auth.store';
+import { saveTokens } from '@/src/libs/auth/token-storage';
 import {
   VERIFY_ACCOUNT_MUTATION,
 } from '@/src/graphql/mutations/auth.mutations';
@@ -10,6 +11,8 @@ interface VerifyData {
   verifyAccount: {
     user: { username: string } | null;
     message: string | null;
+    accessToken: string | null;
+    refreshToken: string | null;
   };
 }
 
@@ -33,8 +36,15 @@ export function useVerify(token: string | undefined) {
     }
 
     verifyMutation({ variables: { data: { token } } })
-      .then(({ data }) => {
-        if (data?.verifyAccount.user) {
+      .then(async ({ data }) => {
+        const result = data?.verifyAccount;
+        if (result?.user) {
+          if (result.accessToken && result.refreshToken) {
+            await saveTokens({
+              accessToken: result.accessToken,
+              refreshToken: result.refreshToken,
+            });
+          }
           setIsAuthenticated(true);
           router.replace('/(tabs)');
         }

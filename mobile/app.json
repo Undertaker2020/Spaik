@@ -27,7 +27,8 @@
         {
           "faceIDPermission": "Allow SPAIK to use Face ID for authentication."
         }
-      ]
+      ],
+      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": true

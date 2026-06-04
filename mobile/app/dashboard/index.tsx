@@ -28,7 +28,6 @@ import {
   IconMessageCircle,
 } from '@tabler/icons-react-native';
 import { COLORS } from '@/src/libs/constants/colors';
-import { useAuthStore } from '@/src/store/auth/auth.store';
 import {
   FIND_MY_STREAM,
   CHANGE_STREAM_INFO,
@@ -70,7 +69,6 @@ function MsgRow({ msg }: { msg: ChatMessage }) {
 
 export default function DashboardScreen() {
   const router = useRouter();
-  const userId = useAuthStore(s => s.userId);
 
   const { data: profileData, loading, refetch } = useQuery<{
     findProfile: { id: string; stream: StreamSettings };
@@ -243,14 +241,13 @@ export default function DashboardScreen() {
             <>
               <Text style={styles.fieldLabel}>Title</Text>
               <TextInput
-                style={styles.input}
+                style={[styles.input, { color: COLORS.textPrimary }]}
                 value={title}
                 onChangeText={setTitle}
                 placeholder="Stream title…"
                 placeholderTextColor={COLORS.textMuted}
                 maxLength={100}
                 selectionColor={COLORS.accent}
-                color={COLORS.textPrimary}
               />
 
               <Text style={styles.fieldLabel}>Category</Text>

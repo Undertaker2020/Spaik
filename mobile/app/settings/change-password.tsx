@@ -15,7 +15,7 @@ function PasswordField({ label, value, onChange }: { label: string; value: strin
       <Text style={styles.fieldLabel}>{label}</Text>
       <View style={styles.inputWrap}>
         <TextInput
-          style={styles.input}
+          style={[styles.input, { color: COLORS.textPrimary }]}
           value={value}
           onChangeText={onChange}
           secureTextEntry={!visible}
@@ -23,7 +23,6 @@ function PasswordField({ label, value, onChange }: { label: string; value: strin
           placeholderTextColor={COLORS.textMuted}
           placeholder="••••••••"
           selectionColor={COLORS.accent}
-          color={COLORS.textPrimary}
         />
         <TouchableOpacity onPress={() => setVisible(v => !v)} hitSlop={8}>
           {visible
