@@ -12,13 +12,13 @@ import type {Request} from "express";
 import {ConfigService} from "@nestjs/config";
 import {getSessionMetadata} from "@/src/shared/utils/session-metadata.util";
 import {RedisService} from "@/src/core/redis/redis.service";
-import {SessionData} from "express-session";
 import {destroySession, saveSession} from "@/src/shared/utils/session.util";
 import {VerificationService} from "@/src/modules/auth/verification/verification.service";
 import {TOTP} from "otpauth";
 import {UserModel} from "@/src/modules/auth/account/models/user.model";
 import {parseBoolean} from "@/src/shared/utils/parse-boolean.util";
 import {ms, StringValue} from "@/src/shared/utils/ms.util";
+import {TokenService} from "@/src/modules/auth/session/token.service";
 
 @Injectable()
 export class SessionService {
@@ -27,51 +27,48 @@ export class SessionService {
         private readonly configService: ConfigService,
         private readonly redisService: RedisService,
         private readonly verificationService: VerificationService,
-    ) {
-    }
+        private readonly tokenService: TokenService,
+    ) {}
 
     public async findByUser(req: Request) {
-        const userId = req.session.userId;
+        const userId = req.session.userId ?? (req as any).jwtUserId;
 
-        if (!userId) {
-            throw new NotFoundException("No user with this session");
-        }
+        if (!userId) throw new NotFoundException('No user with this session');
 
-        const keys = await this.redisService.keys('*')
+        const records = await this.tokenService.findAllByUser(userId);
 
-        const userSessions: SessionData[] = []
-
-        for (const key of keys) {
-            const sessionData = await this.redisService.get(key)
-
-            if (sessionData) {
-                const session = JSON.parse(sessionData);
-
-                if (session.userId === userId) {
-                    userSessions.push({
-                        ...session,
-                        id: key.split(':')[1]
-                    })
-                }
-            }
-        }
-        // @ts-ignore
-        userSessions.sort((a, b) => b.createdAt - a.createdAt)
-
-        return userSessions.filter(session => session.id === req.session.id || session.id !== req.session.id );
+        // Map RefreshTokenRecord → SessionModel shape (reuse existing model)
+        return records.map(r => ({
+            id: r.tokenId,
+            createdAt: r.createdAt,
+            metadata: r.metadata,
+            userId: r.userId,
+        }));
     }
 
     public async findCurrent(req: Request) {
-        const sessionId = req.session.id;
+        const userId = req.session.userId ?? (req as any).jwtUserId;
+        if (!userId) throw new UnauthorizedException();
 
-        const sessionData = await this.redisService.get(`${this.configService.getOrThrow<string>('SESSION_FOLDER')}${sessionId}`);
+        // tokenId attached to req by guard when using JWT
+        const tokenId: string | undefined = (req as any).tokenId;
 
+        if (tokenId) {
+            const record = await this.tokenService.findOne(userId, tokenId);
+            if (!record) throw new NotFoundException('Session not found');
+            return {
+                id: record.tokenId,
+                createdAt: record.createdAt,
+                metadata: record.metadata,
+                userId: record.userId,
+            };
+        }
 
-        const session = JSON.parse(sessionData!);
-        return {
-            ...session,
-            id: sessionId,
-        };
+        // Fallback: web session
+        const sessionFolder = this.configService.getOrThrow<string>('SESSION_FOLDER');
+        const raw = await this.redisService.get(`${sessionFolder}${req.session.id}`);
+        const session = JSON.parse(raw!);
+        return { ...session, id: req.session.id };
     }
 
     public async login(req: Request, input: LoginInput, userAgent: string) {
@@ -85,27 +82,20 @@ export class SessionService {
                 ]
             }
         }) as UserModel;
-        if (!user) {
-            throw new NotFoundException('Invalid login credentials');
-        }
+
+        if (!user) throw new NotFoundException('Invalid login credentials');
 
         const isValidPassword = await verify(user.password, password);
+        if (!isValidPassword) throw new UnauthorizedException('Passwords do not match');
 
-        if (!isValidPassword) {
-            throw new UnauthorizedException('Passwords do not match');
-        }
-
-        if(!user.isEmailVerified){
+        if (!user.isEmailVerified) {
             await this.verificationService.sendVerificationToken(user);
-
-            throw new BadRequestException("Account not verified. Please check your email for confirmation");
+            throw new BadRequestException('Account not verified. Please check your email for confirmation');
         }
 
         if (user.isTotpEnabled) {
             if (!pin) {
-                return {
-                    message: 'A code is required to complete the authorization'
-                }
+                return { message: 'A code is required to complete the authorization' };
             }
             const totp = new TOTP({
                 issuer: 'WG-Stream',
@@ -113,45 +103,51 @@ export class SessionService {
                 algorithm: 'SHA1',
                 digits: 6,
                 secret: user.totpSecret,
-            })
-
-            const delta = totp.validate({token: pin})
-            if (delta === null) {
-                throw new BadRequestException('Totp is invalid')
-            }
+            });
+            const delta = totp.validate({token: pin});
+            if (delta === null) throw new BadRequestException('Totp is invalid');
         }
 
         const metadata = getSessionMetadata(req, userAgent);
-        return saveSession(req, user, metadata);
+        // Save session (web) + issue JWT tokens (mobile)
+        return saveSession(req, user, metadata, this.tokenService);
     }
 
     public async logout(req: Request) {
-       return destroySession(req, this.configService)
+        // Revoke JWT refresh token if present
+        const userId = req.session.userId ?? (req as any).jwtUserId;
+        const tokenId: string | undefined = (req as any).tokenId;
+
+        if (userId && tokenId) {
+            await this.tokenService.revokeToken(userId, tokenId);
+        }
+
+        return destroySession(req, this.configService);
     }
 
     public async clearSession(req: Request) {
         req.res!.clearCookie(this.configService.getOrThrow<string>('SESSION_NAME'), {
             domain: this.configService.getOrThrow<string>('SESSION_DOMAIN'),
             maxAge: ms(this.configService.getOrThrow<StringValue>('SESSION_MAX_AGE')),
-            httpOnly: parseBoolean(
-                this.configService.getOrThrow<string>('SESSION_HTTP_ONLY')
-            ),
-            secure: parseBoolean(
-                this.configService.getOrThrow<string>('SESSION_SECURE')
-            ),
+            httpOnly: parseBoolean(this.configService.getOrThrow<string>('SESSION_HTTP_ONLY')),
+            secure: parseBoolean(this.configService.getOrThrow<string>('SESSION_SECURE')),
             sameSite: 'lax'
         });
-
         return true;
     }
 
     public async removeSession(req: Request, id: string) {
-        if(req.session.id === id) {
-            throw new ConflictException('The current session cannot be deleted.')
+        const userId = req.session.userId ?? (req as any).jwtUserId;
+
+        if (req.session.id === id || (req as any).tokenId === id) {
+            throw new ConflictException('The current session cannot be deleted.');
         }
 
-        await this.redisService.del(`${this.configService.getOrThrow<string>('SESSION_FOLDER')}${id}`);
+        await this.tokenService.revokeToken(userId, id);
+        return true;
+    }
 
-        return true
+    public async refresh(encodedRefreshToken: string) {
+        return this.tokenService.refreshTokens(encodedRefreshToken);
     }
 }

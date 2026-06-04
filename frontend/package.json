@@ -2,8 +2,11 @@
   "name": "frontend",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
-    "dev": "graphql-codegen --config graphql.config.ts && next dev --turbopack",
+    "dev": "next dev --turbopack",
+    "codegen": "graphql-codegen --config graphql.config.ts",
+    "dev:full": "graphql-codegen --config graphql.config.ts && next dev --turbopack",
     "build": "graphql-codegen --config graphql.config.ts && next build",
     "start": "next start",
     "lint": "next lint"

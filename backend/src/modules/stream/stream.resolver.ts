@@ -25,8 +25,10 @@ export class StreamResolver {
     }
 
     @Query(() => [StreamModel], {name: 'findRandomStreams'})
-    public async findRandom() {
-        return await this.streamService.findRandom();
+    public async findRandom(
+        @Args('filters', { nullable: true, type: () => FiltersInput }) input?: FiltersInput
+    ) {
+        return await this.streamService.findRandom(input);
     }
 
     @Authorization()

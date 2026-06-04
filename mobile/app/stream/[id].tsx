@@ -1,0 +1,504 @@
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  FlatList,
+  TextInput,
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
+  Dimensions,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useState, useEffect, useRef } from 'react';
+import { useQuery, useMutation, useSubscription } from '@apollo/client';
+import { LinearGradient } from 'expo-linear-gradient';
+import {
+  IconArrowLeft,
+  IconBadge,
+  IconSend,
+  IconVideo,
+  IconVideoOff,
+  IconUsers,
+  IconEye,
+} from '@tabler/icons-react-native';
+import { COLORS } from '@/src/libs/constants/colors';
+import { getMediaSource } from '@/src/libs/utils/get-media-source';
+import { useAuthStore } from '@/src/store/auth/auth.store';
+import {
+  FIND_CHANNEL_BY_USERNAME,
+  FIND_CHAT_MESSAGES,
+  CHAT_MESSAGE_ADDED,
+  SEND_CHAT_MESSAGE,
+  FOLLOW_CHANNEL,
+  UNFOLLOW_CHANNEL,
+  type ChatMessage,
+  type ChannelInfo,
+} from '@/src/graphql/queries/viewer.queries';
+import {
+  FIND_MY_FOLLOWINGS,
+  type FollowItem,
+} from '@/src/graphql/queries/following.queries';
+
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const VIDEO_HEIGHT = SCREEN_WIDTH * (9 / 16);
+const AVATAR_SIZE  = 46;
+
+// user-colour palette for chat avatars
+const USER_COLORS = ['#7C3AED','#DC2626','#D97706','#059669','#2563EB','#DB2777'];
+function userColor(username: string) {
+  let h = 0;
+  for (let i = 0; i < username.length; i++) h = (h * 31 + username.charCodeAt(i)) & 0xffffffff;
+  return USER_COLORS[Math.abs(h) % USER_COLORS.length];
+}
+
+// ── Video area ─────────────────────────────────────────────────
+
+function VideoArea({
+  isLive,
+  thumbnail,
+  onBack,
+}: {
+  isLive: boolean;
+  thumbnail: string | null;
+  onBack: () => void;
+}) {
+  return (
+    <View style={styles.video}>
+      {/* Background: thumbnail or solid black */}
+      {thumbnail ? (
+        <Image source={{ uri: thumbnail }} style={StyleSheet.absoluteFill} resizeMode="cover" />
+      ) : (
+        <View style={[StyleSheet.absoluteFill, { backgroundColor: '#000' }]} />
+      )}
+
+      {/* Dark overlay */}
+      <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.35)' }]} />
+
+      {/* Bottom gradient */}
+      <LinearGradient
+        colors={['transparent', 'rgba(0,0,0,0.7)']}
+        style={[StyleSheet.absoluteFill, { top: '50%' }]}
+      />
+
+      {/* Back button */}
+      <TouchableOpacity style={styles.backBtn} onPress={onBack} activeOpacity={0.8}>
+        <IconArrowLeft size={20} color="#fff" />
+      </TouchableOpacity>
+
+      {/* Centre icon when no thumbnail */}
+      {!thumbnail && (
+        <View style={styles.videoCenter}>
+          {isLive
+            ? <IconVideo    size={36} color="rgba(255,255,255,0.3)" />
+            : <IconVideoOff size={36} color="rgba(255,255,255,0.2)" />
+          }
+          <Text style={styles.videoLabel}>
+            {isLive ? 'Live video — requires build' : 'Stream offline'}
+          </Text>
+        </View>
+      )}
+
+      {/* LIVE badge */}
+      {isLive && (
+        <View style={styles.liveBadge}>
+          <View style={styles.liveDot} />
+          <Text style={styles.liveText}>LIVE</Text>
+        </View>
+      )}
+    </View>
+  );
+}
+
+// ── Stream info ────────────────────────────────────────────────
+
+function StreamInfo({
+  channel,
+  isFollowing,
+  onFollow,
+  followLoading,
+}: {
+  channel: ChannelInfo;
+  isFollowing: boolean;
+  onFollow: () => void;
+  followLoading: boolean;
+}) {
+  const avatar = getMediaSource(channel.avatar);
+  const stream = channel.stream;
+  const isLive = stream?.isLive ?? false;
+
+  return (
+    <View style={styles.info}>
+      {/* Row: avatar + name/category + follow */}
+      <View style={styles.infoRow}>
+        <View style={styles.avatarWrap}>
+          {avatar ? (
+            <Image source={{ uri: avatar }} style={styles.avatar} />
+          ) : (
+            <View style={[styles.avatar, styles.avatarFallback]}>
+              <Text style={styles.avatarInitial}>
+                {channel.username.charAt(0).toUpperCase()}
+              </Text>
+            </View>
+          )}
+          {isLive && <View style={styles.liveRing} />}
+        </View>
+
+        <View style={styles.infoMeta}>
+          <View style={styles.nameRow}>
+            <Text style={styles.displayName} numberOfLines={1}>{channel.displayName}</Text>
+            {channel.isVerified && <IconBadge size={14} color={COLORS.accent} />}
+          </View>
+          {stream?.category && (
+            <Text style={styles.categoryTag}>{stream.category.title}</Text>
+          )}
+        </View>
+
+        <TouchableOpacity
+          style={[styles.followBtn, isFollowing && styles.followBtnActive]}
+          onPress={onFollow}
+          disabled={followLoading}
+          activeOpacity={0.8}
+        >
+          {followLoading ? (
+            <ActivityIndicator size="small" color={isFollowing ? COLORS.textPrimary : '#000'} />
+          ) : (
+            <Text style={[styles.followBtnText, isFollowing && styles.followBtnTextActive]}>
+              {isFollowing ? 'Following' : 'Follow'}
+            </Text>
+          )}
+        </TouchableOpacity>
+      </View>
+
+      {/* Stream title */}
+      {stream?.title ? (
+        <Text style={styles.streamTitle} numberOfLines={2}>{stream.title}</Text>
+      ) : null}
+    </View>
+  );
+}
+
+// ── Chat header ────────────────────────────────────────────────
+
+function ChatHeader({ count }: { count: number }) {
+  return (
+    <View style={styles.chatHeader}>
+      <View style={styles.chatHeaderLeft}>
+        <IconUsers size={14} color={COLORS.accent} />
+        <Text style={styles.chatHeaderText}>Live Chat</Text>
+      </View>
+      <View style={styles.chatHeaderRight}>
+        <IconEye size={12} color={COLORS.textMuted} />
+        <Text style={styles.chatCount}>{count}</Text>
+      </View>
+    </View>
+  );
+}
+
+// ── Chat message ───────────────────────────────────────────────
+
+function ChatMsg({ msg }: { msg: ChatMessage }) {
+  const color  = userColor(msg.user.username);
+  const avatar = getMediaSource(msg.user.avatar);
+
+  return (
+    <View style={styles.msgRow}>
+      <View style={[styles.msgAvatar, { backgroundColor: color }]}>
+        {avatar
+          ? <Image source={{ uri: avatar }} style={styles.msgAvatarImg} />
+          : <Text style={styles.msgAvatarInitial}>{msg.user.username.charAt(0).toUpperCase()}</Text>
+        }
+      </View>
+      <View style={styles.msgBubble}>
+        <Text style={[styles.msgUser, { color }]}>{msg.user.username}</Text>
+        <Text style={styles.msgText}>{msg.text}</Text>
+      </View>
+    </View>
+  );
+}
+
+// ── Screen ────────────────────────────────────────────────────
+
+export default function StreamViewerScreen() {
+  const { id: username } = useLocalSearchParams<{ id: string }>();
+  const router = useRouter();
+  const isAuthenticated = useAuthStore(s => s.isAuthenticated);
+
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [text, setText] = useState('');
+  const listRef = useRef<FlatList>(null);
+
+  const { data: channelData, loading: loadingChannel } = useQuery<{
+    findChannelByUsername: ChannelInfo;
+  }>(FIND_CHANNEL_BY_USERNAME, { variables: { username }, skip: !username });
+
+  const channel  = channelData?.findChannelByUsername;
+  const streamId = channel?.stream?.id;
+  const isLive   = channel?.stream?.isLive ?? false;
+  const thumbnail = getMediaSource(channel?.stream?.thumbnailUrl ?? null);
+
+  const { data: followingsData, loading: loadingFollowings, refetch: refetchFollowings } = useQuery<{
+    findMyFollowings: FollowItem[];
+  }>(FIND_MY_FOLLOWINGS, { skip: !isAuthenticated });
+
+  const isFollowing = followingsData?.findMyFollowings.some(
+    f => f.following.id === channel?.id
+  ) ?? false;
+
+  const { data: chatData } = useQuery<{ findChatMessagesByStream: ChatMessage[] }>(
+    FIND_CHAT_MESSAGES,
+    { variables: { streamId }, skip: !streamId }
+  );
+
+  useEffect(() => {
+    if (chatData?.findChatMessagesByStream) setMessages(chatData.findChatMessagesByStream);
+  }, [chatData]);
+
+  useSubscription<{ chatMessageAdded: ChatMessage }>(CHAT_MESSAGE_ADDED, {
+    variables: { streamId },
+    skip: !streamId,
+    onData: ({ data }) => {
+      const msg = data.data?.chatMessageAdded;
+      if (msg) {
+        setMessages(prev => [...prev, msg]);
+        setTimeout(() => listRef.current?.scrollToEnd({ animated: true }), 50);
+      }
+    },
+  });
+
+  const [sendMessage, { loading: sending }] = useMutation(SEND_CHAT_MESSAGE);
+  const onSend = async () => {
+    if (!text.trim() || !streamId) return;
+    const msg = text.trim();
+    setText('');
+    await sendMessage({ variables: { data: { streamId, text: msg } } });
+  };
+
+  const [follow,   { loading: followLoading   }] = useMutation(FOLLOW_CHANNEL,   { onCompleted: () => refetchFollowings(), onError: () => refetchFollowings() });
+  const [unfollow, { loading: unfollowLoading }] = useMutation(UNFOLLOW_CHANNEL, { onCompleted: () => refetchFollowings(), onError: () => refetchFollowings() });
+
+  const onFollow = () => {
+    if (!channel || loadingFollowings) return;
+    isFollowing
+      ? unfollow({ variables: { channelId: channel.id } })
+      : follow({ variables: { channelId: channel.id } });
+  };
+
+  const chatEnabled = channel?.stream?.isChatEnabled ?? false;
+
+  return (
+    <SafeAreaView style={styles.root} edges={['top']}>
+      <VideoArea isLive={isLive} thumbnail={thumbnail} onBack={() => router.back()} />
+
+      {loadingChannel ? (
+        <View style={styles.center}>
+          <ActivityIndicator color={COLORS.accent} />
+        </View>
+      ) : channel ? (
+        <KeyboardAvoidingView
+          style={styles.flex}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          keyboardVerticalOffset={0}
+        >
+          <StreamInfo
+            channel={channel}
+            isFollowing={isFollowing}
+            onFollow={onFollow}
+            followLoading={followLoading || unfollowLoading || loadingFollowings}
+          />
+
+          {chatEnabled ? (
+            <>
+              <ChatHeader count={messages.length} />
+
+              <FlatList
+                ref={listRef}
+                data={messages}
+                keyExtractor={m => m.id}
+                contentContainerStyle={styles.chatList}
+                showsVerticalScrollIndicator={false}
+                renderItem={({ item }) => <ChatMsg msg={item} />}
+                ListEmptyComponent={
+                  <Text style={styles.chatEmpty}>
+                    {isLive ? 'Be the first to chat!' : 'Chat unavailable while offline'}
+                  </Text>
+                }
+              />
+
+              {isAuthenticated && isLive && (
+                <View style={styles.inputRow}>
+                  <TextInput
+                    style={styles.input}
+                    value={text}
+                    onChangeText={setText}
+                    placeholder="Send a message…"
+                    placeholderTextColor={COLORS.textMuted}
+                    onSubmitEditing={onSend}
+                    returnKeyType="send"
+                    maxLength={200}
+                  />
+                  <TouchableOpacity
+                    style={[styles.sendBtn, (!text.trim() || sending) && styles.sendBtnDisabled]}
+                    onPress={onSend}
+                    disabled={!text.trim() || sending}
+                    activeOpacity={0.8}
+                  >
+                    {sending
+                      ? <ActivityIndicator size="small" color="#000" />
+                      : <IconSend size={17} color="#000" />
+                    }
+                  </TouchableOpacity>
+                </View>
+              )}
+            </>
+          ) : (
+            <View style={styles.center}>
+              <Text style={styles.chatDisabledText}>Chat is disabled for this stream</Text>
+            </View>
+          )}
+        </KeyboardAvoidingView>
+      ) : null}
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  root:  { flex: 1, backgroundColor: COLORS.bg },
+  flex:  { flex: 1 },
+  center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+
+  // ── Video
+  video: {
+    width: SCREEN_WIDTH,
+    height: VIDEO_HEIGHT,
+    backgroundColor: '#000',
+    overflow: 'hidden',
+  },
+  backBtn: {
+    position: 'absolute',
+    top: 12,
+    left: 12,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 10,
+  },
+  videoCenter: { alignItems: 'center', gap: 8 },
+  videoLabel:  { fontSize: 13, color: 'rgba(255,255,255,0.4)', marginTop: 4 },
+  liveBadge: {
+    position: 'absolute',
+    top: 12,
+    right: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    backgroundColor: COLORS.live,
+    borderRadius: 6,
+    paddingHorizontal: 9,
+    paddingVertical: 4,
+  },
+  liveDot:  { width: 6, height: 6, borderRadius: 3, backgroundColor: '#fff' },
+  liveText: { fontSize: 11, fontWeight: '700', color: '#fff', letterSpacing: 0.5 },
+
+  // ── Stream info
+  info: {
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.border,
+    gap: 8,
+    backgroundColor: COLORS.bg,
+  },
+  infoRow:     { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  avatarWrap:  { position: 'relative' },
+  avatar:      { width: AVATAR_SIZE, height: AVATAR_SIZE, borderRadius: AVATAR_SIZE / 2 },
+  avatarFallback: { backgroundColor: COLORS.card, alignItems: 'center', justifyContent: 'center' },
+  avatarInitial:  { fontSize: 18, fontWeight: '700', color: COLORS.accent },
+  liveRing: {
+    position: 'absolute', top: -2, left: -2,
+    width: AVATAR_SIZE + 4, height: AVATAR_SIZE + 4,
+    borderRadius: (AVATAR_SIZE + 4) / 2,
+    borderWidth: 2, borderColor: COLORS.live,
+  },
+  infoMeta:  { flex: 1 },
+  nameRow:   { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  displayName: { fontSize: 15, fontWeight: '700', color: COLORS.textPrimary },
+  categoryTag: {
+    marginTop: 3,
+    alignSelf: 'flex-start',
+    fontSize: 11, fontWeight: '600', color: COLORS.accent,
+    backgroundColor: 'rgba(24,185,174,0.12)',
+    paddingHorizontal: 7, paddingVertical: 2, borderRadius: 4,
+  },
+  streamTitle: { fontSize: 13, color: COLORS.textSecondary, lineHeight: 19 },
+
+  followBtn: {
+    paddingHorizontal: 16, paddingVertical: 8,
+    borderRadius: 99,
+    backgroundColor: COLORS.accent,
+    minWidth: 82, alignItems: 'center',
+  },
+  followBtnActive: { backgroundColor: 'transparent', borderWidth: 1.5, borderColor: COLORS.border },
+  followBtnText:       { color: '#000', fontSize: 13, fontWeight: '700' },
+  followBtnTextActive: { color: COLORS.textPrimary, fontSize: 13, fontWeight: '600' },
+
+  // ── Chat header
+  chatHeader: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    paddingHorizontal: 14, paddingVertical: 9,
+    borderBottomWidth: 1, borderBottomColor: COLORS.border,
+    backgroundColor: COLORS.bg,
+  },
+  chatHeaderLeft:  { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  chatHeaderText:  { fontSize: 13, fontWeight: '700', color: COLORS.textPrimary },
+  chatHeaderRight: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  chatCount:       { fontSize: 12, color: COLORS.textMuted },
+
+  // ── Chat messages
+  chatList:  { paddingHorizontal: 12, paddingVertical: 10, gap: 10 },
+  chatEmpty: { textAlign: 'center', color: COLORS.textMuted, fontSize: 13, paddingTop: 24 },
+
+  msgRow: { flexDirection: 'row', gap: 9, alignItems: 'flex-start' },
+  msgAvatar: {
+    width: 28, height: 28, borderRadius: 14,
+    alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+    marginTop: 1,
+  },
+  msgAvatarImg:     { width: 28, height: 28, borderRadius: 14 },
+  msgAvatarInitial: { fontSize: 12, fontWeight: '700', color: '#fff' },
+  msgBubble:  { flex: 1 },
+  msgUser:    { fontSize: 12, fontWeight: '700', marginBottom: 2 },
+  msgText:    { fontSize: 13, color: COLORS.textPrimary, lineHeight: 18 },
+
+  // ── Input
+  inputRow: {
+    flexDirection: 'row', alignItems: 'center', gap: 8,
+    paddingHorizontal: 12, paddingVertical: 10,
+    borderTopWidth: 1, borderTopColor: COLORS.border,
+    backgroundColor: COLORS.bg,
+  },
+  input: {
+    flex: 1,
+    backgroundColor: COLORS.card,
+    borderRadius: 22,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    fontSize: 14,
+    color: COLORS.textPrimary,
+  },
+  sendBtn: {
+    width: 42, height: 42, borderRadius: 21,
+    backgroundColor: COLORS.accent,
+    alignItems: 'center', justifyContent: 'center',
+  },
+  sendBtnDisabled: { opacity: 0.35 },
+  chatDisabledText: { color: COLORS.textMuted, fontSize: 13 },
+});

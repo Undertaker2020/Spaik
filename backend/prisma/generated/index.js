@@ -289,7 +289,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "D:\\IT-Projects\\Twitch-clone\\backend\\prisma\\generated",
+      "value": "D:\\Software\\Udemy\\SPAIK\\backend\\prisma\\generated",
       "fromEnvVar": null
     },
     "config": {
@@ -303,7 +303,7 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "D:\\IT-Projects\\Twitch-clone\\backend\\prisma\\schema.prisma",
+    "sourceFilePath": "D:\\Software\\Udemy\\SPAIK\\backend\\prisma\\schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
@@ -321,7 +321,7 @@ const config = {
     "db": {
       "url": {
         "fromEnvVar": "POSTGRES_URI",
-        "value": "postgresql://IlyaAdmin:7jdfCATLOVER3565@51.21.245.31:5432/wg-stream"
+        "value": "postgresql://spaik_user:spaik_pass@localhost:5433/spaik_db"
       }
     }
   },

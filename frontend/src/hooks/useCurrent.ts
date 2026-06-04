@@ -13,12 +13,10 @@ export function useCurrent() {
 
     useEffect(() => {
         if (error) {
-            if (isAuthenticated) {
-                clear()
-            }
+            clear()
             exit()
         }
-    }, [isAuthenticated, exit, clear]);
+    }, [error]);
 
     return {
         user: data?.findProfile,

@@ -3,7 +3,9 @@
 # ------------------------------------------------------
 
 type AuthModel {
+  accessToken: String
   message: String
+  refreshToken: String
   user: UserModel
 }
 
@@ -100,6 +102,7 @@ input EnableTotpInput {
 }
 
 input FiltersInput {
+  categoryName: String
   searchTerm: String
   skip: Float
   take: Float
@@ -164,6 +167,7 @@ type Mutation {
   logout: Boolean!
   makePayment(planId: String!): MakePaymentModel!
   newPassword(data: NewPasswordInput!): Boolean!
+  refreshTokens(refreshToken: String!): AuthModel!
   removeProfileAvatar: Boolean!
   removeSession(id: String!): Boolean!
   removeSocialLink(id: String!): Boolean!
@@ -242,7 +246,7 @@ type Query {
   findNotificationUnreadCount: Float!
   findProfile: UserModel!
   findRandomCategories: [CategoryModel!]!
-  findRandomStreams: [StreamModel!]!
+  findRandomStreams(filters: FiltersInput): [StreamModel!]!
   findRecommendedChannels: [UserModel!]!
   findSessionByUser: [SessionModel!]!
   findSocialLinks: [SocialLinkModel!]!
@@ -363,20 +367,20 @@ type UserModel {
   deactivatedAt: DateTime
   displayName: String!
   email: String!
-  followers: [FollowModel!]!
-  followings: [FollowModel!]!
+  followers: [FollowModel!]
+  followings: [FollowModel!]
   id: ID!
   isDeactivated: Boolean!
   isEmailVerified: Boolean!
   isTotpEnabled: Boolean!
   isVerified: Boolean!
-  notificationSettings: NotificationSettingsModel!
-  notifications: [NotificationModel!]!
+  notificationSettings: NotificationSettingsModel
+  notifications: [NotificationModel!]
   password: String!
-  socialLinks: [SocialLinkModel!]!
-  sponsorshipPlans: [PlanModel!]!
-  sponsorshipSubscriptions: [SubscriptionModel!]!
-  stream: StreamModel!
+  socialLinks: [SocialLinkModel!]
+  sponsorshipPlans: [PlanModel!]
+  sponsorshipSubscriptions: [SubscriptionModel!]
+  stream: StreamModel
   telegramId: String
   totpSecret: String
   updatedAt: DateTime!

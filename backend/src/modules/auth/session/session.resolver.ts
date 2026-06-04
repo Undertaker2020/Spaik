@@ -41,6 +41,13 @@ export class SessionResolver {
         return this.sessionService.logout(req);
     }
 
+    @Mutation(() => AuthModel, {name: 'refreshTokens'})
+    public async refresh(
+        @Args('refreshToken') refreshToken: string
+    ) {
+        return this.sessionService.refresh(refreshToken);
+    }
+
     @Mutation(() => Boolean, {name: 'clearSessionCookie'})
     public async clearSession(
         @Context() {req}: GqlContext

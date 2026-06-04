@@ -1,0 +1,45 @@
+{
+  "expo": {
+    "name": "SPAIK",
+    "slug": "spaik-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "spaik",
+    "userInterfaceStyle": "dark",
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.spaik.mobile"
+    },
+    "android": {
+      "package": "com.spaik.mobile"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-font",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow SPAIK to access your photos to set a profile avatar."
+        }
+      ],
+      [
+        "expo-local-authentication",
+        {
+          "faceIDPermission": "Allow SPAIK to use Face ID for authentication."
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "apiUrl": "http://192.168.50.253:4000/graphql",
+      "wsUrl": "ws://192.168.50.253:4000/graphql",
+      "mediaUrl": "http://192.168.50.253:9000/spaik-media",
+      "livekitWsUrl": "ws://192.168.50.253:7880",
+      "eas": {
+        "projectId": ""
+      }
+    }
+  }
+}

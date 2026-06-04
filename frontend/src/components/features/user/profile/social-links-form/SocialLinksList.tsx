@@ -12,13 +12,12 @@ export function SocialLinksList() {
     const t = useTranslations('dashboard.settings.profile.socialLinks')
 
     const {data, refetch} = useFindSocialLinksQuery()
-    const items = data?.findSocialLinks ?? []
 
-    const [socialLinks, setSocialLinks] = useState(items)
+    const [socialLinks, setSocialLinks] = useState(data?.findSocialLinks ?? [])
 
     useEffect(() => {
-        setSocialLinks(items)
-    }, [items])
+        setSocialLinks(data?.findSocialLinks ?? [])
+    }, [data])
 
     const [reorder, {loading: isLoadingReorder}] =
         useReorderSocialLinksMutation({

@@ -1,2 +1,4 @@
 .idea
-.gitignore
+.claude
+/scripts
+/spaik-wireframes.html

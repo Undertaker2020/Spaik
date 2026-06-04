@@ -23,6 +23,7 @@ export class StorageService {
                 accessKeyId: this.configService.getOrThrow<string>('S3_ACCESS_KEY_ID'),
                 secretAccessKey: this.configService.getOrThrow<string>('S3_SECRET_ACCESS_KEY')
             },
+            forcePathStyle: true
         })
 
         this.bucket = this.configService.getOrThrow<string>('S3_BUCKET_NAME');

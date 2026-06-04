@@ -20,19 +20,22 @@ export class StreamService {
 
     public async findAll(input: FiltersInput = {}) {
 
-        const {take, skip, searchTerm} = input;
+        const {take, skip, searchTerm, categoryName} = input;
 
-        const whereClause = searchTerm ? this.findBySearchTermFilter(searchTerm) : undefined;
+        const where: Prisma.StreamWhereInput = {
+            user: { isDeactivated: false },
+            ...(searchTerm ? this.findBySearchTermFilter(searchTerm) : {}),
+            ...(categoryName ? {
+                category: {
+                    title: { equals: categoryName, mode: 'insensitive' }
+                }
+            } : {}),
+        };
 
         const streams = await this.prismaService.stream.findMany({
             take: take ?? 12,
             skip: skip ?? 0,
-            where: {
-                user: {
-                    isDeactivated: false,
-                },
-                ...whereClause,
-            },
+            where,
             include: {
                 user: true,
                 category: true
@@ -45,36 +48,34 @@ export class StreamService {
         return streams;
     }
 
-    public async findRandom(){
-        const total = await this.prismaService.stream.count({
-            where: {
-                user: {
-                    isDeactivated: false,
+    public async findRandom(input: FiltersInput = {}) {
+        const { categoryName } = input;
+
+        const where: Prisma.StreamWhereInput = {
+            user: { isDeactivated: false },
+            ...(categoryName ? {
+                category: {
+                    title: { equals: categoryName, mode: 'insensitive' }
                 }
-            }
-        })
+            } : {}),
+        };
 
-        const randomIndexes = new Set<number>()
+        const total = await this.prismaService.stream.count({ where });
 
-        while (randomIndexes.size < 4){
-            const randomIndex = Math.floor(Math.random() * total)
+        if (total === 0) return [];
 
-            randomIndexes.add(randomIndex)
+        const pickCount = Math.min(4, total);
+        const randomIndexes = new Set<number>();
+        while (randomIndexes.size < pickCount) {
+            randomIndexes.add(Math.floor(Math.random() * total));
         }
 
         const streams = await this.prismaService.stream.findMany({
-            where: {
-                user: {
-                    isDeactivated: false,
-                }
-            },
-            include: {
-                user: true,
-                category: true
-            },
+            where,
+            include: { user: true, category: true },
             take: total,
             skip: 0,
-        })
+        });
 
         return Array.from(randomIndexes).map(index => streams[index]);
     }
@@ -243,7 +244,8 @@ export class StreamService {
         token.addGrant({
             room: channel.id,
             roomJoin: true,
-            canPublish: false
+            canPublish: isHost,
+            canSubscribe: true,
         })
 
         return { token: token.toJwt() }

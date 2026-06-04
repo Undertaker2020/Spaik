@@ -52,28 +52,28 @@ export class UserModel implements User{
     @Field(() => Date, {nullable: true})
     public deactivatedAt: Date;
 
-    @Field(()=> [SocialLinkModel])
+    @Field(()=> [SocialLinkModel], { nullable: true })
     public socialLinks: SocialLinkModel[];
 
-    @Field(()=> StreamModel)
-    public stream: StreamModel;
+    @Field(()=> StreamModel, { nullable: true })
+    public stream: StreamModel | null;
 
-    @Field(()=> [FollowModel])
+    @Field(()=> [FollowModel], { nullable: true })
     public followers: FollowModel[];
 
-    @Field(()=> [FollowModel])
+    @Field(()=> [FollowModel], { nullable: true })
     public followings: FollowModel[];
 
-    @Field(()=> [NotificationModel])
+    @Field(()=> [NotificationModel], { nullable: true })
     public notifications: NotificationModel[];
 
-    @Field(()=> NotificationSettingsModel)
+    @Field(()=> NotificationSettingsModel, { nullable: true })
     public notificationSettings: NotificationSettingsModel;
 
-    @Field(() => [PlanModel])
+    @Field(() => [PlanModel], { nullable: true })
     public sponsorshipPlans: PlanModel[]
 
-    @Field(() => [SubscriptionModel])
+    @Field(() => [SubscriptionModel], { nullable: true })
     public sponsorshipSubscriptions: SubscriptionModel[]
 
     @Field(() => Date)

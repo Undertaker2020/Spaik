@@ -8,4 +8,10 @@ export class AuthModel {
 
     @Field(() => String, {nullable: true})
     public message: string;
+
+    @Field(() => String, {nullable: true})
+    public accessToken: string;
+
+    @Field(() => String, {nullable: true})
+    public refreshToken: string;
 }

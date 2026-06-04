@@ -18,4 +18,9 @@ export class FiltersInput {
     @IsString()
     @IsOptional()
     public searchTerm?: string;
+
+    @Field(() => String, { nullable: true })
+    @IsString()
+    @IsOptional()
+    public categoryName?: string;
 }

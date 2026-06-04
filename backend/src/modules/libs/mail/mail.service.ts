@@ -18,7 +18,8 @@ export class MailService {
     ) {}
 
     public async sendVerificationToken(email: string, token: string){
-        const domain =  this.configService.getOrThrow<string>('ALLOWED_ORIGIN')
+        const domain = this.configService.get<string>('VERIFICATION_DOMAIN')
+            ?? this.configService.getOrThrow<string>('ALLOWED_ORIGIN').split(',')[0].trim()
         const html = await render(VerificationTemplate({domain, token}))
 
         return this.sendMail(email, 'Verification Token', html)

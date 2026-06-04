@@ -8,7 +8,8 @@ interface VerificationTemplateProps {
 }
 
 export function VerificationTemplate({domain, token}: VerificationTemplateProps) {
-    const verificationLink = `${domain}/account/verify?token=${token}`;
+    const isNgrok = domain.includes('ngrok');
+    const verificationLink = `${domain}/account/verify?token=${token}${isNgrok ? '&ngrok-skip-browser-warning=1' : ''}`;
 
     return (
         <Html>

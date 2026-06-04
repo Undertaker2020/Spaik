@@ -46,6 +46,9 @@ lerna-debug.log*
 .temp
 .tmp
 
+# Prisma generated engine temp files
+prisma/generated/*.tmp*
+
 # Runtime data
 pids
 *.pid
