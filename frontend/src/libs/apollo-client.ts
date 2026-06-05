@@ -1,5 +1,6 @@
 import {ApolloClient, InMemoryCache, split} from "@apollo/client";
-import { WebSocketLink } from '@apollo/client/link/ws'
+import { GraphQLWsLink } from '@apollo/client/link/subscriptions'
+import { createClient } from 'graphql-ws'
 import {SERVER_URL, WEBSOCKET_URL} from "@/libs/constants/url.constants";
 import createUploadLink from "apollo-upload-client/createUploadLink.mjs";
 import {getMainDefinition} from "@apollo/client/utilities";
@@ -12,12 +13,14 @@ const httpLink = createUploadLink({
     }
 })
 
-const wsLink = new WebSocketLink({
-    uri: WEBSOCKET_URL,
-    options: {
-        reconnect: true
-    }
-})
+// graphql-ws (modern protocol) — matches the backend's standalone WS server.
+// Auth on web is cookie-based, sent with the WS handshake.
+const wsLink = new GraphQLWsLink(
+    createClient({
+        url: WEBSOCKET_URL,
+        retryAttempts: Infinity,
+    })
+)
 
 const splitLink = split(
     ({ query }) => {
