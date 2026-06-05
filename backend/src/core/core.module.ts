@@ -23,7 +23,6 @@ import {getLiveKitConfig} from "@/src/core/config/livekit.config";
 import {IngressModule} from "@/src/modules/stream/ingress/ingress.module";
 import {WebhookModule} from "@/src/modules/webhook/webhook.module";
 import {CategoryModule} from "@/src/modules/category/category.module";
-import {ChatModule} from "@/src/modules/chat/chat.module";
 import {FollowModule} from "@/src/modules/follow/follow.module";
 import {ChannelModule} from "@/src/modules/channel/channel.module";
 import {NotificationModule} from "@/src/modules/notification/notification.module";
@@ -74,7 +73,6 @@ import {SubscriptionModule} from "@/src/modules/sponsorship/subscription/subscri
         IngressModule,
         WebhookModule,
         CategoryModule,
-        ChatModule,
         FollowModule,
         ChannelModule,
         NotificationModule,

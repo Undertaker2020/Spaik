@@ -20,12 +20,6 @@ type CategoryModel {
   updatedAt: DateTime!
 }
 
-input ChangeChatSettingsInput {
-  isChatEnabled: Boolean!
-  isChatFollowersOnly: Boolean!
-  isChatPremiumFollowersOnly: Boolean!
-}
-
 input ChangeEmailInput {
   email: String!
 }
@@ -54,17 +48,6 @@ input ChangeProfileInfoInput {
 input ChangeStreamInfoInput {
   categoryId: String!
   title: String!
-}
-
-type ChatMessageModel {
-  createdAt: DateTime!
-  id: ID!
-  stream: StreamModel!
-  streamId: String!
-  text: String!
-  updatedAt: DateTime!
-  user: UserModel!
-  userId: String!
 }
 
 input CreatePlanInput {
@@ -145,7 +128,6 @@ type MakePaymentModel {
 }
 
 type Mutation {
-  changeChatSettings(data: ChangeChatSettingsInput!): Boolean!
   changeEmail(data: ChangeEmailInput!): Boolean!
   changeNotificationsSettings(data: ChangeNotificationsSettingsInput!): ChangeNotificationsSettingsResponse!
   changePassword(data: ChangePasswordInput!): Boolean!
@@ -175,7 +157,6 @@ type Mutation {
   removeStreamThumbnail: Boolean!
   reorderSocialLink(list: [SocialLinkOrderInput!]!): Boolean!
   resetPassword(data: ResetPasswordInput!): Boolean!
-  sendChatMessage(data: SendMessageInput!): ChatMessageModel!
   unfollowChannel(channelId: String!): Boolean!
   updateSocialLink(data: SocialLinkInput!, id: String!): Boolean!
   verifyAccount(data: VerificationInput!): AuthModel!
@@ -234,7 +215,6 @@ type Query {
   findAllStreams(filters: FiltersInput!): [StreamModel!]!
   findCategoryBySlug(slug: String!): CategoryModel!
   findChannelByUsername(username: String!): UserModel!
-  findChatMessagesByStream(streamId: String!): [ChatMessageModel!]!
   findCurrentSession: SessionModel!
   findFollowersCountByChannel(channelId: String!): Float!
   findMyFollowers: [FollowModel!]!
@@ -256,11 +236,6 @@ type Query {
 
 input ResetPasswordInput {
   email: String!
-}
-
-input SendMessageInput {
-  streamId: String!
-  text: String!
 }
 
 type SessionMetadataModel {
@@ -299,7 +274,6 @@ input SocialLinkOrderInput {
 type StreamModel {
   category: CategoryModel
   categoryId: String
-  chatMessages: [ChatMessageModel!]!
   createdAt: DateTime!
   id: ID!
   ingressId: String
@@ -314,10 +288,6 @@ type StreamModel {
   updatedAt: DateTime!
   user: UserModel!
   userId: String!
-}
-
-type Subscription {
-  chatMessageAdded(streamId: String!): ChatMessageModel!
 }
 
 type SubscriptionModel {

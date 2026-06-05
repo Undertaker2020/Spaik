@@ -1,4 +1,4 @@
-import {Field, ID, ObjectType} from "@nestjs/graphql";
+import {Directive, Field, ID, ObjectType} from "@nestjs/graphql";
 import type {User} from "@prisma/generated";
 import {SocialLinkModel} from "@/src/modules/auth/profile/models/social-link.model";
 import {StreamModel} from "@/src/modules/stream/models/stream.model";
@@ -8,7 +8,10 @@ import {NotificationSettingsModel} from "@/src/modules/notification/models/notif
 import {PlanModel} from "@/src/modules/sponsorship/plan/models/plan.model";
 import {SubscriptionModel} from "@/src/modules/sponsorship/subscription/models/subscription.model";
 
+// Federation entity. `username`, `displayName` and `avatar` are also resolved
+// by the chat subgraph (for chat messages), so they are @shareable.
 @ObjectType()
+@Directive('@key(fields: "id")')
 export class UserModel implements User{
     @Field(() => ID)
     public id: string;
@@ -20,12 +23,15 @@ export class UserModel implements User{
     public password: string;
 
     @Field(() => String)
+    @Directive('@shareable')
     public username: string;
 
     @Field(() => String)
+    @Directive('@shareable')
     public displayName: string;
 
     @Field(() => String, {nullable: true})
+    @Directive('@shareable')
     public avatar: string;
 
     @Field(() => String, {nullable: true})
