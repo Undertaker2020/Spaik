@@ -1,11 +1,11 @@
 import {ApolloClient, HttpLink, InMemoryCache, split} from "@apollo/client";
 import { GraphQLWsLink } from '@apollo/client/link/subscriptions'
 import { createClient } from 'graphql-ws'
-import {GATEWAY_URL, SERVER_URL, WEBSOCKET_URL} from "@/libs/constants/url.constants";
+import {GATEWAY_URL, MEDIA_SERVICE_URL, WEBSOCKET_URL} from "@/libs/constants/url.constants";
 import createUploadLink from "apollo-upload-client/createUploadLink.mjs";
 import {getMainDefinition} from "@apollo/client/utilities";
 
-// Queries & mutations → federation gateway (composes monolith + chat-service)
+// Queries & mutations → federation gateway (composes monolith + chat + media)
 const gatewayLink = new HttpLink({
     uri: GATEWAY_URL,
     credentials: 'include',
@@ -13,9 +13,9 @@ const gatewayLink = new HttpLink({
 
 // File uploads (changeProfileAvatar / changeStreamThumbnail) can't go through
 // the gateway — Apollo Federation doesn't support multipart — so route any
-// operation carrying a File/Blob straight to the monolith.
+// operation carrying a File/Blob straight to the media-service.
 const uploadLink = createUploadLink({
-    uri: SERVER_URL,
+    uri: MEDIA_SERVICE_URL,
     credentials: 'include',
     headers: {
         'apollo-require-preflight': 'true'

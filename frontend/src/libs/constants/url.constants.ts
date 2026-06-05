@@ -1,8 +1,10 @@
 export const APP_URL = process.env.NEXT_PUBLIC_APP_URL as string
-// Monolith — direct (file uploads bypass the gateway, which can't do multipart)
+// Monolith — direct (non-federated calls if any)
 export const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL as string
 // Federation gateway — queries & mutations
 export const GATEWAY_URL = (process.env.NEXT_PUBLIC_GATEWAY_URL as string) ?? 'http://localhost:4002/graphql'
+// Media-service — file uploads go here directly (gateway can't do multipart)
+export const MEDIA_SERVICE_URL = (process.env.NEXT_PUBLIC_MEDIA_SERVICE_URL as string) ?? 'http://localhost:4003/graphql'
 // Chat-service WS — subscriptions (e.g. ws://localhost:4001/graphql)
 export const WEBSOCKET_URL = process.env.NEXT_PUBLIC_WEBSOCKET_URL as string
 export const MEDIA_URL = process.env.NEXT_PUBLIC_MEDIA_URL as string

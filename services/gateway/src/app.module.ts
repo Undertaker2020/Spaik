@@ -29,6 +29,10 @@ import { AuthForwardingDataSource } from './auth-forwarding.datasource';
                                 name: 'chat',
                                 url: configService.getOrThrow<string>('CHAT_SUBGRAPH_URL'),
                             },
+                            {
+                                name: 'media',
+                                url: configService.getOrThrow<string>('MEDIA_SUBGRAPH_URL'),
+                            },
                         ],
                     }),
                     buildService: ({ url }) => new AuthForwardingDataSource({ url }),

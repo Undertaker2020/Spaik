@@ -131,10 +131,8 @@ type Mutation {
   changeEmail(data: ChangeEmailInput!): Boolean!
   changeNotificationsSettings(data: ChangeNotificationsSettingsInput!): ChangeNotificationsSettingsResponse!
   changePassword(data: ChangePasswordInput!): Boolean!
-  changeProfileAvatar(avatar: Upload!): Boolean!
   changeProfileInfo(data: ChangeProfileInfoInput!): Boolean!
   changeStreamInfo(data: ChangeStreamInfoInput!): Boolean!
-  changeStreamThumbnail(thumbnail: Upload!): Boolean!
   clearSessionCookie: Boolean!
   createIngress(ingressType: Float!): Boolean!
   createSocialLink(data: SocialLinkInput!): Boolean!
@@ -150,11 +148,9 @@ type Mutation {
   makePayment(planId: String!): MakePaymentModel!
   newPassword(data: NewPasswordInput!): Boolean!
   refreshTokens(refreshToken: String!): AuthModel!
-  removeProfileAvatar: Boolean!
   removeSession(id: String!): Boolean!
   removeSocialLink(id: String!): Boolean!
   removeSponsorshipPlan(planId: String!): Boolean!
-  removeStreamThumbnail: Boolean!
   reorderSocialLink(list: [SocialLinkOrderInput!]!): Boolean!
   resetPassword(data: ResetPasswordInput!): Boolean!
   unfollowChannel(channelId: String!): Boolean!
@@ -326,9 +322,6 @@ enum TransactionStatus {
   PENDING
   SUCCESS
 }
-
-"""The `Upload` scalar type represents a file upload."""
-scalar Upload
 
 type UserModel {
   avatar: String

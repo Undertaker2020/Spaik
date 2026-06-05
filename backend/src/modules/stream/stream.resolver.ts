@@ -6,9 +6,6 @@ import {Authorized} from "@/src/shared/decorators/authorized.decorator";
 import type {User} from "@prisma/generated";
 import {ChangeStreamInfoInput} from "@/src/modules/stream/inputs/change-stream-info.input";
 import {Authorization} from "@/src/shared/decorators/auth.decorator";
-import * as GraphQLUpload from "graphql-upload/GraphQLUpload.js";
-import * as Upload from "graphql-upload/Upload.js"
-import {FileValidationPipe} from "@/src/shared/pipes/file-validation.pipe";
 import {GenerateStreamTokenModel} from "@/src/modules/stream/models/generate-stream-token.model";
 import {GenerateStreamTokenInput} from "@/src/modules/stream/inputs/generate-stream-token.input";
 
@@ -38,23 +35,6 @@ export class StreamResolver {
         @Args('data') input: ChangeStreamInfoInput
     ) {
         return await this.streamService.changeInfo(user, input);
-    }
-
-    @Authorization()
-    @Mutation(() => Boolean, {name: 'changeStreamThumbnail'})
-    public async changeThumbnail(
-        @Authorized() user: User,
-        @Args('thumbnail', {type: () => GraphQLUpload}, FileValidationPipe) thumbnail: Upload
-    ) {
-        return this.streamService.changeThumbnail(user, thumbnail);
-    }
-
-    @Authorization()
-    @Mutation(() => Boolean, {name: 'removeStreamThumbnail'})
-    public async removeThumbnail(
-        @Authorized() user: User
-    ) {
-        return this.streamService.removeThumbnail(user);
     }
 
     @Mutation(() => GenerateStreamTokenModel, {name: 'generateStreamToken'})
