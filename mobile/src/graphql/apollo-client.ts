@@ -11,7 +11,7 @@ import { onError } from '@apollo/client/link/error';
 import { GraphQLWsLink } from '@apollo/client/link/subscriptions';
 import { createClient } from 'graphql-ws';
 import { getMainDefinition } from '@apollo/client/utilities';
-import { SERVER_URL, WEBSOCKET_URL } from '@/src/libs/constants/url.constants';
+import { GATEWAY_URL, CHAT_WS_URL } from '@/src/libs/constants/url.constants';
 import {
   getAccessToken,
   getRefreshToken,
@@ -20,17 +20,18 @@ import {
 } from '@/src/libs/auth/token-storage';
 import { useAuthStore } from '@/src/store/auth/auth.store';
 
+// Queries & mutations → federation gateway
 const httpLink = new HttpLink({
-  uri: SERVER_URL,
+  uri: GATEWAY_URL,
   headers: {
     'apollo-require-preflight': 'true',
   },
 });
 
-// Subscriptions: native WebSocket, authenticated via connectionParams
+// Subscriptions → chat-service WS (gateway doesn't federate subscriptions)
 const wsLink = new GraphQLWsLink(
   createClient({
-    url: WEBSOCKET_URL,
+    url: CHAT_WS_URL,
     retryAttempts: Infinity,
     shouldRetry: () => true,
     connectionParams: async () => {
@@ -60,7 +61,7 @@ async function performRefresh(): Promise<string | null> {
   if (!refreshToken) return null;
 
   try {
-    const res = await fetch(SERVER_URL, {
+    const res = await fetch(GATEWAY_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

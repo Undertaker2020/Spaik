@@ -35,6 +35,8 @@
     },
     "extra": {
       "apiUrl": "http://192.168.50.253:4000/graphql",
+      "gatewayUrl": "http://192.168.50.253:4002/graphql",
+      "chatWsUrl": "ws://192.168.50.253:4001/graphql",
       "wsUrl": "ws://192.168.50.253:4000/graphql",
       "mediaUrl": "http://192.168.50.253:9000/spaik-media",
       "livekitWsUrl": "ws://192.168.50.253:7880",
