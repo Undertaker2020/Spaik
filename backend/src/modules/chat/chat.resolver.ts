@@ -1,20 +1,21 @@
 import {Args, Mutation, Query, Resolver, Subscription} from '@nestjs/graphql';
+import {Inject} from "@nestjs/common";
+import {RedisPubSub} from "graphql-redis-subscriptions";
 import {ChatService} from './chat.service';
-import {PubSub} from "graphql-subscriptions";
 import {ChatMessageModel} from "@/src/modules/chat/models/chat-message.model";
 import {Authorization} from "@/src/shared/decorators/auth.decorator";
 import {Authorized} from "@/src/shared/decorators/authorized.decorator";
 import {User} from "@prisma/generated";
 import {ChangeChatSettingsInput} from "@/src/modules/chat/inputs/change-chat-settings.input";
 import {SendMessageInput} from "@/src/modules/chat/inputs/send-message.input";
+import {PUB_SUB} from "@/src/modules/chat/pubsub/pubsub.provider";
 
 @Resolver('Chat')
 export class ChatResolver {
-    private readonly pubSub: PubSub;
-
-    public constructor(private readonly chatService: ChatService) {
-        this.pubSub = new PubSub();
-    }
+    public constructor(
+        private readonly chatService: ChatService,
+        @Inject(PUB_SUB) private readonly pubSub: RedisPubSub,
+    ) {}
 
     @Query(() => [ChatMessageModel], {name: 'findChatMessagesByStream'})
     public async findMessagesByStream(@Args('streamId') streamId: string) {
