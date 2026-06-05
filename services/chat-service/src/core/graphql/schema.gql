@@ -1,0 +1,49 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+input ChangeChatSettingsInput {
+  isChatEnabled: Boolean!
+  isChatFollowersOnly: Boolean!
+  isChatPremiumFollowersOnly: Boolean!
+}
+
+type ChatMessageModel {
+  createdAt: DateTime!
+  id: ID!
+  streamId: String!
+  text: String!
+  updatedAt: DateTime!
+  user: UserModel!
+  userId: String!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Mutation {
+  changeChatSettings(data: ChangeChatSettingsInput!): Boolean!
+  sendChatMessage(data: SendMessageInput!): ChatMessageModel!
+}
+
+type Query {
+  findChatMessagesByStream(streamId: String!): [ChatMessageModel!]!
+}
+
+input SendMessageInput {
+  streamId: String!
+  text: String!
+}
+
+type Subscription {
+  chatMessageAdded(streamId: String!): ChatMessageModel!
+}
+
+type UserModel {
+  avatar: String
+  displayName: String!
+  id: ID!
+  username: String!
+}
