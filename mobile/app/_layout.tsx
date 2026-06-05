@@ -1,17 +1,32 @@
 import '../global.css';
+import { useEffect } from 'react';
 import { Stack } from 'expo-router';
 import { ApolloProvider } from '@apollo/client';
 import { StatusBar } from 'expo-status-bar';
+import * as SplashScreen from 'expo-splash-screen';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { client } from '@/src/graphql/apollo-client';
+import { useAuthStore } from '@/src/store/auth/auth.store';
 import { COLORS } from '@/src/libs/constants/colors';
 
 const BG = COLORS.bg;
 
+// Keep the native splash up until the persisted auth state is rehydrated,
+// so group-layout redirects settle before anything is shown.
+SplashScreen.preventAutoHideAsync();
+
 // Root layout: only providers + navigator, NO routing logic.
 // Auth redirects live in each group layout using <Redirect>.
 export default function RootLayout() {
+  const hasHydrated = useAuthStore(s => s.hasHydrated);
+
+  useEffect(() => {
+    if (hasHydrated) {
+      SplashScreen.hideAsync();
+    }
+  }, [hasHydrated]);
+
   return (
     <GestureHandlerRootView style={{ flex: 1, backgroundColor: BG }}>
       <SafeAreaProvider>
