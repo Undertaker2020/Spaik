@@ -15,8 +15,9 @@ import { AuthForwardingDataSource } from './auth-forwarding.datasource';
             useFactory: (configService: ConfigService) => ({
                 server: {
                     path: configService.getOrThrow<string>('GRAPHQL_PREFIX'),
-                    // expose the incoming request so the data source can forward auth
-                    context: ({ req }: { req: unknown }) => ({ req }),
+                    // expose req + res so the data source can forward the auth header /
+                    // cookie to subgraphs and relay Set-Cookie back to the browser
+                    context: ({ req, res }: { req: unknown; res: unknown }) => ({ req, res }),
                 },
                 gateway: {
                     supergraphSdl: new IntrospectAndCompose({
