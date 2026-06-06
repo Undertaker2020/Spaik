@@ -57,6 +57,23 @@ services:
     networks:
       - spaik-backend
 
+  livekit-ingress:
+    container_name: spaik-livekit-ingress
+    image: livekit/ingress:latest
+    restart: always
+    environment:
+      INGRESS_CONFIG_FILE: /etc/ingress.yaml
+    ports:
+      - "1935:1935"   # RTMP (OBS)
+      - "8080:8080"   # WHIP (OBS 30+ / browsers)
+    volumes:
+      - ./ingress.yaml:/etc/ingress.yaml
+    depends_on:
+      - livekit
+      - redis
+    networks:
+      - spaik-backend
+
 volumes:
   spaik_postgres_data:
   spaik_redis_data:

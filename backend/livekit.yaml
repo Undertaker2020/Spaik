@@ -12,9 +12,19 @@ redis:
   address: redis:6379
   password: redis_pass
 
+# LiveKit posts events (ingress_started/ended) to the monolith webhook so it can
+# flip stream.isLive + send notifications. The monolith runs on the host, reached
+# from the container via host.docker.internal.
+webhook:
+  api_key: spaik_dev_key
+  urls:
+    - http://host.docker.internal:4000/webhook/livekit
+
 ingress:
-  rtmp_base_url: rtmp://localhost:7881/live
-  whip_base_url: http://localhost:7880/whip
+  # URLs returned to clients (OBS). Use localhost for OBS on this machine; for OBS
+  # on another device, replace localhost with this machine's LAN IP.
+  rtmp_base_url: rtmp://localhost:1935/x
+  whip_base_url: http://localhost:8080/w
 
 logging:
   level: info

@@ -1,0 +1,18 @@
+log_level: info
+api_key: spaik_dev_key
+api_secret: spaik_dev_secret_min_32_chars_long
+# Reach the livekit-server and redis over the docker network (service names)
+ws_url: ws://livekit:7880
+redis:
+  address: redis:6379
+  password: redis_pass
+# Ports the ingress service listens on (exposed to the host for OBS)
+rtmp_port: 1935
+whip_port: 8080
+http_relay_port: 9090
+# Per-input CPU cost — without this the node advertises 0 capacity and the
+# server won't route streams to it.
+cpu_cost:
+  rtmp_cpu_cost: 2
+  whip_cpu_cost: 2
+  whip_bypass_transcoding_cpu_cost: 0.1
