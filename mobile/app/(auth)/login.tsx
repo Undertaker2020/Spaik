@@ -12,6 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Controller } from 'react-hook-form';
 import { AuthInput } from '@/src/components/ui/AuthInput';
+import { OtpInput } from '@/src/components/ui/OtpInput';
 import { useLogin } from '@/src/hooks/useLogin';
 import { COLORS } from '@/src/libs/constants/colors';
 
@@ -77,16 +78,14 @@ export default function LoginScreen() {
               <Controller
                 control={control}
                 name="pin"
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <AuthInput
-                    label="2FA Code"
-                    placeholder="6-digit code from your app"
-                    value={value}
+                render={({ field: { onChange, value } }) => (
+                  <OtpInput
+                    label="Two-Factor Code"
+                    hint="Enter the 6-digit code from your authenticator app"
+                    value={value ?? ''}
                     onChangeText={onChange}
-                    onBlur={onBlur}
                     error={errors.pin?.message}
-                    keyboardType="number-pad"
-                    maxLength={6}
+                    autoFocus
                   />
                 )}
               />

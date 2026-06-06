@@ -39,10 +39,11 @@ export function useLogin() {
       const result = data?.login;
       if (!result) return;
 
-      // Server signals TOTP required via message without user
+      // Server signals TOTP required via message without user — reveal the code
+      // field (the prompt is guidance, not an error, so don't flag it red).
       if (result.message && !result.user) {
         setRequiresPin(true);
-        setServerError(result.message);
+        setServerError(null);
         return;
       }
 
