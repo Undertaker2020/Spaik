@@ -3,6 +3,6 @@ import { IngressService } from './ingress.service';
 import { IngressResolver } from './ingress.resolver';
 
 @Module({
-  providers: [IngressResolver, IngressService],
+    providers: [IngressResolver, IngressService],
 })
 export class IngressModule {}

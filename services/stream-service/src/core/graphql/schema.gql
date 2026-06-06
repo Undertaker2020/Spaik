@@ -1,0 +1,67 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type CategoryModel {
+  id: ID!
+}
+
+input ChangeStreamInfoInput {
+  categoryId: String!
+  title: String!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+input FiltersInput {
+  categoryName: String
+  searchTerm: String
+  skip: Float
+  take: Float
+}
+
+input GenerateStreamTokenInput {
+  channelId: String!
+  userId: String!
+}
+
+type GenerateStreamTokenModel {
+  token: String!
+}
+
+type Mutation {
+  changeStreamInfo(data: ChangeStreamInfoInput!): Boolean!
+  createIngress(ingressType: Float!): Boolean!
+  generateStreamToken(data: GenerateStreamTokenInput!): GenerateStreamTokenModel!
+}
+
+type Query {
+  findAllStreams(filters: FiltersInput!): [StreamModel!]!
+  findRandomStreams(filters: FiltersInput): [StreamModel!]!
+}
+
+type StreamModel {
+  category: CategoryModel
+  categoryId: String
+  createdAt: DateTime!
+  id: ID!
+  ingressId: String
+  isChatEnabled: Boolean!
+  isChatFollowersOnly: Boolean!
+  isChatPremiumFollowersOnly: Boolean!
+  isLive: Boolean!
+  serverUrl: String
+  streamKey: String
+  thumbnailUrl: String
+  title: String!
+  updatedAt: DateTime!
+  user: UserModel!
+  userId: String!
+}
+
+type UserModel {
+  id: ID!
+}

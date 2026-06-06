@@ -33,6 +33,10 @@ import { AuthForwardingDataSource } from './auth-forwarding.datasource';
                                 name: 'media',
                                 url: configService.getOrThrow<string>('MEDIA_SUBGRAPH_URL'),
                             },
+                            {
+                                name: 'stream',
+                                url: configService.getOrThrow<string>('STREAM_SUBGRAPH_URL'),
+                            },
                         ],
                     }),
                     buildService: ({ url }) => new AuthForwardingDataSource({ url }),

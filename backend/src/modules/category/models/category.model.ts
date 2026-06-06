@@ -1,8 +1,10 @@
-import {Field, ID, ObjectType} from "@nestjs/graphql";
+import {Directive, Field, ID, ObjectType} from "@nestjs/graphql";
 import type {Category} from "@prisma/generated";
 import {StreamModel} from "@/src/modules/stream/models/stream.model";
 
+// Federation entity — referenced by the stream-service subgraph (Stream.category).
 @ObjectType()
+@Directive('@key(fields: "id")')
 export class CategoryModel implements Category {
     @Field(() => ID)
     public id: string;

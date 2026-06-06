@@ -1,0 +1,14 @@
+# dependencies
+/node_modules
+
+# build
+/dist
+
+# Prisma generated client (reproducible via `prisma generate`)
+/prisma/generated
+
+# env
+.env
+
+# logs
+*.log

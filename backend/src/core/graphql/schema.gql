@@ -45,11 +45,6 @@ input ChangeProfileInfoInput {
   username: String!
 }
 
-input ChangeStreamInfoInput {
-  categoryId: String!
-  title: String!
-}
-
 input CreatePlanInput {
   description: String
   price: Float!
@@ -84,13 +79,6 @@ input EnableTotpInput {
   secret: String!
 }
 
-input FiltersInput {
-  categoryName: String
-  searchTerm: String
-  skip: Float
-  take: Float
-}
-
 type FollowModel {
   createdAt: DateTime!
   follower: UserModel!
@@ -99,15 +87,6 @@ type FollowModel {
   followingId: String!
   id: ID!
   updatedAt: DateTime!
-}
-
-input GenerateStreamTokenInput {
-  channelId: String!
-  userId: String!
-}
-
-type GenerateStreamTokenModel {
-  token: String!
 }
 
 type LocationModel {
@@ -132,9 +111,7 @@ type Mutation {
   changeNotificationsSettings(data: ChangeNotificationsSettingsInput!): ChangeNotificationsSettingsResponse!
   changePassword(data: ChangePasswordInput!): Boolean!
   changeProfileInfo(data: ChangeProfileInfoInput!): Boolean!
-  changeStreamInfo(data: ChangeStreamInfoInput!): Boolean!
   clearSessionCookie: Boolean!
-  createIngress(ingressType: Float!): Boolean!
   createSocialLink(data: SocialLinkInput!): Boolean!
   createSponsorshipPlan(data: CreatePlanInput!): Boolean!
   createUser(data: CreateUserInput!): Boolean!
@@ -142,7 +119,6 @@ type Mutation {
   disableTotp: Boolean!
   enableTotp(data: EnableTotpInput!): Boolean!
   followChannel(channelId: String!): Boolean!
-  generateStreamToken(data: GenerateStreamTokenInput!): GenerateStreamTokenModel!
   login(data: LoginInput!): AuthModel!
   logout: Boolean!
   makePayment(planId: String!): MakePaymentModel!
@@ -208,7 +184,6 @@ type PlanModel {
 
 type Query {
   findAllCategories: [CategoryModel!]!
-  findAllStreams(filters: FiltersInput!): [StreamModel!]!
   findCategoryBySlug(slug: String!): CategoryModel!
   findChannelByUsername(username: String!): UserModel!
   findCurrentSession: SessionModel!
@@ -222,7 +197,6 @@ type Query {
   findNotificationUnreadCount: Float!
   findProfile: UserModel!
   findRandomCategories: [CategoryModel!]!
-  findRandomStreams(filters: FiltersInput): [StreamModel!]!
   findRecommendedChannels: [UserModel!]!
   findSessionByUser: [SessionModel!]!
   findSocialLinks: [SocialLinkModel!]!
@@ -268,22 +242,7 @@ input SocialLinkOrderInput {
 }
 
 type StreamModel {
-  category: CategoryModel
-  categoryId: String
-  createdAt: DateTime!
   id: ID!
-  ingressId: String
-  isChatEnabled: Boolean!
-  isChatFollowersOnly: Boolean!
-  isChatPremiumFollowersOnly: Boolean!
-  isLive: Boolean!
-  serverUrl: String
-  streamKey: String
-  thumbnailUrl: String
-  title: String!
-  updatedAt: DateTime!
-  user: UserModel!
-  userId: String!
 }
 
 type SubscriptionModel {
