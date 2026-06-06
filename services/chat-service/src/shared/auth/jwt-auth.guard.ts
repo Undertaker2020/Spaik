@@ -6,35 +6,44 @@ import {
 } from '@nestjs/common';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
+import { resolveSessionUserId } from './session.util';
 
 interface TokenPayload {
     sub: string;
     tokenId: string;
 }
 
-// Stateless auth for the subgraph: verify the JWT access token issued by the
-// monolith (shared JWT_SECRET). No session store, no DB lookup needed for the
-// chat operations (they only require the user id).
+// Accepts BOTH auth schemes so web (cookie) and mobile (JWT) can call the service:
+//  - Authorization: Bearer <access token>  → verified with the shared JWT_SECRET
+//  - the monolith's express-session cookie  → resolved against the shared Redis
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
-    public constructor(private readonly jwtService: JwtService) {}
+    public constructor(
+        private readonly jwtService: JwtService,
+        private readonly configService: ConfigService,
+    ) {}
 
-    public canActivate(context: ExecutionContext): boolean {
+    public async canActivate(context: ExecutionContext): Promise<boolean> {
         const ctx = GqlExecutionContext.create(context);
         const req = ctx.getContext().req;
 
         const authHeader: string | undefined = req?.headers?.authorization;
-        if (!authHeader?.startsWith('Bearer ')) {
-            throw new UnauthorizedException('Missing bearer token');
+        if (authHeader?.startsWith('Bearer ')) {
+            try {
+                const payload = this.jwtService.verify<TokenPayload>(authHeader.slice(7));
+                req.user = { id: payload.sub };
+                req.tokenId = payload.tokenId;
+                return true;
+            } catch {
+                throw new UnauthorizedException('Invalid or expired access token');
+            }
         }
 
-        try {
-            const payload = this.jwtService.verify<TokenPayload>(authHeader.slice(7));
-            req.user = { id: payload.sub };
-            req.tokenId = payload.tokenId;
-            return true;
-        } catch {
-            throw new UnauthorizedException('Invalid or expired access token');
-        }
+        const userId = await resolveSessionUserId(req, this.configService);
+        if (!userId) throw new UnauthorizedException('Not authenticated');
+
+        req.user = { id: userId };
+        return true;
     }
 }
