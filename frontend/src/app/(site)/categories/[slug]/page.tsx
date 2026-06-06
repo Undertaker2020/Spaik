@@ -5,7 +5,7 @@ import {CategoryOverview} from '@/components/features/category/overview/Category
 
 import {FindCategoryBySlugDocument, type FindCategoryBySlugQuery} from '@/graphql/generated/output'
 
-import {SERVER_URL} from '@/libs/constants/url.constants'
+import {GATEWAY_URL} from '@/libs/constants/url.constants'
 
 import {getMediaSource} from '@/utils/get-media-source'
 
@@ -14,7 +14,7 @@ async function findCategoryBySlug(params: { slug: string }) {
         const query = FindCategoryBySlugDocument.loc?.source.body
         const variables = {slug: params.slug}
 
-        const response = await fetch(SERVER_URL, {
+        const response = await fetch(GATEWAY_URL, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

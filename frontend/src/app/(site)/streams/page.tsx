@@ -4,7 +4,7 @@ import {getTranslations} from 'next-intl/server'
 import {StreamsContent} from '@/components/features/stream/list/StreamsContent'
 
 import {FindAllStreamsDocument, type FindAllStreamsQuery} from '@/graphql/generated/output'
-import {SERVER_URL} from '@/libs/constants/url.constants'
+import {GATEWAY_URL} from '@/libs/constants/url.constants'
 
 async function findAllStreams() {
     try {
@@ -13,7 +13,7 @@ async function findAllStreams() {
             filters: {}
         }
 
-        const response = await fetch(SERVER_URL, {
+        const response = await fetch(GATEWAY_URL, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

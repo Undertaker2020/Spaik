@@ -5,13 +5,13 @@ import {CategoriesList} from '@/components/features/category/list/CategoriesList
 
 import {FindAllCategoriesDocument, type FindAllCategoriesQuery} from '@/graphql/generated/output'
 
-import {SERVER_URL} from '@/libs/constants/url.constants'
+import {GATEWAY_URL} from '@/libs/constants/url.constants'
 
 async function findAllCategories() {
     try {
         const query = FindAllCategoriesDocument.loc?.source.body
 
-        const response = await fetch(SERVER_URL, {
+        const response = await fetch(GATEWAY_URL, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

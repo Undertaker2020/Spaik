@@ -8,7 +8,7 @@ import {
 	type FindChannelByUsernameQuery
 } from '@/graphql/generated/output'
 
-import { SERVER_URL } from '@/libs/constants/url.constants'
+import { GATEWAY_URL } from '@/libs/constants/url.constants'
 
 import { getMediaSource } from '@/utils/get-media-source'
 
@@ -17,7 +17,7 @@ async function findChannelByUsername(params: { username: string }) {
 		const query = FindChannelByUsernameDocument.loc?.source.body
 		const variables = { username: params.username }
 
-		const response = await fetch(SERVER_URL, {
+		const response = await fetch(GATEWAY_URL, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'

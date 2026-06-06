@@ -10,13 +10,13 @@ import {
     type FindRandomStreamsQuery
 } from '@/graphql/generated/output'
 
-import {SERVER_URL} from '@/libs/constants/url.constants'
+import {GATEWAY_URL} from '@/libs/constants/url.constants'
 
 async function findRandomStreams() {
     try {
         const query = FindRandomStreamsDocument.loc?.source.body
 
-        const response = await fetch(SERVER_URL, {
+        const response = await fetch(GATEWAY_URL, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -42,7 +42,7 @@ async function findRandomCategories() {
     try {
         const query = FindRandomCategoriesDocument.loc?.source.body
 
-        const response = await fetch(SERVER_URL, {
+        const response = await fetch(GATEWAY_URL, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

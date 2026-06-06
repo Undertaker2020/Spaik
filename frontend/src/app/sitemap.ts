@@ -4,7 +4,7 @@ import {
     FindAllCategoriesDocument,
     type FindAllCategoriesQuery,
 } from '@/graphql/generated/output';
-import { APP_URL, SERVER_URL } from '@/libs/constants/url.constants';
+import { APP_URL, GATEWAY_URL } from '@/libs/constants/url.constants';
 
 async function findAllCategories(): Promise<
     FindAllCategoriesQuery['findAllCategories']
@@ -12,7 +12,7 @@ async function findAllCategories(): Promise<
     try {
         const query = FindAllCategoriesDocument.loc?.source.body;
 
-        const response = await fetch(SERVER_URL, {
+        const response = await fetch(GATEWAY_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ query }),
