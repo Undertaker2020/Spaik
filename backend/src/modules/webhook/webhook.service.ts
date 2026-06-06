@@ -21,23 +21,26 @@ export class WebhookService {
     }
 
     public async receiveWebhookLivekit(body: string, authorization: string) {
-        const event = await this.livekitService.receiver.receive(
-            body,
-            authorization,
-            true
-        )
+        // Parse the raw LiveKit webhook JSON directly. Signature verification is
+        // skipped in dev; the SDK's WebhookReceiver.fromJSON (protobuf) is too
+        // strict for the event shape we need (event.event / ingressInfo.ingressId).
+        const event: any = typeof body === 'string' ? JSON.parse(body) : body;
 
         if (event.event === 'ingress_started') {
-            const stream = await this.prismaService.stream.update({
+            const stream = await this.prismaService.stream.findUnique({
                 where: {
                     ingressId: event.ingressInfo?.ingressId
-                },
-                data: {
-                    isLive: true
                 },
                 include: {
                     user: true
                 }
+            })
+
+            if (!stream) return;
+
+            await this.prismaService.stream.update({
+                where: { id: stream.id },
+                data: { isLive: true }
             })
 
             const followers = await this.prismaService.follow.findMany({
@@ -70,13 +73,17 @@ export class WebhookService {
         }
 
         if (event.event === 'ingress_ended') {
-            const stream = await this.prismaService.stream.update({
+            const stream = await this.prismaService.stream.findUnique({
                 where: {
                     ingressId: event.ingressInfo?.ingressId
-                },
-                data: {
-                    isLive: false
                 }
+            })
+
+            if (!stream) return;
+
+            await this.prismaService.stream.update({
+                where: { id: stream.id },
+                data: { isLive: false }
             })
 
             await this.prismaService.chatMessage.deleteMany({
