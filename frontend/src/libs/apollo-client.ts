@@ -36,8 +36,8 @@ const httpLink = split(
     gatewayLink,
 )
 
-// graphql-ws (modern protocol) → chat-service WS. The gateway doesn't federate
-// subscriptions, so they connect to the owning subgraph directly.
+// graphql-ws (modern protocol) → Hive gateway WS. The gateway federates
+// subscriptions over WS to the owning subgraph (chat).
 // Auth on web is cookie-based, sent with the WS handshake.
 const wsLink = new GraphQLWsLink(
     createClient({

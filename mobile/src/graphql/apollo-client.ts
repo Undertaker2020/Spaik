@@ -28,7 +28,7 @@ const httpLink = new HttpLink({
   },
 });
 
-// Subscriptions → chat-service WS (gateway doesn't federate subscriptions)
+// Subscriptions → Hive gateway WS (federated over WS to the chat subgraph)
 const wsLink = new GraphQLWsLink(
   createClient({
     url: CHAT_WS_URL,

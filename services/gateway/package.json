@@ -1,34 +1,21 @@
 {
   "name": "gateway",
   "version": "0.0.1",
-  "description": "SPAIK Apollo Federation gateway (composes monolith + chat-service)",
+  "description": "SPAIK federation gateway (Hive Gateway): composes monolith + chat + media + stream, serves queries/mutations and federated WS subscriptions",
   "private": true,
   "scripts": {
-    "build": "nest build",
-    "start": "nest start",
-    "start:dev": "nest start --watch",
-    "start:prod": "node dist/main"
+    "compose": "mesh-compose -o supergraph.graphql",
+    "start": "npm run compose && hive-gateway supergraph supergraph.graphql --port 4002",
+    "start:dev": "npm run compose && hive-gateway supergraph supergraph.graphql --port 4002",
+    "start:prod": "hive-gateway supergraph supergraph.graphql --port 4002"
   },
   "dependencies": {
-    "@apollo/gateway": "^2.9.3",
-    "@apollo/server": "^4.11.3",
-    "@apollo/subgraph": "^2.14.1",
-    "@nestjs/apollo": "13.0.2",
-    "@nestjs/common": "^11.0.1",
-    "@nestjs/config": "^4.0.0",
-    "@nestjs/core": "^11.0.1",
-    "@nestjs/graphql": "13.0.2",
-    "@nestjs/platform-express": "^11.0.1",
-    "graphql": "^16.10.0",
-    "reflect-metadata": "^0.2.2",
-    "rxjs": "^7.8.1"
+    "@graphql-hive/gateway": "^2.8.5",
+    "@graphql-mesh/compose-cli": "^1.5.33",
+    "graphql": "^16.10.0"
   },
   "devDependencies": {
-    "@nestjs/cli": "^11.0.0",
-    "@nestjs/schematics": "^11.0.0",
     "@types/node": "^22.10.7",
-    "ts-node": "^10.9.2",
-    "tsconfig-paths": "^4.2.0",
     "typescript": "^5.7.3"
   }
 }
