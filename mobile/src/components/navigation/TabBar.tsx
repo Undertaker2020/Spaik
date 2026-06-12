@@ -61,7 +61,7 @@ export function TabBar({ state, navigation }: BottomTabBarProps) {
             );
           }
 
-          const color = isFocused ? COLORS.accent : COLORS.textDisabled;
+          const color = isFocused ? COLORS.accent : COLORS.textMuted;
 
           return (
             <View key={route.key} style={styles.itemOuter}>
@@ -87,10 +87,12 @@ const styles = StyleSheet.create({
   pill: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(15, 17, 26, 0.96)',
+    // A *raised* surface: lighter than the screen bg so it reads as a floating
+    // pill (on dark themes depth comes from a lighter surface, not a shadow).
+    backgroundColor: COLORS.card,
     borderRadius: 32,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.09)',
+    borderColor: 'rgba(255,255,255,0.12)',
     paddingHorizontal: 4,
     paddingVertical: 8,
     ...Platform.select({
@@ -101,7 +103,8 @@ const styles = StyleSheet.create({
         shadowRadius: 16,
       },
       android: {
-        elevation: 14,
+        shadowColor: '#000',
+        elevation: 8,
       },
     }),
   },
@@ -142,11 +145,14 @@ const styles = StyleSheet.create({
       ios: {
         shadowColor: COLORS.accent,
         shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.5,
-        shadowRadius: 10,
+        shadowOpacity: 0.7,
+        shadowRadius: 12,
       },
       android: {
-        elevation: 10,
+        // Tint the elevation shadow teal (Android 9+) for a glow that reads
+        // against the lighter pill, instead of a black blob.
+        shadowColor: COLORS.accent,
+        elevation: 9,
       },
     }),
   },

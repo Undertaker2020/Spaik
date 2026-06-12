@@ -4,6 +4,10 @@ rtc:
   port_range_end: 50100
   tcp_port: 7881
   use_external_ip: false
+  # Advertise the host's LAN IP in ICE candidates so phones on the same Wi-Fi
+  # can reach the media ports (without this, the container advertises its
+  # unreachable internal bridge IP). Must match mobile/app.json livekitWsUrl.
+  node_ip: 192.168.50.253
 
 keys:
   spaik_dev_key: spaik_dev_secret_min_32_chars_long

@@ -11,11 +11,22 @@ import {
   FlatList,
   Clipboard,
   Alert,
+  PermissionsAndroid,
+  Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'expo-router';
 import { useQuery, useMutation } from '@apollo/client';
+import {
+  LiveKitRoom,
+  VideoTrack,
+  useTracks,
+  useLocalParticipant,
+  isTrackReference,
+  AudioSession,
+} from '@livekit/react-native';
+import { Track, VideoPresets43 } from 'livekit-client';
 import {
   IconVideo,
   IconKey,
@@ -27,14 +38,19 @@ import {
   IconMessageCircle,
   IconUsers,
   IconCrown,
+  IconMicrophone,
+  IconMicrophoneOff,
+  IconPlayerStopFilled,
 } from '@tabler/icons-react-native';
 import { COLORS } from '@/src/libs/constants/colors';
+import { LIVEKIT_WS_URL } from '@/src/libs/constants/url.constants';
 import {
   FIND_MY_STREAM,
   FIND_ALL_CATEGORIES,
   CHANGE_STREAM_INFO,
   CHANGE_CHAT_SETTINGS,
   CREATE_INGRESS,
+  GENERATE_STREAM_TOKEN,
   type StreamSettings,
   type CategoryOption,
 } from '@/src/graphql/queries/stream.queries';
@@ -137,6 +153,51 @@ function CategoryPicker({ categories, selectedId, onSelect }: {
   );
 }
 
+// ── Broadcast view (inside LiveKitRoom; publishes local camera) ─
+
+function BroadcastView({ onEnd, aspect }: { onEnd: () => void; aspect: '16:9' | '4:3' }) {
+  const tracks = useTracks([Track.Source.Camera]);
+  const localCam = tracks.find(t => isTrackReference(t) && t.participant.isLocal);
+  const { localParticipant } = useLocalParticipant();
+  const [micOn, setMicOn] = useState(true);
+
+  const toggleMic = async () => {
+    const next = !micOn;
+    await localParticipant.setMicrophoneEnabled(next);
+    setMicOn(next);
+  };
+
+  return (
+    <View style={[styles.broadcastStage, { aspectRatio: aspect === '4:3' ? 4 / 3 : 16 / 9 }]}>
+      {localCam ? (
+        <VideoTrack trackRef={localCam} style={StyleSheet.absoluteFill} objectFit="contain" mirror />
+      ) : (
+        <View style={[StyleSheet.absoluteFill, styles.broadcastConnecting]}>
+          <ActivityIndicator color="#fff" />
+          <Text style={styles.cameraNote}>Starting camera…</Text>
+        </View>
+      )}
+
+      <View style={styles.liveBadgeAbs}>
+        <View style={styles.liveBadgeDot} />
+        <Text style={styles.liveBadgeText}>LIVE</Text>
+      </View>
+
+      <View style={styles.broadcastControls}>
+        <TouchableOpacity onPress={toggleMic} style={styles.ctrlBtn} activeOpacity={0.8}>
+          {micOn
+            ? <IconMicrophone size={20} color="#fff" />
+            : <IconMicrophoneOff size={20} color={COLORS.live} />}
+        </TouchableOpacity>
+        <TouchableOpacity onPress={onEnd} style={styles.endBtn} activeOpacity={0.85}>
+          <IconPlayerStopFilled size={16} color="#fff" />
+          <Text style={styles.endBtnText}>End Stream</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+}
+
 // ── Screen ────────────────────────────────────────────────────
 
 export default function GoLiveScreen() {
@@ -147,6 +208,10 @@ export default function GoLiveScreen() {
   const [isChatFollowersOnly, setIsChatFollowersOnly] = useState(false);
   const [isChatPremiumFollowersOnly, setIsChatPremiumFollowersOnly] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [broadcasting, setBroadcasting] = useState(false);
+  const [hostToken, setHostToken] = useState<string | null>(null);
+  const [starting, setStarting] = useState(false);
+  const [aspect, setAspect] = useState<'16:9' | '4:3'>('16:9');
 
   const { data: profileData, loading: loadingProfile, refetch } = useQuery<{
     findProfile: { id: string; stream: StreamSettings };
@@ -172,8 +237,70 @@ export default function GoLiveScreen() {
   const [changeInfo, { loading: savingInfo }] = useMutation(CHANGE_STREAM_INFO);
   const [changeChatSettings, { loading: savingChat }] = useMutation(CHANGE_CHAT_SETTINGS);
   const [createIngress, { loading: generatingIngress }] = useMutation(CREATE_INGRESS);
+  const [generateToken] = useMutation(GENERATE_STREAM_TOKEN);
 
   const saving = savingInfo || savingChat;
+
+  // Audio session is only needed while actively broadcasting.
+  useEffect(() => {
+    if (!broadcasting) return;
+    let active = false;
+    AudioSession.startAudioSession().then(() => { active = true; }).catch(() => {});
+    return () => { if (active) AudioSession.stopAudioSession(); };
+  }, [broadcasting]);
+
+  const startBroadcast = async () => {
+    if (!userId) return;
+    if (!categoryId) {
+      Alert.alert('Add a category', 'Select a category before going live.');
+      return;
+    }
+
+    setStarting(true);
+    try {
+      // Camera + mic permissions (Android; iOS prompts on first use via Info.plist).
+      if (Platform.OS === 'android') {
+        const res = await PermissionsAndroid.requestMultiple([
+          PermissionsAndroid.PERMISSIONS.CAMERA,
+          PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
+        ]);
+        const granted =
+          res['android.permission.CAMERA'] === 'granted' &&
+          res['android.permission.RECORD_AUDIO'] === 'granted';
+        if (!granted) {
+          Alert.alert('Permissions required', 'Camera and microphone access are needed to go live.');
+          return;
+        }
+      }
+
+      // Persist title/category/chat so viewers see the right metadata.
+      await Promise.all([
+        changeInfo({ variables: { data: { title, categoryId } } }),
+        changeChatSettings({ variables: { data: { isChatEnabled, isChatFollowersOnly, isChatPremiumFollowersOnly } } }),
+      ]);
+
+      // Host token: userId === channelId → isHost → canPublish. Room = own id.
+      const tokenRes = await generateToken({ variables: { data: { userId, channelId: userId } } });
+      const token = tokenRes.data?.generateStreamToken?.token;
+      if (!token) {
+        Alert.alert('Error', 'Could not start the stream. Try again.');
+        return;
+      }
+      setHostToken(token);
+      setBroadcasting(true);
+    } catch {
+      Alert.alert('Error', 'Could not start the stream. Try again.');
+    } finally {
+      setStarting(false);
+    }
+  };
+
+  const endBroadcast = () => {
+    setBroadcasting(false);
+    setHostToken(null);
+    // Give the LiveKit `participant_left` webhook a moment to flip isLive.
+    setTimeout(() => refetch(), 1500);
+  };
 
   const onSave = async () => {
     if (!categoryId) return;
@@ -232,12 +359,50 @@ export default function GoLiveScreen() {
       ) : (
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll}>
 
-          {/* Camera placeholder */}
-          <View style={styles.cameraPlaceholder}>
-            <IconVideo size={36} color={COLORS.textMuted} />
-            <Text style={styles.cameraNote}>Camera streaming available in production build</Text>
-            <Text style={styles.cameraNoteSub}>Use WHIP server URL below with OBS or mobile encoder</Text>
-          </View>
+          {/* Camera broadcast */}
+          {broadcasting && hostToken ? (
+            // Capture preset follows the chosen aspect so the camera frame is
+            // published at that ratio (no cropping); players letterbox it.
+            <LiveKitRoom
+              serverUrl={LIVEKIT_WS_URL}
+              token={hostToken}
+              connect
+              audio
+              video={aspect === '4:3' ? { resolution: VideoPresets43.h720.resolution } : true}
+            >
+              <BroadcastView onEnd={endBroadcast} aspect={aspect} />
+            </LiveKitRoom>
+          ) : (
+            <View style={styles.cameraPlaceholder}>
+              <IconVideo size={36} color={COLORS.textMuted} />
+              <Text style={styles.cameraNote}>Broadcast live from your phone</Text>
+
+              <View style={styles.aspectRow}>
+                {(['16:9', '4:3'] as const).map(a => (
+                  <TouchableOpacity
+                    key={a}
+                    onPress={() => setAspect(a)}
+                    style={[styles.aspectBtn, aspect === a && styles.aspectBtnActive]}
+                    activeOpacity={0.8}
+                  >
+                    <Text style={[styles.aspectBtnText, aspect === a && styles.aspectBtnTextActive]}>{a}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+
+              <TouchableOpacity
+                style={[styles.goLiveBtn, (starting || !categoryId) && styles.saveBtnDisabled]}
+                onPress={startBroadcast}
+                disabled={starting || !categoryId}
+                activeOpacity={0.85}
+              >
+                {starting
+                  ? <ActivityIndicator size="small" color="#000" />
+                  : <Text style={styles.goLiveBtnText}>Go Live</Text>}
+              </TouchableOpacity>
+              <Text style={styles.cameraNoteSub}>or use the stream keys below with OBS</Text>
+            </View>
+          )}
 
           {/* Stream Info */}
           <View style={styles.card}>
@@ -407,6 +572,77 @@ const styles = StyleSheet.create({
   },
   cameraNote: { fontSize: 14, fontWeight: '600', color: COLORS.textSecondary, textAlign: 'center' },
   cameraNoteSub: { fontSize: 12, color: COLORS.textMuted, textAlign: 'center' },
+  goLiveBtn: {
+    backgroundColor: COLORS.accent,
+    borderRadius: 12,
+    paddingHorizontal: 28,
+    paddingVertical: 11,
+    marginVertical: 4,
+    minWidth: 140,
+    alignItems: 'center',
+  },
+  goLiveBtnText: { color: '#000', fontWeight: '700', fontSize: 15 },
+  aspectRow: { flexDirection: 'row', gap: 8 },
+  aspectBtn: {
+    paddingHorizontal: 16,
+    paddingVertical: 6,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    backgroundColor: COLORS.bg,
+  },
+  aspectBtnActive: { backgroundColor: 'rgba(24,185,174,0.12)', borderColor: COLORS.accent },
+  aspectBtnText: { fontSize: 13, fontWeight: '600', color: COLORS.textSecondary },
+  aspectBtnTextActive: { color: COLORS.accent },
+
+  // Broadcast stage
+  broadcastStage: {
+    backgroundColor: '#000',
+    borderRadius: 16,
+    overflow: 'hidden',
+  },
+  broadcastConnecting: { alignItems: 'center', justifyContent: 'center', gap: 8 },
+  liveBadgeAbs: {
+    position: 'absolute',
+    top: 12,
+    left: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    backgroundColor: COLORS.live,
+    borderRadius: 6,
+    paddingHorizontal: 9,
+    paddingVertical: 4,
+  },
+  liveBadgeDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: '#fff' },
+  liveBadgeText: { fontSize: 11, fontWeight: '700', color: '#fff', letterSpacing: 0.5 },
+  broadcastControls: {
+    position: 'absolute',
+    bottom: 12,
+    left: 12,
+    right: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  ctrlBtn: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(0,0,0,0.55)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  endBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: COLORS.live,
+    borderRadius: 22,
+    paddingHorizontal: 18,
+    paddingVertical: 11,
+  },
+  endBtnText: { color: '#fff', fontWeight: '700', fontSize: 14 },
 
   // Card
   card: {

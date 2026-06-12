@@ -28,7 +28,9 @@
           "faceIDPermission": "Allow SPAIK to use Face ID for authentication."
         }
       ],
-      "expo-secure-store"
+      "expo-secure-store",
+      "@livekit/react-native-expo-plugin",
+      "@config-plugins/react-native-webrtc"
     ],
     "experiments": {
       "typedRoutes": true

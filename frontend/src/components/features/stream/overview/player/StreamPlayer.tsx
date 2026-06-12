@@ -69,8 +69,8 @@ export function StreamPlayer({participant}: StreamPlayerProps) {
         })
 
     return (
-        <div ref={wrapperRef} className='relative flex h-full'>
-            <video ref={videoRef}/>
+        <div ref={wrapperRef} className='relative flex h-full w-full items-center justify-center bg-black'>
+            <video ref={videoRef} className='h-full w-full object-contain'/>
             <div className='absolute top-0 h-full w-full opacity-0 hover:opacity-100'>
                 <div className='absolute bottom-0 flex h-16 w-full items-center justify-between px-4'>
                     <VolumeControl

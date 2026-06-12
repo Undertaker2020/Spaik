@@ -4,7 +4,7 @@ import {PrismaService} from "@/src/core/prisma/prisma.service";
 import {NotificationService} from "@/src/modules/notification/notification.service";
 import {TelegramService} from "@/src/modules/libs/telegram/telegram.service";
 import Stripe from "stripe";
-import {TransactionStatus} from "@prisma/generated";
+import {TransactionStatus, type Stream, type User} from "@prisma/generated";
 import {StripeService} from "@/src/modules/libs/stripe/stripe.service";
 import {ConfigService} from "@nestjs/config";
 
@@ -43,33 +43,45 @@ export class WebhookService {
                 data: { isLive: true }
             })
 
-            const followers = await this.prismaService.follow.findMany({
-                where: {
-                    followingId: stream.user?.id,
-                    follower: {
-                        isDeactivated: false
-                    }
-                },
-                include: {
-                    follower: {
-                        include: {
-                            notificationSettings: true
-                        }
-                    }
-                }
+            await this.notifyFollowersStreamStart(stream)
+        }
+
+        // Direct in-app broadcasting (no ingress): the host joins the LiveKit room
+        // with a `Host-<userId>` identity (room name == userId) and publishes a
+        // track. Mirror ingress_started/ended so isLive + notifications + chat
+        // cleanup work for mobile/web publishing too.
+        if (event.event === 'track_published' && this.isHostPublisher(event)) {
+            const stream = await this.prismaService.stream.findUnique({
+                where: { userId: event.room?.name },
+                include: { user: true }
             })
 
-            for(const follow of followers){
-                const follower = follow.follower
+            // Idempotent: the host publishes camera + mic, so this fires twice.
+            if (!stream || stream.isLive) return;
 
-                if(follower.notificationSettings?.siteNotifications) {
-                    await this.notificationService.createStreamStart(follower.id, stream.user!)
-                }
+            await this.prismaService.stream.update({
+                where: { id: stream.id },
+                data: { isLive: true }
+            })
 
-                if(follower.notificationSettings?.telegramNotifications && follower.telegramId) {
-                    await this.telegramService.sendStreamStart(follower.id, stream.user!)
-                }
-            }
+            await this.notifyFollowersStreamStart(stream)
+        }
+
+        if (event.event === 'participant_left' && this.isHostPublisher(event)) {
+            const stream = await this.prismaService.stream.findUnique({
+                where: { userId: event.room?.name }
+            })
+
+            if (!stream) return;
+
+            await this.prismaService.stream.update({
+                where: { id: stream.id },
+                data: { isLive: false }
+            })
+
+            await this.prismaService.chatMessage.deleteMany({
+                where: { streamId: stream.id }
+            })
         }
 
         if (event.event === 'ingress_ended') {
@@ -91,6 +103,45 @@ export class WebhookService {
                     streamId: stream.id
                 }
             })
+        }
+    }
+
+    // The host publishes with identity === the room name (the channel owner's
+    // user id) — same convention as the ingress participant. Viewers can't
+    // publish, so this reliably distinguishes the broadcaster.
+    private isHostPublisher(event: any): boolean {
+        const identity = event.participant?.identity;
+        const room = event.room?.name;
+        return typeof identity === 'string' && !!room && identity === room;
+    }
+
+    private async notifyFollowersStreamStart(stream: Stream & { user: User | null }) {
+        const followers = await this.prismaService.follow.findMany({
+            where: {
+                followingId: stream.user?.id,
+                follower: {
+                    isDeactivated: false
+                }
+            },
+            include: {
+                follower: {
+                    include: {
+                        notificationSettings: true
+                    }
+                }
+            }
+        })
+
+        for (const follow of followers) {
+            const follower = follow.follower
+
+            if (follower.notificationSettings?.siteNotifications) {
+                await this.notificationService.createStreamStart(follower.id, stream.user!)
+            }
+
+            if (follower.notificationSettings?.telegramNotifications && follower.telegramId) {
+                await this.telegramService.sendStreamStart(follower.id, stream.user!)
+            }
         }
     }
 

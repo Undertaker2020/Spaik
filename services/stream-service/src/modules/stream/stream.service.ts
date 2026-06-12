@@ -96,7 +96,11 @@ export class StreamService {
             this.configService.getOrThrow<string>('LIVEKIT_API_KEY'),
             this.configService.getOrThrow<string>('LIVEKIT_API_SECRET'),
             {
-                identity: isHost ? `Host-${self.id}` : self.id.toString(),
+                // Identity must equal the channel/user id for the host so the
+                // LiveKit room participant matches what the web player and the
+                // ingress convention expect (web finds the publisher by
+                // `participant.identity === channel.id`). No `Host-` prefix.
+                identity: self.id.toString(),
                 name: self.username,
             },
         );

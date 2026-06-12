@@ -13,8 +13,16 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, type ReactNode } from 'react';
 import { useQuery, useMutation, useSubscription } from '@apollo/client';
+import {
+  LiveKitRoom,
+  VideoTrack,
+  useTracks,
+  isTrackReference,
+  AudioSession,
+} from '@livekit/react-native';
+import { Track } from 'livekit-client';
 import { LinearGradient } from 'expo-linear-gradient';
 import {
   IconArrowLeft,
@@ -26,8 +34,11 @@ import {
   IconEye,
 } from '@tabler/icons-react-native';
 import { COLORS } from '@/src/libs/constants/colors';
+import { LIVEKIT_WS_URL } from '@/src/libs/constants/url.constants';
 import { getMediaSource } from '@/src/libs/utils/get-media-source';
 import { useAuthStore } from '@/src/store/auth/auth.store';
+import { FIND_MY_PROFILE, type MyProfile } from '@/src/graphql/queries/profile.queries';
+import { GENERATE_STREAM_TOKEN } from '@/src/graphql/queries/stream.queries';
 import {
   FIND_CHANNEL_BY_USERNAME,
   FIND_CHAT_MESSAGES,
@@ -61,46 +72,58 @@ function VideoArea({
   isLive,
   thumbnail,
   onBack,
+  children,
 }: {
   isLive: boolean;
   thumbnail: string | null;
   onBack: () => void;
+  /** Live video layer. When present, it replaces the thumbnail/offline visuals. */
+  children?: ReactNode;
 }) {
+  const hasVideo = !!children;
+
   return (
     <View style={styles.video}>
-      {/* Background: thumbnail or solid black */}
-      {thumbnail ? (
+      {/* Background: live video, else thumbnail, else solid black */}
+      {hasVideo ? (
+        children
+      ) : thumbnail ? (
         <Image source={{ uri: thumbnail }} style={StyleSheet.absoluteFill} resizeMode="cover" />
       ) : (
         <View style={[StyleSheet.absoluteFill, { backgroundColor: '#000' }]} />
       )}
 
-      {/* Dark overlay */}
-      <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.35)' }]} />
+      {/* Overlays only over the static (non-video) background */}
+      {!hasVideo && (
+        <>
+          {/* Dark overlay */}
+          <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.35)' }]} />
 
-      {/* Bottom gradient */}
-      <LinearGradient
-        colors={['transparent', 'rgba(0,0,0,0.7)']}
-        style={[StyleSheet.absoluteFill, { top: '50%' }]}
-      />
+          {/* Bottom gradient */}
+          <LinearGradient
+            colors={['transparent', 'rgba(0,0,0,0.7)']}
+            style={[StyleSheet.absoluteFill, { top: '50%' }]}
+          />
+
+          {/* Centre icon when no thumbnail */}
+          {!thumbnail && (
+            <View style={styles.videoCenter}>
+              {isLive
+                ? <IconVideo    size={36} color="rgba(255,255,255,0.3)" />
+                : <IconVideoOff size={36} color="rgba(255,255,255,0.2)" />
+              }
+              <Text style={styles.videoLabel}>
+                {isLive ? 'Connecting…' : 'Stream offline'}
+              </Text>
+            </View>
+          )}
+        </>
+      )}
 
       {/* Back button */}
       <TouchableOpacity style={styles.backBtn} onPress={onBack} activeOpacity={0.8}>
         <IconArrowLeft size={20} color="#fff" />
       </TouchableOpacity>
-
-      {/* Centre icon when no thumbnail */}
-      {!thumbnail && (
-        <View style={styles.videoCenter}>
-          {isLive
-            ? <IconVideo    size={36} color="rgba(255,255,255,0.3)" />
-            : <IconVideoOff size={36} color="rgba(255,255,255,0.2)" />
-          }
-          <Text style={styles.videoLabel}>
-            {isLive ? 'Live video — requires build' : 'Stream offline'}
-          </Text>
-        </View>
-      )}
 
       {/* LIVE badge */}
       {isLive && (
@@ -111,6 +134,25 @@ function VideoArea({
       )}
     </View>
   );
+}
+
+// ── Live video stage (inside LiveKitRoom context) ──────────────
+
+function LiveStage() {
+  // Subscribed camera tracks in the room; the host is the only remote publisher.
+  const tracks = useTracks([Track.Source.Camera], { onlySubscribed: true });
+  const hostTrack = tracks.find(t => isTrackReference(t) && !t.participant.isLocal);
+
+  if (!hostTrack) {
+    return (
+      <View style={[StyleSheet.absoluteFill, styles.videoConnecting]}>
+        <ActivityIndicator color="#fff" />
+        <Text style={styles.videoLabel}>Connecting to stream…</Text>
+      </View>
+    );
+  }
+
+  return <VideoTrack trackRef={hostTrack} style={StyleSheet.absoluteFill} objectFit="contain" />;
 }
 
 // ── Stream info ────────────────────────────────────────────────
@@ -236,9 +278,43 @@ export default function StreamViewerScreen() {
   }>(FIND_CHANNEL_BY_USERNAME, { variables: { username }, skip: !username });
 
   const channel  = channelData?.findChannelByUsername;
+  const channelId = channel?.id;
   const streamId = channel?.stream?.id;
   const isLive   = channel?.stream?.isLive ?? false;
   const thumbnail = getMediaSource(channel?.stream?.thumbnailUrl ?? null);
+
+  // ── LiveKit: viewer identity + access token ──────────────────
+  // Logged-in viewers use their own user id; anonymous viewers get a stable
+  // per-session id (the stream-service then mints an anonymous "Viewer").
+  const { data: profileData } = useQuery<{ findProfile: MyProfile }>(
+    FIND_MY_PROFILE,
+    { skip: !isAuthenticated }
+  );
+  const anonIdRef = useRef<string>(`anon-${Math.random().toString(36).slice(2)}`);
+  const viewerId = profileData?.findProfile?.id ?? anonIdRef.current;
+
+  const [generateToken] = useMutation(GENERATE_STREAM_TOKEN);
+  const [lkToken, setLkToken] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!isLive || !channelId) { setLkToken(null); return; }
+    // Wait for the profile to resolve before minting, so we don't request an
+    // anonymous token and immediately replace it with the logged-in one.
+    if (isAuthenticated && !profileData) return;
+
+    let cancelled = false;
+    generateToken({ variables: { data: { userId: viewerId, channelId } } })
+      .then(res => { if (!cancelled) setLkToken(res.data?.generateStreamToken?.token ?? null); })
+      .catch(() => { if (!cancelled) setLkToken(null); });
+    return () => { cancelled = true; };
+  }, [isLive, channelId, isAuthenticated, profileData, viewerId, generateToken]);
+
+  // Configure the native audio session for the lifetime of this screen.
+  useEffect(() => {
+    let active = false;
+    AudioSession.startAudioSession().then(() => { active = true; }).catch(() => {});
+    return () => { if (active) AudioSession.stopAudioSession(); };
+  }, []);
 
   const { data: followingsData, loading: loadingFollowings, refetch: refetchFollowings } = useQuery<{
     findMyFollowings: FollowItem[];
@@ -291,7 +367,19 @@ export default function StreamViewerScreen() {
 
   return (
     <SafeAreaView style={styles.root} edges={['top']}>
-      <VideoArea isLive={isLive} thumbnail={thumbnail} onBack={() => router.back()} />
+      <VideoArea isLive={isLive} thumbnail={thumbnail} onBack={() => router.back()}>
+        {isLive && lkToken ? (
+          <LiveKitRoom
+            serverUrl={LIVEKIT_WS_URL}
+            token={lkToken}
+            connect
+            audio={false}
+            video={false}
+          >
+            <LiveStage />
+          </LiveKitRoom>
+        ) : undefined}
+      </VideoArea>
 
       {loadingChannel ? (
         <View style={styles.center}>
@@ -390,6 +478,7 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
   videoCenter: { alignItems: 'center', gap: 8 },
+  videoConnecting: { alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: '#000' },
   videoLabel:  { fontSize: 13, color: 'rgba(255,255,255,0.4)', marginTop: 4 },
   liveBadge: {
     position: 'absolute',
