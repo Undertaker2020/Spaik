@@ -49,9 +49,6 @@
     "express-session": "^1.18.1",
     "geoip-lite": "^1.4.10",
     "graphql": "^16.10.0",
-    "graphql-redis-subscriptions": "^2.7.0",
-    "graphql-subscriptions": "^3.0.0",
-    "graphql-upload": "14.0.0",
     "hi-base32": "^0.5.1",
     "i18n-iso-countries": "^7.14.0",
     "ioredis": "^5.5.0",
@@ -65,7 +62,6 @@
     "react-dom": "^19.0.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
-    "sharp": "^0.33.5",
     "stripe": "^18.0.0",
     "telegraf": "^4.16.3"
   },

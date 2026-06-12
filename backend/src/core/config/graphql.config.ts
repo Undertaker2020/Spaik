@@ -16,9 +16,8 @@ export function getGraphQlConfig(configService: ConfigService): ApolloFederation
         },
         sortSchema: true,
         context: ({req, res}) => ({req, res}),
-        // Subscriptions are NOT handled by the federation driver (it refuses
-        // installSubscriptionHandlers). A standalone graphql-ws server is set
-        // up in main.ts against the same executable schema instead.
+        // The monolith subgraph has no GraphQL subscriptions of its own (chat
+        // subscriptions live in the chat-service, federated through the gateway).
         introspection: true
     }
 }

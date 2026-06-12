@@ -8,10 +8,6 @@ import {ms, StringValue} from "@/src/shared/utils/ms.util";
 import {parseBoolean} from "@/src/shared/utils/parse-boolean.util";
 import {RedisService} from "@/src/core/redis/redis.service";
 import {RedisStore} from "connect-redis";
-import * as graphqlUploadExpress from "graphql-upload/graphqlUploadExpress.js"
-import {GraphQLSchemaHost} from "@nestjs/graphql";
-import {WebSocketServer} from "ws";
-import {useServer} from "graphql-ws/use/ws";
 
 async function bootstrap() {
     const app = await NestFactory.create(CoreModule, { rawBody: true});
@@ -21,7 +17,6 @@ async function bootstrap() {
     const redis = app.get(RedisService);
 
     app.use(cookieParser(config.getOrThrow<string>('COOKIES_SECRET')));
-    app.use(config.getOrThrow<string>('GRAPHQL_PREFIX'), graphqlUploadExpress())
     app.useGlobalPipes(new ValidationPipe({
         transform: true,
     }));
@@ -55,16 +50,6 @@ async function bootstrap() {
         exposeHeaders: ['set-cookie']
     })
     await app.listen(config.getOrThrow<string>('APPLICATION_PORT'));
-
-    // The Apollo Federation driver does not serve subscriptions, so we mount a
-    // standalone graphql-ws server on the same HTTP server and GraphQL path,
-    // backed by the schema NestJS already built for the subgraph.
-    const { schema } = app.get(GraphQLSchemaHost);
-    const wsServer = new WebSocketServer({
-        server: app.getHttpServer(),
-        path: config.getOrThrow<string>('GRAPHQL_PREFIX'),
-    });
-    useServer({ schema }, wsServer);
 }
 
 bootstrap();
