@@ -14,7 +14,7 @@ export const FIND_MY_FOLLOWINGS = gql`
           isLive
           title
           thumbnailUrl
-          category { title }
+          category { id title }
         }
       }
     }

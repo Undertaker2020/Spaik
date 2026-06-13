@@ -12,6 +12,7 @@ export const FIND_RANDOM_STREAMS = gql`
         isVerified
       }
       category {
+        id
         title
         slug
       }
@@ -42,6 +43,7 @@ export const FIND_ALL_STREAMS = gql`
         isVerified
       }
       category {
+        id
         title
         slug
       }

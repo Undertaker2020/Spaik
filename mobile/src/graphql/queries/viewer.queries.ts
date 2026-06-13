@@ -19,7 +19,7 @@ export const FIND_CHANNEL_BY_USERNAME = gql`
         thumbnailUrl
         isChatEnabled
         isChatFollowersOnly
-        category { title }
+        category { id title }
       }
     }
   }
