@@ -17,9 +17,9 @@ interface OfflineStreamProps {
 export function OfflineStream({channel}: OfflineStreamProps) {
     const t = useTranslations('stream.video')
 
-    const backgroundStyle: CSSProperties = channel.stream.thumbnailUrl
+    const backgroundStyle: CSSProperties = channel.stream?.thumbnailUrl
         ? {
-            backgroundImage: `url(${getMediaSource(channel.stream.thumbnailUrl)})`,
+            backgroundImage: `url(${getMediaSource(channel.stream?.thumbnailUrl)})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center'
         }
@@ -30,7 +30,7 @@ export function OfflineStream({channel}: OfflineStreamProps) {
             className='flex h-full flex-col items-center justify-center'
             style={backgroundStyle}
         >
-            {channel.stream.thumbnailUrl && (
+            {channel.stream?.thumbnailUrl && (
                 <div className='absolute inset-0 z-0 rounded-lg bg-black opacity-60'/>
             )}
             <WifiOff className='z-10 size-12 text-muted-foreground'/>

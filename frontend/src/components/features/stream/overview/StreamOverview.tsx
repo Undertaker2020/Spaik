@@ -40,10 +40,10 @@ export function StreamOverview({ channel }: StreamOverviewProps) {
 			<div className='order-2 col-span-1 flex h-80 flex-col space-y-6 lg:col-span-2'>
 				<LiveChat
 					channel={channel}
-					isChatEnabled={channel.stream.isChatEnabled}
-					isChatFollowersOnly={channel.stream.isChatFollowersOnly}
+					isChatEnabled={channel.stream?.isChatEnabled ?? false}
+					isChatFollowersOnly={channel.stream?.isChatFollowersOnly ?? false}
 					isChatPremiumFollowersOnly={
-						channel.stream.isChatPremiumFollowersOnly
+						channel.stream?.isChatPremiumFollowersOnly ?? false
 					}
 				/>
 			</div>

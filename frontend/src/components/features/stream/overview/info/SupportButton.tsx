@@ -71,15 +71,15 @@ export function SupportButton({channel}: SupportButtonProps) {
                 </Button>
             </DialogTrigger>
             <DialogContent>
-                <Tabs defaultValue={channel.sponsorshipPlans[0].id}>
+                <Tabs defaultValue={channel.sponsorshipPlans?.[0]?.id}>
                     <TabsList className='mb-1'>
-                        {channel.sponsorshipPlans.map((plan, index) => (
+                        {channel.sponsorshipPlans?.map((plan, index) => (
                             <TabsTrigger key={index} value={plan.id}>
                                 {plan.title}
                             </TabsTrigger>
                         ))}
                     </TabsList>
-                    {channel.sponsorshipPlans.map((plan, index) => (
+                    {channel.sponsorshipPlans?.map((plan, index) => (
                         <TabsContent key={index} value={plan.id}>
                             <DialogTitle className='text-2xl'>
                                 {convertPrice(plan.price)}

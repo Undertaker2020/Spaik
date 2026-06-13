@@ -29,10 +29,10 @@ export function ChangeChatSettings() {
 	const form = useForm<TypeChangeChatSettingsSchema>({
 		resolver: zodResolver(changeChatSettingsSchema),
 		values: {
-			isChatEnabled: user?.stream.isChatEnabled ?? false,
-			isChatFollowersOnly: user?.stream.isChatFollowersOnly ?? false,
+			isChatEnabled: user?.stream?.isChatEnabled ?? false,
+			isChatFollowersOnly: user?.stream?.isChatFollowersOnly ?? false,
 			isChatPremiumFollowersOnly:
-				user?.stream.isChatPremiumFollowersOnly ?? false
+				user?.stream?.isChatPremiumFollowersOnly ?? false
 		}
 	})
 

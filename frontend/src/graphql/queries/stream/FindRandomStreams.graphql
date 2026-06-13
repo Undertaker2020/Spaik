@@ -9,6 +9,7 @@ query FindRandomStreams {
 			isVerified
 		}
 		category {
+			id
 			title
 			slug
 		}

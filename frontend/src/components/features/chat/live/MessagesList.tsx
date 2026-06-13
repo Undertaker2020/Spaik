@@ -17,7 +17,7 @@ interface MessagesListProps {
 export function MessagesList({channel}: MessagesListProps) {
     const {data} = useFindChatMessagesByStreamQuery({
         variables: {
-            streamId: channel.stream.id
+            streamId: channel.stream!.id
         }
     })
 
@@ -36,7 +36,7 @@ export function MessagesList({channel}: MessagesListProps) {
 
     const {data: newMessageData} = useChatMessageAddedSubscription({
         variables: {
-            streamId: channel.stream.id
+            streamId: channel.stream!.id
         }
     })
 

@@ -26,8 +26,8 @@ export function StreamInfo({channel}: StreamInfoProps) {
     return (
         <div className='space-y-5'>
             <h1 className='text-xl font-semibold'>
-                {channel.stream.title}{' '}
-                {channel.stream.category &&
+                {channel.stream?.title}{' '}
+                {channel.stream?.category &&
                     ` | ${channel.stream.category.title}`}
             </h1>
             <div className='flex flex-col items-start justify-between lg:flex-row'>

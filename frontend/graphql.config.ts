@@ -1,8 +1,12 @@
 import type {CodegenConfig} from "@graphql-codegen/cli";
-import 'dotenv/config'
 
 const config: CodegenConfig = {
-    schema: process.env.NEXT_PUBLIC_SERVER_URL,
+    // SDL of the federated supergraph (Hive gateway), produced by
+    // `scripts/introspect-gateway.mjs` which runs before codegen. We can't point
+    // codegen straight at the monolith (StreamModel there is only a @key stub
+    // post-split) nor at the live gateway URL (its @deprecated declares the
+    // DIRECTIVE_DEFINITION location, which graphql@16 can't parse).
+    schema: './schema.gateway.graphql',
     documents: ['./src/graphql/**/*.graphql'],
     generates: {
         './src/graphql/generated/output.ts': {

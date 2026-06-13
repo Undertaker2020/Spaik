@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# generated codegen schema snapshot (introspected from the gateway at codegen time)
+/schema.gateway.graphql

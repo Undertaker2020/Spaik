@@ -37,8 +37,8 @@ export function KeysSettings() {
                     ))
                 ) : (
                     <>
-                        <StreamURL value={user?.stream.serverUrl!}/>
-                        <StreamKey value={user?.stream.streamKey!}/>
+                        <StreamURL value={user?.stream?.serverUrl!}/>
+                        <StreamKey value={user?.stream?.streamKey!}/>
                     </>
                 )}
             </div>

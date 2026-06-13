@@ -25,7 +25,7 @@ export function ChannelItem({channel}: ChannelItemProps){
     return isCollapsed ? (
         <Hint label={channel.username} side='right' asChild>
             <Link href={`/${channel.username}`} className='mt-3 flex w-full items-center justify-center'>
-                <ChannelAvatar channel={channel} isLive={channel.stream.isLive}/>
+                <ChannelAvatar channel={channel} isLive={channel.stream?.isLive ?? false}/>
             </Link>
         </Hint>
     ) : (
@@ -35,10 +35,10 @@ export function ChannelItem({channel}: ChannelItemProps){
             variant='ghost'
             asChild>
             <Link href={`/${channel.username}`} className='flex w-full items-center'>
-                <ChannelAvatar channel={channel} size='sm' isLive={channel.stream.isLive}/>
+                <ChannelAvatar channel={channel} size='sm' isLive={channel.stream?.isLive ?? false}/>
                 <h2 className='truncate pl-3 pr-2 capitalize'>{channel.username}</h2>
                 {channel.isVerified && <ChannelVerified size='sm' />}
-                {channel.stream.isLive && (
+                {channel.stream?.isLive && (
                     <div className='absolute right-5'>
                         <LiveBadge/>
                     </div>

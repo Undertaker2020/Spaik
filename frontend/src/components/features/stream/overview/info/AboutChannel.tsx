@@ -25,14 +25,14 @@ export function AboutChannel({channel}: AboutChannelProps) {
             <CardContent className='-mt-1 space-y-2 px-4'>
                 <div className='text-[15px] text-foreground'>
 					<span className='font-semibold'>
-						{channel.followings.length}
+						{channel.followings?.length ?? 0}
 					</span>{' '}
                     {t('followersCount')}
                 </div>
                 <div className='text-[15px] text-muted-foreground'>
                     {channel.bio ?? t('noDescription')}
                 </div>
-                {channel.socialLinks.length ? (
+                {channel.socialLinks?.length ? (
                     <div className='grid gap-x-3 md:grid-cols-3 xl:grid-cols-8'>
                         {channel.socialLinks.map((socialLink, index) => {
                             const Icon = getSocialIcon(socialLink.url)

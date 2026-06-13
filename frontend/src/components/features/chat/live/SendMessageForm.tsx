@@ -41,7 +41,7 @@ export function SendMessageForm({channel, isDisabled}: SendMessageFormProps) {
             variables: {
                 data: {
                     text: data.text,
-                    streamId: channel.stream.id
+                    streamId: channel.stream!.id
                 }
             }
         })

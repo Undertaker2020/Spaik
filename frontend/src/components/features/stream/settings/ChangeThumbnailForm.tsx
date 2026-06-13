@@ -81,14 +81,14 @@ export function ChangeThumbnailForm({stream}: ChangeThumbnailFormProps) {
                 render={({field}) => (
                     <>
                         <div className='flex items-center space-x-6'>
-                            {stream.thumbnailUrl ? (
+                            {stream?.thumbnailUrl ? (
                                 <Image
                                     src={
                                         field.value instanceof File
                                             ? URL.createObjectURL(field.value)
                                             : field.value!
                                     }
-                                    alt={stream.title}
+                                    alt={stream?.title ?? ''}
                                     width={190}
                                     height={80}
                                     className='aspect-video rounded-lg'
@@ -114,7 +114,7 @@ export function ChangeThumbnailForm({stream}: ChangeThumbnailFormProps) {
                                 >
                                     {t('updateButton')}
                                 </Button>
-                                {stream.thumbnailUrl && (
+                                {stream?.thumbnailUrl && (
                                     <ConfirmModal
                                         heading={t('confirmModal.heading')}
                                         message={t('confirmModal.message')}

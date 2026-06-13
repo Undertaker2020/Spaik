@@ -9,6 +9,7 @@ query FindAllStreams($filters: FiltersInput!) {
 			isVerified
 		}
 		category {
+			id
 			title
 			slug
 		}

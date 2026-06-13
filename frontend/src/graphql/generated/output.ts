@@ -15,13 +15,18 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
+  /** A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format. */
   DateTime: { input: any; output: any; }
+  TransportOptions: { input: any; output: any; }
+  /** The `Upload` scalar type represents a file upload. */
   Upload: { input: any; output: any; }
 };
 
 export type AuthModel = {
   __typename?: 'AuthModel';
+  accessToken?: Maybe<Scalars['String']['output']>;
   message?: Maybe<Scalars['String']['output']>;
+  refreshToken?: Maybe<Scalars['String']['output']>;
   user?: Maybe<UserModel>;
 };
 
@@ -78,7 +83,6 @@ export type ChatMessageModel = {
   __typename?: 'ChatMessageModel';
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['ID']['output'];
-  stream: StreamModel;
   streamId: Scalars['String']['output'];
   text: Scalars['String']['output'];
   updatedAt: Scalars['DateTime']['output'];
@@ -117,6 +121,7 @@ export type EnableTotpInput = {
 };
 
 export type FiltersInput = {
+  categoryName?: InputMaybe<Scalars['String']['input']>;
   searchTerm?: InputMaybe<Scalars['String']['input']>;
   skip?: InputMaybe<Scalars['Float']['input']>;
   take?: InputMaybe<Scalars['Float']['input']>;
@@ -186,6 +191,7 @@ export type Mutation = {
   logout: Scalars['Boolean']['output'];
   makePayment: MakePaymentModel;
   newPassword: Scalars['Boolean']['output'];
+  refreshTokens: AuthModel;
   removeProfileAvatar: Scalars['Boolean']['output'];
   removeSession: Scalars['Boolean']['output'];
   removeSocialLink: Scalars['Boolean']['output'];
@@ -292,6 +298,11 @@ export type MutationMakePaymentArgs = {
 
 export type MutationNewPasswordArgs = {
   data: NewPasswordInput;
+};
+
+
+export type MutationRefreshTokensArgs = {
+  refreshToken: Scalars['String']['input'];
 };
 
 
@@ -415,6 +426,7 @@ export type Query = {
   findSocialLinks: Array<SocialLinkModel>;
   findSponsorsByChannel: Array<SubscriptionModel>;
   generateTotpSecret: TotpModel;
+  mediaServiceStatus: Scalars['String']['output'];
 };
 
 
@@ -440,6 +452,11 @@ export type QueryFindChatMessagesByStreamArgs = {
 
 export type QueryFindFollowersCountByChannelArgs = {
   channelId: Scalars['String']['input'];
+};
+
+
+export type QueryFindRandomStreamsArgs = {
+  filters?: InputMaybe<FiltersInput>;
 };
 
 
@@ -496,7 +513,6 @@ export type StreamModel = {
   __typename?: 'StreamModel';
   category?: Maybe<CategoryModel>;
   categoryId?: Maybe<Scalars['String']['output']>;
-  chatMessages: Array<ChatMessageModel>;
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['ID']['output'];
   ingressId?: Maybe<Scalars['String']['output']>;
@@ -571,20 +587,20 @@ export type UserModel = {
   deactivatedAt?: Maybe<Scalars['DateTime']['output']>;
   displayName: Scalars['String']['output'];
   email: Scalars['String']['output'];
-  followers: Array<FollowModel>;
-  followings: Array<FollowModel>;
+  followers?: Maybe<Array<FollowModel>>;
+  followings?: Maybe<Array<FollowModel>>;
   id: Scalars['ID']['output'];
   isDeactivated: Scalars['Boolean']['output'];
   isEmailVerified: Scalars['Boolean']['output'];
   isTotpEnabled: Scalars['Boolean']['output'];
   isVerified: Scalars['Boolean']['output'];
-  notificationSettings: NotificationSettingsModel;
-  notifications: Array<NotificationModel>;
+  notificationSettings?: Maybe<NotificationSettingsModel>;
+  notifications?: Maybe<Array<NotificationModel>>;
   password: Scalars['String']['output'];
-  socialLinks: Array<SocialLinkModel>;
-  sponsorshipPlans: Array<PlanModel>;
-  sponsorshipSubscriptions: Array<SubscriptionModel>;
-  stream: StreamModel;
+  socialLinks?: Maybe<Array<SocialLinkModel>>;
+  sponsorshipPlans?: Maybe<Array<PlanModel>>;
+  sponsorshipSubscriptions?: Maybe<Array<SubscriptionModel>>;
+  stream?: Maybe<StreamModel>;
   telegramId?: Maybe<Scalars['String']['output']>;
   totpSecret?: Maybe<Scalars['String']['output']>;
   updatedAt: Scalars['DateTime']['output'];
@@ -820,7 +836,7 @@ export type FindCategoryBySlugQueryVariables = Exact<{
 }>;
 
 
-export type FindCategoryBySlugQuery = { __typename?: 'Query', findCategoryBySlug: { __typename?: 'CategoryModel', title: string, thumbnailUrl: string, description?: string | null, streams: Array<{ __typename?: 'StreamModel', title: string, thumbnailUrl?: string | null, isLive: boolean, user: { __typename?: 'UserModel', username: string, avatar?: string | null, isVerified: boolean }, category?: { __typename?: 'CategoryModel', title: string, slug: string } | null }> } };
+export type FindCategoryBySlugQuery = { __typename?: 'Query', findCategoryBySlug: { __typename?: 'CategoryModel', title: string, thumbnailUrl: string, description?: string | null, streams: Array<{ __typename?: 'StreamModel', title: string, thumbnailUrl?: string | null, isLive: boolean, user: { __typename?: 'UserModel', username: string, avatar?: string | null, isVerified: boolean }, category?: { __typename?: 'CategoryModel', id: string, title: string, slug: string } | null }> } };
 
 export type FindRandomCategoriesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -832,12 +848,12 @@ export type FindChannelByUsernameQueryVariables = Exact<{
 }>;
 
 
-export type FindChannelByUsernameQuery = { __typename?: 'Query', findChannelByUsername: { __typename?: 'UserModel', id: string, username: string, displayName: string, avatar?: string | null, bio?: string | null, isVerified: boolean, socialLinks: Array<{ __typename?: 'SocialLinkModel', title: string, url: string }>, stream: { __typename?: 'StreamModel', id: string, title: string, thumbnailUrl?: string | null, isLive: boolean, isChatEnabled: boolean, isChatFollowersOnly: boolean, isChatPremiumFollowersOnly: boolean, category?: { __typename?: 'CategoryModel', id: string, title: string } | null }, sponsorshipPlans: Array<{ __typename?: 'PlanModel', id: string, title: string, description?: string | null, price: number }>, followings: Array<{ __typename?: 'FollowModel', id: string }> } };
+export type FindChannelByUsernameQuery = { __typename?: 'Query', findChannelByUsername: { __typename?: 'UserModel', id: string, username: string, displayName: string, avatar?: string | null, bio?: string | null, isVerified: boolean, socialLinks?: Array<{ __typename?: 'SocialLinkModel', title: string, url: string }> | null, stream?: { __typename?: 'StreamModel', id: string, title: string, thumbnailUrl?: string | null, isLive: boolean, isChatEnabled: boolean, isChatFollowersOnly: boolean, isChatPremiumFollowersOnly: boolean, category?: { __typename?: 'CategoryModel', id: string, title: string } | null } | null, sponsorshipPlans?: Array<{ __typename?: 'PlanModel', id: string, title: string, description?: string | null, price: number }> | null, followings?: Array<{ __typename?: 'FollowModel', id: string }> | null } };
 
 export type FindRecommendedChannelsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type FindRecommendedChannelsQuery = { __typename?: 'Query', findRecommendedChannels: Array<{ __typename?: 'UserModel', username: string, avatar?: string | null, isVerified: boolean, stream: { __typename?: 'StreamModel', isLive: boolean } }> };
+export type FindRecommendedChannelsQuery = { __typename?: 'Query', findRecommendedChannels: Array<{ __typename?: 'UserModel', username: string, avatar?: string | null, isVerified: boolean, stream?: { __typename?: 'StreamModel', isLive: boolean } | null }> };
 
 export type FindSponsorsByChannelQueryVariables = Exact<{
   channelId: Scalars['String']['input'];
@@ -883,12 +899,12 @@ export type FindAllStreamsQueryVariables = Exact<{
 }>;
 
 
-export type FindAllStreamsQuery = { __typename?: 'Query', findAllStreams: Array<{ __typename?: 'StreamModel', title: string, thumbnailUrl?: string | null, isLive: boolean, user: { __typename?: 'UserModel', username: string, avatar?: string | null, isVerified: boolean }, category?: { __typename?: 'CategoryModel', title: string, slug: string } | null }> };
+export type FindAllStreamsQuery = { __typename?: 'Query', findAllStreams: Array<{ __typename?: 'StreamModel', title: string, thumbnailUrl?: string | null, isLive: boolean, user: { __typename?: 'UserModel', username: string, avatar?: string | null, isVerified: boolean }, category?: { __typename?: 'CategoryModel', id: string, title: string, slug: string } | null }> };
 
 export type FindRandomStreamsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type FindRandomStreamsQuery = { __typename?: 'Query', findRandomStreams: Array<{ __typename?: 'StreamModel', title: string, thumbnailUrl?: string | null, isLive: boolean, user: { __typename?: 'UserModel', username: string, avatar?: string | null, isVerified: boolean }, category?: { __typename?: 'CategoryModel', title: string, slug: string } | null }> };
+export type FindRandomStreamsQuery = { __typename?: 'Query', findRandomStreams: Array<{ __typename?: 'StreamModel', title: string, thumbnailUrl?: string | null, isLive: boolean, user: { __typename?: 'UserModel', username: string, avatar?: string | null, isVerified: boolean }, category?: { __typename?: 'CategoryModel', id: string, title: string, slug: string } | null }> };
 
 export type FindCurrentSessionQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -908,7 +924,7 @@ export type FindNotificationUnreadCountQuery = { __typename?: 'Query', findNotif
 export type FindProfileQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type FindProfileQuery = { __typename?: 'Query', findProfile: { __typename?: 'UserModel', id: string, username: string, displayName: string, email: string, avatar?: string | null, bio?: string | null, isTotpEnabled: boolean, isVerified: boolean, notificationSettings: { __typename?: 'NotificationSettingsModel', siteNotifications: boolean, telegramNotifications: boolean }, stream: { __typename?: 'StreamModel', serverUrl?: string | null, streamKey?: string | null, isChatEnabled: boolean, isChatFollowersOnly: boolean, isChatPremiumFollowersOnly: boolean } } };
+export type FindProfileQuery = { __typename?: 'Query', findProfile: { __typename?: 'UserModel', id: string, username: string, displayName: string, email: string, avatar?: string | null, bio?: string | null, isTotpEnabled: boolean, isVerified: boolean, notificationSettings?: { __typename?: 'NotificationSettingsModel', siteNotifications: boolean, telegramNotifications: boolean } | null, stream?: { __typename?: 'StreamModel', serverUrl?: string | null, streamKey?: string | null, isChatEnabled: boolean, isChatFollowersOnly: boolean, isChatPremiumFollowersOnly: boolean } | null } };
 
 export type FindSessionsByUserQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -2002,6 +2018,7 @@ export const FindCategoryBySlugDocument = gql`
         isVerified
       }
       category {
+        id
         title
         slug
       }
@@ -2513,6 +2530,7 @@ export const FindAllStreamsDocument = gql`
       isVerified
     }
     category {
+      id
       title
       slug
     }
@@ -2564,6 +2582,7 @@ export const FindRandomStreamsDocument = gql`
       isVerified
     }
     category {
+      id
       title
       slug
     }
