@@ -5,9 +5,9 @@
   "private": true,
   "scripts": {
     "compose": "mesh-compose -o supergraph.graphql",
-    "start": "npm run compose && hive-gateway supergraph supergraph.graphql --port 4002",
-    "start:dev": "npm run compose && hive-gateway supergraph supergraph.graphql --port 4002",
-    "start:prod": "hive-gateway supergraph supergraph.graphql --port 4002"
+    "start": "npm run compose && hive-gateway supergraph supergraph.graphql --host 0.0.0.0 --port 4002",
+    "start:dev": "npm run compose && hive-gateway supergraph supergraph.graphql --host 0.0.0.0 --port 4002",
+    "start:prod": "hive-gateway supergraph supergraph.graphql --host 0.0.0.0 --port 4002"
   },
   "dependencies": {
     "@graphql-hive/gateway": "^2.8.5",
