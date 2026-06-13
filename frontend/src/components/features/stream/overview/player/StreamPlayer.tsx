@@ -1,10 +1,17 @@
 import {useTracks} from '@livekit/components-react'
-import {RemoteParticipant, Track} from 'livekit-client'
+import {RemoteParticipant, type RemoteTrackPublication, Track, VideoQuality} from 'livekit-client'
 import {useEffect, useRef, useState} from 'react'
 import {useEventListener} from 'usehooks-ts'
 
 import {FullscreenControl} from '@/components/features/stream/overview/player/FullscreenControl'
+import {QualityControl, type QualityKey} from '@/components/features/stream/overview/player/QualityControl'
 import {VolumeControl} from '@/components/features/stream/overview/player/VolumeControl'
+
+const QUALITY_MAP: Record<QualityKey, VideoQuality> = {
+    '720p': VideoQuality.HIGH,
+    '360p': VideoQuality.MEDIUM,
+    '180p': VideoQuality.LOW,
+}
 
 interface StreamPlayerProps {
     participant: RemoteParticipant
@@ -16,6 +23,7 @@ export function StreamPlayer({participant}: StreamPlayerProps) {
 
     const [volume, setVolume] = useState(0)
     const [isFullscreen, setIsFullscreen] = useState(false)
+    const [quality, setQuality] = useState<QualityKey>('720p')
 
     function onVolumeChange(value: number) {
         setVolume(+value)
@@ -60,13 +68,22 @@ export function StreamPlayer({participant}: StreamPlayerProps) {
         handleFullscreenChange
     )
 
-    useTracks([Track.Source.Camera, Track.Source.Microphone])
+    const tracks = useTracks([Track.Source.Camera, Track.Source.Microphone])
         .filter(track => track.participant.identity === participant.identity)
-        .forEach(track => {
-            if (videoRef.current) {
-                track.publication.track?.attach(videoRef.current)
-            }
-        })
+
+    tracks.forEach(track => {
+        if (videoRef.current) {
+            track.publication.track?.attach(videoRef.current)
+        }
+    })
+
+    const cameraPublication = tracks.find(t => t.source === Track.Source.Camera)
+        ?.publication as RemoteTrackPublication | undefined
+
+    // Pin the chosen simulcast layer.
+    useEffect(() => {
+        cameraPublication?.setVideoQuality?.(QUALITY_MAP[quality])
+    }, [cameraPublication, quality])
 
     return (
         <div ref={wrapperRef} className='relative flex h-full w-full items-center justify-center bg-black'>
@@ -78,10 +95,13 @@ export function StreamPlayer({participant}: StreamPlayerProps) {
                         onChange={onVolumeChange}
                         value={volume}
                     />
-                    <FullscreenControl
-                        isFullscreen={isFullscreen}
-                        onToggle={toggleFullscreen}
-                    />
+                    <div className='flex items-center gap-2'>
+                        <QualityControl value={quality} onChange={setQuality}/>
+                        <FullscreenControl
+                            isFullscreen={isFullscreen}
+                            onToggle={toggleFullscreen}
+                        />
+                    </div>
                 </div>
             </div>
         </div>

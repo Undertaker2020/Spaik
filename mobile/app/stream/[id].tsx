@@ -22,7 +22,7 @@ import {
   isTrackReference,
   AudioSession,
 } from '@livekit/react-native';
-import { Track } from 'livekit-client';
+import { Track, VideoQuality, type RemoteTrackPublication } from 'livekit-client';
 import { LinearGradient } from 'expo-linear-gradient';
 import {
   IconArrowLeft,
@@ -32,6 +32,8 @@ import {
   IconVideoOff,
   IconUsers,
   IconEye,
+  IconSettings,
+  IconCheck,
 } from '@tabler/icons-react-native';
 import { COLORS } from '@/src/libs/constants/colors';
 import { LIVEKIT_WS_URL } from '@/src/libs/constants/url.constants';
@@ -136,12 +138,34 @@ function VideoArea({
   );
 }
 
+// ── Quality (simulcast layer) options ──────────────────────────
+
+type QualityKey = '720p' | '360p' | '180p';
+const QUALITY_OPTIONS: QualityKey[] = ['720p', '360p', '180p'];
+const QUALITY_MAP: Record<QualityKey, VideoQuality> = {
+  '720p': VideoQuality.HIGH,
+  '360p': VideoQuality.MEDIUM,
+  '180p': VideoQuality.LOW,
+};
+
 // ── Live video stage (inside LiveKitRoom context) ──────────────
 
 function LiveStage() {
   // Subscribed camera tracks in the room; the host is the only remote publisher.
   const tracks = useTracks([Track.Source.Camera], { onlySubscribed: true });
   const hostTrack = tracks.find(t => isTrackReference(t) && !t.participant.isLocal);
+
+  const [quality, setQuality] = useState<QualityKey>('720p');
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  // Pin the chosen simulcast layer whenever the track or selection changes.
+  useEffect(() => {
+    if (hostTrack && isTrackReference(hostTrack)) {
+      (hostTrack.publication as RemoteTrackPublication | undefined)?.setVideoQuality?.(
+        QUALITY_MAP[quality],
+      );
+    }
+  }, [hostTrack, quality]);
 
   if (!hostTrack) {
     return (
@@ -152,7 +176,40 @@ function LiveStage() {
     );
   }
 
-  return <VideoTrack trackRef={hostTrack} style={StyleSheet.absoluteFill} objectFit="contain" />;
+  return (
+    <>
+      <VideoTrack trackRef={hostTrack} style={StyleSheet.absoluteFill} objectFit="contain" />
+
+      {/* Quality selector */}
+      <View style={styles.qualityWrap}>
+        {menuOpen && (
+          <View style={styles.qualityMenu}>
+            {QUALITY_OPTIONS.map(q => (
+              <TouchableOpacity
+                key={q}
+                style={styles.qualityItem}
+                onPress={() => { setQuality(q); setMenuOpen(false); }}
+                activeOpacity={0.7}
+              >
+                <Text style={[styles.qualityItemText, q === quality && styles.qualityItemTextActive]}>
+                  {q}
+                </Text>
+                {q === quality && <IconCheck size={14} color={COLORS.accent} />}
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
+        <TouchableOpacity
+          style={styles.qualityBtn}
+          onPress={() => setMenuOpen(o => !o)}
+          activeOpacity={0.8}
+        >
+          <IconSettings size={15} color="#fff" />
+          <Text style={styles.qualityBtnText}>{quality}</Text>
+        </TouchableOpacity>
+      </View>
+    </>
+  );
 }
 
 // ── Stream info ────────────────────────────────────────────────
@@ -480,6 +537,26 @@ const styles = StyleSheet.create({
   videoCenter: { alignItems: 'center', gap: 8 },
   videoConnecting: { alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: '#000' },
   videoLabel:  { fontSize: 13, color: 'rgba(255,255,255,0.4)', marginTop: 4 },
+
+  // ── Quality selector
+  qualityWrap: { position: 'absolute', bottom: 12, right: 12, alignItems: 'flex-end', gap: 6 },
+  qualityBtn: {
+    flexDirection: 'row', alignItems: 'center', gap: 5,
+    backgroundColor: 'rgba(0,0,0,0.55)', borderRadius: 8,
+    paddingHorizontal: 10, paddingVertical: 6,
+  },
+  qualityBtnText: { color: '#fff', fontSize: 12, fontWeight: '600' },
+  qualityMenu: {
+    backgroundColor: 'rgba(0,0,0,0.88)', borderRadius: 8,
+    paddingVertical: 4, minWidth: 96,
+    borderWidth: 1, borderColor: COLORS.border,
+  },
+  qualityItem: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    paddingHorizontal: 12, paddingVertical: 8, gap: 10,
+  },
+  qualityItemText: { color: '#fff', fontSize: 13 },
+  qualityItemTextActive: { color: COLORS.accent, fontWeight: '700' },
   liveBadge: {
     position: 'absolute',
     top: 12,
