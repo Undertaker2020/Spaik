@@ -55,7 +55,7 @@ function LiveCard({ channel }: { channel: FollowingChannel }) {
     <TouchableOpacity
       style={styles.liveCard}
       activeOpacity={0.88}
-      onPress={() => router.push(`/stream/${channel.username}` as any)}
+      onPress={() => router.push(`/channel/${channel.username}` as any)}
     >
       {/* Background */}
       {thumb

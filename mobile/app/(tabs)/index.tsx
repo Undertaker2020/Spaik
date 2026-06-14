@@ -284,7 +284,7 @@ export default function HomeScreen() {
                 <SectionHeader title="Featured" />
                 <FeaturedCard
                   stream={featured}
-                  onPress={() => router.push(`/stream/${featured.user.username}` as any)}
+                  onPress={() => router.push(`/channel/${featured.user.username}` as any)}
                 />
               </View>
             )}
@@ -305,7 +305,7 @@ export default function HomeScreen() {
                   renderItem={({ item }) => (
                     <RecCard
                       stream={item}
-                      onPress={() => router.push(`/stream/${item.user.username}` as any)}
+                      onPress={() => router.push(`/channel/${item.user.username}` as any)}
                     />
                   )}
                 />

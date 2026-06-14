@@ -270,7 +270,7 @@ export default function StreamsScreen() {
         renderItem={({ item }) => (
           <StreamCard
             stream={item}
-            onPress={() => router.push(`/stream/${item.user.username}` as any)}
+            onPress={() => router.push(`/channel/${item.user.username}` as any)}
           />
         )}
         ListEmptyComponent={<EmptyState loading={loading} hasSearch={search.length > 0} />}

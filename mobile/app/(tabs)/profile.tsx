@@ -24,6 +24,7 @@ import {
   IconLanguage,
   IconBell,
   IconLogout,
+  IconBroadcast,
 } from '@tabler/icons-react-native';
 import { COLORS } from '@/src/libs/constants/colors';
 import { getMediaSource } from '@/src/libs/utils/get-media-source';
@@ -173,6 +174,7 @@ export default function ProfileScreen() {
 
         {/* Stream */}
         <Section title="Stream">
+          <SettingsItem icon={<IconBroadcast size={22} color="#fff" />} iconBg="#18B9AE" label="My Channel"    onPress={() => router.push(`/channel/${user.username}` as any)} />
           <SettingsItem icon={<IconLock    size={22} color="#fff" />} iconBg="#2563EB" label="Stream Keys"   onPress={() => router.push('/settings/stream-keys' as any)} />
           <SettingsItem icon={<IconMessage size={22} color="#fff" />} iconBg="#DB2777" label="Chat Settings" onPress={() => router.push('/settings/chat-settings' as any)} last />
         </Section>
