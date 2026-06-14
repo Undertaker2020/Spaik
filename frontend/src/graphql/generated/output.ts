@@ -184,6 +184,7 @@ export type Mutation = {
   createSponsorshipPlan: Scalars['Boolean']['output'];
   createUser: Scalars['Boolean']['output'];
   deactivateAccount: AuthModel;
+  deleteRecording: Scalars['Boolean']['output'];
   disableTotp: Scalars['Boolean']['output'];
   enableTotp: Scalars['Boolean']['output'];
   followChannel: Scalars['Boolean']['output'];
@@ -269,6 +270,11 @@ export type MutationCreateUserArgs = {
 
 export type MutationDeactivateAccountArgs = {
   data: DeactivateAccountInput;
+};
+
+
+export type MutationDeleteRecordingArgs = {
+  id: Scalars['String']['input'];
 };
 
 
@@ -739,6 +745,13 @@ export type CreateIngressMutationVariables = Exact<{
 
 
 export type CreateIngressMutation = { __typename?: 'Mutation', createIngress: boolean };
+
+export type DeleteRecordingMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type DeleteRecordingMutation = { __typename?: 'Mutation', deleteRecording: boolean };
 
 export type GenerateStreamTokenMutationVariables = Exact<{
   data: GenerateStreamTokenInput;
@@ -1484,6 +1497,37 @@ export function useCreateIngressMutation(baseOptions?: Apollo.MutationHookOption
 export type CreateIngressMutationHookResult = ReturnType<typeof useCreateIngressMutation>;
 export type CreateIngressMutationResult = Apollo.MutationResult<CreateIngressMutation>;
 export type CreateIngressMutationOptions = Apollo.BaseMutationOptions<CreateIngressMutation, CreateIngressMutationVariables>;
+export const DeleteRecordingDocument = gql`
+    mutation DeleteRecording($id: String!) {
+  deleteRecording(id: $id)
+}
+    `;
+export type DeleteRecordingMutationFn = Apollo.MutationFunction<DeleteRecordingMutation, DeleteRecordingMutationVariables>;
+
+/**
+ * __useDeleteRecordingMutation__
+ *
+ * To run a mutation, you first call `useDeleteRecordingMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteRecordingMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteRecordingMutation, { data, loading, error }] = useDeleteRecordingMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useDeleteRecordingMutation(baseOptions?: Apollo.MutationHookOptions<DeleteRecordingMutation, DeleteRecordingMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteRecordingMutation, DeleteRecordingMutationVariables>(DeleteRecordingDocument, options);
+      }
+export type DeleteRecordingMutationHookResult = ReturnType<typeof useDeleteRecordingMutation>;
+export type DeleteRecordingMutationResult = Apollo.MutationResult<DeleteRecordingMutation>;
+export type DeleteRecordingMutationOptions = Apollo.BaseMutationOptions<DeleteRecordingMutation, DeleteRecordingMutationVariables>;
 export const GenerateStreamTokenDocument = gql`
     mutation GenerateStreamToken($data: GenerateStreamTokenInput!) {
   generateStreamToken(data: $data) {

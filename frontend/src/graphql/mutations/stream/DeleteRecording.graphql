@@ -1,0 +1,3 @@
+mutation DeleteRecording($id: String!) {
+	deleteRecording(id: $id)
+}

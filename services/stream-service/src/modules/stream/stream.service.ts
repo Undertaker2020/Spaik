@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '@/src/core/prisma/prisma.service';
 import { FiltersInput } from '@/src/modules/stream/inputs/filters.input';
 import type { Prisma, User } from '@prisma/generated';
@@ -6,12 +6,14 @@ import { ChangeStreamInfoInput } from '@/src/modules/stream/inputs/change-stream
 import { GenerateStreamTokenInput } from '@/src/modules/stream/inputs/generate-stream-token.input';
 import { ConfigService } from '@nestjs/config';
 import { AccessToken } from 'livekit-server-sdk';
+import { RecordingStorageService } from '@/src/modules/stream/recording-storage.service';
 
 @Injectable()
 export class StreamService {
     public constructor(
         private readonly prismaService: PrismaService,
         private readonly configService: ConfigService,
+        private readonly recordingStorage: RecordingStorageService,
     ) {}
 
     public async findAll(input: FiltersInput = {}) {
@@ -123,6 +125,23 @@ export class StreamService {
             where: { userId: channelId },
             orderBy: { createdAt: 'desc' },
         });
+    }
+
+    public async deleteRecording(user: User, id: string) {
+        const recording = await this.prismaService.recording.findUnique({ where: { id } });
+
+        if (!recording) {
+            throw new NotFoundException('Recording not found');
+        }
+        // Only the channel owner may delete their own recordings.
+        if (recording.userId !== user.id) {
+            throw new ForbiddenException('You can only delete your own recordings');
+        }
+
+        await this.recordingStorage.remove(recording.url);
+        await this.prismaService.recording.delete({ where: { id } });
+
+        return true;
     }
 
     private findBySearchTermFilter(searchTerm: string): Prisma.StreamWhereInput {

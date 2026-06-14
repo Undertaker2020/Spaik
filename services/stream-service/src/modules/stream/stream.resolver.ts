@@ -56,6 +56,12 @@ export class StreamResolver {
         return this.streamService.findRecordingsByChannel(channelId);
     }
 
+    @Authorization()
+    @Mutation(() => Boolean, { name: 'deleteRecording' })
+    public async deleteRecording(@Authorized() user: User, @Args('id') id: string) {
+        return this.streamService.deleteRecording(user, id);
+    }
+
     // Return entity references (by id) — the gateway resolves the rest from the
     // monolith subgraph (which owns User and Category).
     @ResolveField(() => UserModel)

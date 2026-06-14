@@ -1,15 +1,19 @@
 'use client'
 
-import { Clock, Play, Video } from 'lucide-react'
+import { Clock, Play, Trash2, Video } from 'lucide-react'
 import { useState } from 'react'
+import { toast } from 'sonner'
 
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/common/Dialog'
 import { Skeleton } from '@/components/ui/common/Skeleton'
 
 import {
 	type FindRecordingsByChannelQuery,
+	useDeleteRecordingMutation,
 	useFindRecordingsByChannelQuery
 } from '@/graphql/generated/output'
+
+import { useCurrent } from '@/hooks/useCurrent'
 
 import { getMediaSource } from '@/utils/get-media-source'
 import { getRecordingSource } from '@/utils/get-recording-source'
@@ -28,12 +32,29 @@ interface ChannelVideosProps {
 }
 
 export function ChannelVideos({ channelId }: ChannelVideosProps) {
-	const { data, loading } = useFindRecordingsByChannelQuery({
+	const { data, loading, refetch } = useFindRecordingsByChannelQuery({
 		variables: { channelId },
 		skip: !channelId
 	})
 
+	const { user } = useCurrent()
+	const isOwner = !!user && user.id === channelId
+
 	const [active, setActive] = useState<Recording | null>(null)
+
+	const [deleteRecording, { loading: deleting }] = useDeleteRecordingMutation({
+		onCompleted() {
+			refetch()
+		},
+		onError() {
+			toast.error('Could not delete the video')
+		}
+	})
+
+	function onDelete(recording: Recording) {
+		if (!window.confirm(`Delete "${recording.title}"? This can't be undone.`)) return
+		deleteRecording({ variables: { id: recording.id } })
+	}
 
 	const recordings = data?.findRecordingsByChannel ?? []
 
@@ -58,12 +79,14 @@ export function ChannelVideos({ channelId }: ChannelVideosProps) {
 						const duration = formatDuration(recording.duration)
 
 						return (
-							<button
+							<div
 								key={recording.id}
-								onClick={() => setActive(recording)}
-								className='group flex flex-col text-left'
+								className='group relative flex flex-col'
 							>
-								<div className='relative aspect-video w-full overflow-hidden rounded-lg bg-muted'>
+								<button
+									onClick={() => setActive(recording)}
+									className='relative aspect-video w-full overflow-hidden rounded-lg bg-muted text-left'
+								>
 									{recording.thumbnailUrl ? (
 										// eslint-disable-next-line @next/next/no-img-element
 										<img
@@ -85,14 +108,26 @@ export function ChannelVideos({ channelId }: ChannelVideosProps) {
 											{duration}
 										</span>
 									)}
-								</div>
+								</button>
+
+								{isOwner && (
+									<button
+										onClick={() => onDelete(recording)}
+										disabled={deleting}
+										aria-label='Delete video'
+										className='absolute right-1.5 top-1.5 rounded-md bg-black/60 p-1.5 text-white opacity-0 transition-opacity hover:bg-red-600 group-hover:opacity-100 disabled:opacity-50'
+									>
+										<Trash2 className='size-4' />
+									</button>
+								)}
+
 								<p className='mt-2 line-clamp-2 text-sm font-medium'>
 									{recording.title}
 								</p>
 								<p className='text-xs text-muted-foreground'>
 									{new Date(recording.createdAt).toLocaleDateString()}
 								</p>
-							</button>
+							</div>
 						)
 					})}
 				</div>

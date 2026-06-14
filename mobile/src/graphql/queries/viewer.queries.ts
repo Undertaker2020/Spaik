@@ -66,6 +66,12 @@ export const FIND_RECORDINGS_BY_CHANNEL = gql`
   }
 `;
 
+export const DELETE_RECORDING = gql`
+  mutation DeleteRecording($id: String!) {
+    deleteRecording(id: $id)
+  }
+`;
+
 export const FOLLOW_CHANNEL = gql`
   mutation FollowChannel($channelId: String!) {
     followChannel(channelId: $channelId)

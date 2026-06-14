@@ -36,6 +36,7 @@ type GenerateStreamTokenModel {
 type Mutation {
   changeStreamInfo(data: ChangeStreamInfoInput!): Boolean!
   createIngress(ingressType: Float!): Boolean!
+  deleteRecording(id: String!): Boolean!
   generateStreamToken(data: GenerateStreamTokenInput!): GenerateStreamTokenModel!
 }
 
