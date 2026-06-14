@@ -139,6 +139,7 @@ export type FollowModel = {
 };
 
 export type GenerateStreamTokenInput = {
+  asHost?: InputMaybe<Scalars['Boolean']['input']>;
   channelId: Scalars['String']['input'];
   userId: Scalars['String']['input'];
 };
@@ -422,6 +423,7 @@ export type Query = {
   findRandomCategories: Array<CategoryModel>;
   findRandomStreams: Array<StreamModel>;
   findRecommendedChannels: Array<UserModel>;
+  findRecordingsByChannel: Array<RecordingModel>;
   findSessionByUser: Array<SessionModel>;
   findSocialLinks: Array<SocialLinkModel>;
   findSponsorsByChannel: Array<SubscriptionModel>;
@@ -460,8 +462,25 @@ export type QueryFindRandomStreamsArgs = {
 };
 
 
+export type QueryFindRecordingsByChannelArgs = {
+  channelId: Scalars['String']['input'];
+};
+
+
 export type QueryFindSponsorsByChannelArgs = {
   channelId: Scalars['String']['input'];
+};
+
+export type RecordingModel = {
+  __typename?: 'RecordingModel';
+  createdAt: Scalars['DateTime']['output'];
+  duration?: Maybe<Scalars['Int']['output']>;
+  id: Scalars['ID']['output'];
+  streamId?: Maybe<Scalars['String']['output']>;
+  thumbnailUrl?: Maybe<Scalars['String']['output']>;
+  title: Scalars['String']['output'];
+  url: Scalars['String']['output'];
+  userId: Scalars['String']['output'];
 };
 
 export type ResetPasswordInput = {
@@ -854,6 +873,13 @@ export type FindRecommendedChannelsQueryVariables = Exact<{ [key: string]: never
 
 
 export type FindRecommendedChannelsQuery = { __typename?: 'Query', findRecommendedChannels: Array<{ __typename?: 'UserModel', username: string, avatar?: string | null, isVerified: boolean, stream?: { __typename?: 'StreamModel', isLive: boolean } | null }> };
+
+export type FindRecordingsByChannelQueryVariables = Exact<{
+  channelId: Scalars['String']['input'];
+}>;
+
+
+export type FindRecordingsByChannelQuery = { __typename?: 'Query', findRecordingsByChannel: Array<{ __typename?: 'RecordingModel', id: string, title: string, url: string, thumbnailUrl?: string | null, duration?: number | null, createdAt: any }> };
 
 export type FindSponsorsByChannelQueryVariables = Exact<{
   channelId: Scalars['String']['input'];
@@ -2215,6 +2241,51 @@ export type FindRecommendedChannelsQueryHookResult = ReturnType<typeof useFindRe
 export type FindRecommendedChannelsLazyQueryHookResult = ReturnType<typeof useFindRecommendedChannelsLazyQuery>;
 export type FindRecommendedChannelsSuspenseQueryHookResult = ReturnType<typeof useFindRecommendedChannelsSuspenseQuery>;
 export type FindRecommendedChannelsQueryResult = Apollo.QueryResult<FindRecommendedChannelsQuery, FindRecommendedChannelsQueryVariables>;
+export const FindRecordingsByChannelDocument = gql`
+    query FindRecordingsByChannel($channelId: String!) {
+  findRecordingsByChannel(channelId: $channelId) {
+    id
+    title
+    url
+    thumbnailUrl
+    duration
+    createdAt
+  }
+}
+    `;
+
+/**
+ * __useFindRecordingsByChannelQuery__
+ *
+ * To run a query within a React component, call `useFindRecordingsByChannelQuery` and pass it any options that fit your needs.
+ * When your component renders, `useFindRecordingsByChannelQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useFindRecordingsByChannelQuery({
+ *   variables: {
+ *      channelId: // value for 'channelId'
+ *   },
+ * });
+ */
+export function useFindRecordingsByChannelQuery(baseOptions: Apollo.QueryHookOptions<FindRecordingsByChannelQuery, FindRecordingsByChannelQueryVariables> & ({ variables: FindRecordingsByChannelQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<FindRecordingsByChannelQuery, FindRecordingsByChannelQueryVariables>(FindRecordingsByChannelDocument, options);
+      }
+export function useFindRecordingsByChannelLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<FindRecordingsByChannelQuery, FindRecordingsByChannelQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<FindRecordingsByChannelQuery, FindRecordingsByChannelQueryVariables>(FindRecordingsByChannelDocument, options);
+        }
+export function useFindRecordingsByChannelSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<FindRecordingsByChannelQuery, FindRecordingsByChannelQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<FindRecordingsByChannelQuery, FindRecordingsByChannelQueryVariables>(FindRecordingsByChannelDocument, options);
+        }
+export type FindRecordingsByChannelQueryHookResult = ReturnType<typeof useFindRecordingsByChannelQuery>;
+export type FindRecordingsByChannelLazyQueryHookResult = ReturnType<typeof useFindRecordingsByChannelLazyQuery>;
+export type FindRecordingsByChannelSuspenseQueryHookResult = ReturnType<typeof useFindRecordingsByChannelSuspenseQuery>;
+export type FindRecordingsByChannelQueryResult = Apollo.QueryResult<FindRecordingsByChannelQuery, FindRecordingsByChannelQueryVariables>;
 export const FindSponsorsByChannelDocument = gql`
     query FindSponsorsByChannel($channelId: String!) {
   findSponsorsByChannel(channelId: $channelId) {

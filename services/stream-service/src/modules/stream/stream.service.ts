@@ -118,6 +118,13 @@ export class StreamService {
         return { token: token.toJwt() };
     }
 
+    public async findRecordingsByChannel(channelId: string) {
+        return this.prismaService.recording.findMany({
+            where: { userId: channelId },
+            orderBy: { createdAt: 'desc' },
+        });
+    }
+
     private findBySearchTermFilter(searchTerm: string): Prisma.StreamWhereInput {
         return {
             OR: [

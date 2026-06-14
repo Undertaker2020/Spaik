@@ -9,5 +9,7 @@ export const MEDIA_SERVICE_URL = (process.env.NEXT_PUBLIC_MEDIA_SERVICE_URL as s
 // which federates them over WS to the chat subgraph.
 export const WEBSOCKET_URL = process.env.NEXT_PUBLIC_WEBSOCKET_URL as string
 export const MEDIA_URL = process.env.NEXT_PUBLIC_MEDIA_URL as string
+// Stream recordings (VOD) — public MinIO bucket; egress uploads MP4s here.
+export const RECORDINGS_URL = (process.env.NEXT_PUBLIC_RECORDINGS_URL as string) ?? 'http://localhost:9000/spaik-recordings'
 export const GOOGLE_MAP_API = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY as string
 export const LIVEKIT_WS_URL = process.env.NEXT_PUBLIC_LIVEKIT_WS_URL as string

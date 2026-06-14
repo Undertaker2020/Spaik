@@ -11,7 +11,9 @@ import {
   Platform,
   Dimensions,
   PanResponder,
+  Modal,
 } from 'react-native';
+import { useVideoPlayer, VideoView } from 'expo-video';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState, useEffect, useRef, type ReactNode } from 'react';
@@ -39,6 +41,8 @@ import {
   IconPlayerPauseFilled,
   IconVolume,
   IconVolumeOff,
+  IconClock,
+  IconX,
 } from '@tabler/icons-react-native';
 import { COLORS } from '@/src/libs/constants/colors';
 import { LIVEKIT_WS_URL } from '@/src/libs/constants/url.constants';
@@ -53,9 +57,12 @@ import {
   SEND_CHAT_MESSAGE,
   FOLLOW_CHANNEL,
   UNFOLLOW_CHANNEL,
+  FIND_RECORDINGS_BY_CHANNEL,
   type ChatMessage,
   type ChannelInfo,
+  type Recording,
 } from '@/src/graphql/queries/viewer.queries';
+import { getRecordingSource } from '@/src/libs/utils/get-recording-source';
 import {
   FIND_MY_FOLLOWINGS,
   type FollowItem,
@@ -409,6 +416,89 @@ function ChatMsg({ msg }: { msg: ChatMessage }) {
   );
 }
 
+// ── Channel videos (VOD) ───────────────────────────────────────
+
+function fmtDuration(sec?: number | null) {
+  if (!sec) return null;
+  const m = Math.floor(sec / 60);
+  const s = sec % 60;
+  return `${m}:${s.toString().padStart(2, '0')}`;
+}
+
+function VodPlayerModal({ recording, onClose }: { recording: Recording; onClose: () => void }) {
+  const uri = getRecordingSource(recording.url) ?? '';
+  const player = useVideoPlayer(uri, p => { p.play(); });
+
+  return (
+    <Modal visible animationType="slide" onRequestClose={onClose} statusBarTranslucent>
+      <View style={styles.vodModal}>
+        <View style={styles.vodHeader}>
+          <Text style={styles.vodTitle} numberOfLines={1}>{recording.title}</Text>
+          <TouchableOpacity onPress={onClose} style={styles.vodClose} activeOpacity={0.8}>
+            <IconX size={22} color="#fff" />
+          </TouchableOpacity>
+        </View>
+        <VideoView player={player} style={styles.vodVideo} nativeControls allowsFullscreen contentFit="contain" />
+      </View>
+    </Modal>
+  );
+}
+
+function ChannelVideos({ channelId }: { channelId: string }) {
+  const { data } = useQuery<{ findRecordingsByChannel: Recording[] }>(
+    FIND_RECORDINGS_BY_CHANNEL,
+    { variables: { channelId }, skip: !channelId },
+  );
+  const [active, setActive] = useState<Recording | null>(null);
+
+  const recordings = data?.findRecordingsByChannel ?? [];
+  if (recordings.length === 0) return null;
+
+  return (
+    <View style={styles.vodSection}>
+      <View style={styles.vodSectionHeader}>
+        <IconVideo size={15} color={COLORS.accent} />
+        <Text style={styles.vodSectionTitle}>Videos</Text>
+      </View>
+      <FlatList
+        data={recordings}
+        keyExtractor={r => r.id}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.vodList}
+        renderItem={({ item }) => {
+          const thumb = getMediaSource(item.thumbnailUrl);
+          const dur = fmtDuration(item.duration);
+          return (
+            <TouchableOpacity style={styles.vodCard} activeOpacity={0.8} onPress={() => setActive(item)}>
+              <View style={styles.vodThumb}>
+                {thumb ? (
+                  <Image source={{ uri: thumb }} style={StyleSheet.absoluteFill} resizeMode="cover" />
+                ) : (
+                  <View style={[StyleSheet.absoluteFill, styles.vodThumbFallback]}>
+                    <IconVideo size={22} color={COLORS.textMuted} />
+                  </View>
+                )}
+                <View style={styles.vodPlayBadge}>
+                  <IconPlayerPlayFilled size={16} color="#fff" />
+                </View>
+                {dur && (
+                  <View style={styles.vodDuration}>
+                    <IconClock size={10} color="#fff" />
+                    <Text style={styles.vodDurationText}>{dur}</Text>
+                  </View>
+                )}
+              </View>
+              <Text style={styles.vodCardTitle} numberOfLines={2}>{item.title}</Text>
+            </TouchableOpacity>
+          );
+        }}
+      />
+      {active && <VodPlayerModal recording={active} onClose={() => setActive(null)} />}
+    </View>
+  );
+}
+
 // ── Screen ────────────────────────────────────────────────────
 
 export default function StreamViewerScreen() {
@@ -544,6 +634,8 @@ export default function StreamViewerScreen() {
             onFollow={onFollow}
             followLoading={followLoading || unfollowLoading || loadingFollowings}
           />
+
+          <ChannelVideos channelId={channel.id} />
 
           {chatEnabled ? (
             <>
@@ -778,4 +870,51 @@ const styles = StyleSheet.create({
   },
   sendBtnDisabled: { opacity: 0.35 },
   chatDisabledText: { color: COLORS.textMuted, fontSize: 13 },
+
+  // ── Channel videos (VOD)
+  vodSection: {
+    paddingTop: 12, paddingBottom: 6,
+    borderBottomWidth: 1, borderBottomColor: COLORS.border,
+    backgroundColor: COLORS.bg,
+  },
+  vodSectionHeader: {
+    flexDirection: 'row', alignItems: 'center', gap: 6,
+    paddingHorizontal: 14, marginBottom: 10,
+  },
+  vodSectionTitle: { fontSize: 13, fontWeight: '700', color: COLORS.textPrimary },
+  vodList: { paddingHorizontal: 14, gap: 10 },
+  vodCard: { width: 150 },
+  vodThumb: {
+    width: 150, height: 84, borderRadius: 8, overflow: 'hidden',
+    backgroundColor: COLORS.card,
+  },
+  vodThumbFallback: { alignItems: 'center', justifyContent: 'center' },
+  vodPlayBadge: {
+    position: 'absolute', top: '50%', left: '50%',
+    width: 32, height: 32, borderRadius: 16, marginLeft: -16, marginTop: -16,
+    backgroundColor: 'rgba(0,0,0,0.55)',
+    alignItems: 'center', justifyContent: 'center',
+  },
+  vodDuration: {
+    position: 'absolute', bottom: 5, right: 5,
+    flexDirection: 'row', alignItems: 'center', gap: 3,
+    backgroundColor: 'rgba(0,0,0,0.75)', borderRadius: 4,
+    paddingHorizontal: 5, paddingVertical: 2,
+  },
+  vodDurationText: { color: '#fff', fontSize: 10, fontWeight: '600' },
+  vodCardTitle: { marginTop: 6, fontSize: 12, color: COLORS.textPrimary, lineHeight: 16 },
+
+  // ── VOD player modal
+  vodModal: { flex: 1, backgroundColor: '#000' },
+  vodHeader: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    paddingHorizontal: 14, paddingTop: 48, paddingBottom: 12, gap: 12,
+  },
+  vodTitle: { flex: 1, color: '#fff', fontSize: 15, fontWeight: '600' },
+  vodClose: {
+    width: 36, height: 36, borderRadius: 18,
+    backgroundColor: 'rgba(255,255,255,0.12)',
+    alignItems: 'center', justifyContent: 'center',
+  },
+  vodVideo: { flex: 1, width: '100%' },
 });

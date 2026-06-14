@@ -1,0 +1,10 @@
+query FindRecordingsByChannel($channelId: String!) {
+	findRecordingsByChannel(channelId: $channelId) {
+		id
+		title
+		url
+		thumbnailUrl
+		duration
+		createdAt
+	}
+}

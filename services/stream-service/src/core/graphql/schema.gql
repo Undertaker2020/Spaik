@@ -42,6 +42,18 @@ type Mutation {
 type Query {
   findAllStreams(filters: FiltersInput!): [StreamModel!]!
   findRandomStreams(filters: FiltersInput): [StreamModel!]!
+  findRecordingsByChannel(channelId: String!): [RecordingModel!]!
+}
+
+type RecordingModel {
+  createdAt: DateTime!
+  duration: Int
+  id: ID!
+  streamId: String
+  thumbnailUrl: String
+  title: String!
+  url: String!
+  userId: String!
 }
 
 type StreamModel {

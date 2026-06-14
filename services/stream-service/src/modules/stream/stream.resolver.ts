@@ -12,6 +12,7 @@ import { StreamModel } from '@/src/modules/stream/models/stream.model';
 import { UserModel } from '@/src/modules/stream/models/user.model';
 import { CategoryModel } from '@/src/modules/stream/models/category.model';
 import { GenerateStreamTokenModel } from '@/src/modules/stream/models/generate-stream-token.model';
+import { RecordingModel } from '@/src/modules/stream/models/recording.model';
 import { FiltersInput } from '@/src/modules/stream/inputs/filters.input';
 import { ChangeStreamInfoInput } from '@/src/modules/stream/inputs/change-stream-info.input';
 import { GenerateStreamTokenInput } from '@/src/modules/stream/inputs/generate-stream-token.input';
@@ -48,6 +49,11 @@ export class StreamResolver {
     @Mutation(() => GenerateStreamTokenModel, { name: 'generateStreamToken' })
     public async generateStreamToken(@Args('data') input: GenerateStreamTokenInput) {
         return this.streamService.generateToken(input);
+    }
+
+    @Query(() => [RecordingModel], { name: 'findRecordingsByChannel' })
+    public async findRecordingsByChannel(@Args('channelId') channelId: string) {
+        return this.streamService.findRecordingsByChannel(channelId);
     }
 
     // Return entity references (by id) — the gateway resolves the rest from the

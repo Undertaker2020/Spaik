@@ -14,6 +14,7 @@ if (!process.env.EXPO_PUBLIC_HOST) {
 
 module.exports = ({ config }) => ({
   ...config,
+  plugins: [...(config.plugins ?? []), 'expo-video'],
   extra: {
     ...config.extra,
     apiUrl: `http://${HOST}:4000/graphql`,
@@ -21,6 +22,7 @@ module.exports = ({ config }) => ({
     chatWsUrl: `ws://${HOST}:4002/graphql`,
     wsUrl: `ws://${HOST}:4000/graphql`,
     mediaUrl: `http://${HOST}:9000/spaik-media`,
+    recordingsUrl: `http://${HOST}:9000/spaik-recordings`,
     livekitWsUrl: `ws://${HOST}:7880`,
   },
 });

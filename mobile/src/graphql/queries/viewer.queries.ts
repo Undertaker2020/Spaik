@@ -53,6 +53,19 @@ export const SEND_CHAT_MESSAGE = gql`
   }
 `;
 
+export const FIND_RECORDINGS_BY_CHANNEL = gql`
+  query FindRecordingsByChannel($channelId: String!) {
+    findRecordingsByChannel(channelId: $channelId) {
+      id
+      title
+      url
+      thumbnailUrl
+      duration
+      createdAt
+    }
+  }
+`;
+
 export const FOLLOW_CHANNEL = gql`
   mutation FollowChannel($channelId: String!) {
     followChannel(channelId: $channelId)
@@ -70,6 +83,15 @@ export interface ChatMessage {
   text: string;
   createdAt: string;
   user: { id: string; username: string; avatar: string | null };
+}
+
+export interface Recording {
+  id: string;
+  title: string;
+  url: string;
+  thumbnailUrl: string | null;
+  duration: number | null;
+  createdAt: string;
 }
 
 export interface ChannelInfo {

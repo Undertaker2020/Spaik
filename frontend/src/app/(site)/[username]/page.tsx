@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
 import { StreamOverview } from '@/components/features/stream/overview/StreamOverview'
+import { ChannelVideos } from '@/components/features/stream/recordings/ChannelVideos'
 
 import {
 	FindChannelByUsernameDocument,
@@ -67,5 +68,10 @@ export default async function ChannelPage(props: {
 
 	const { channel } = await findChannelByUsername(params)
 
-	return <StreamOverview channel={channel} />
+	return (
+		<>
+			<StreamOverview channel={channel} />
+			<ChannelVideos channelId={channel.id} />
+		</>
+	)
 }
