@@ -24,6 +24,7 @@ input FiltersInput {
 }
 
 input GenerateStreamTokenInput {
+  asHost: Boolean
   channelId: String!
   userId: String!
 }

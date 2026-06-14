@@ -1,5 +1,5 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsBoolean, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 @InputType()
 export class GenerateStreamTokenInput {
@@ -12,4 +12,12 @@ export class GenerateStreamTokenInput {
     @IsString()
     @IsNotEmpty()
     public channelId: string;
+
+    // Set only by the in-app broadcaster (go-live). Viewers — including the channel
+    // owner watching their own stream — leave this false and get a unique viewer
+    // identity, so they never collide with the publisher's identity (channel id).
+    @Field(() => Boolean, { nullable: true })
+    @IsOptional()
+    @IsBoolean()
+    public asHost?: boolean;
 }

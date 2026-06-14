@@ -90,17 +90,20 @@ export class StreamService {
             throw new NotFoundException('Channel does not exist');
         }
 
-        const isHost = self.id === channel.id;
+        // Only the in-app broadcaster (asHost) publishes. Everyone else — including
+        // the channel owner just watching their own stream — joins as a viewer.
+        const isHost = input.asHost === true && self.id === channel.id;
 
         const token = new AccessToken(
             this.configService.getOrThrow<string>('LIVEKIT_API_KEY'),
             this.configService.getOrThrow<string>('LIVEKIT_API_SECRET'),
             {
-                // Identity must equal the channel/user id for the host so the
-                // LiveKit room participant matches what the web player and the
-                // ingress convention expect (web finds the publisher by
-                // `participant.identity === channel.id`). No `Host-` prefix.
-                identity: self.id.toString(),
+                // The publisher's identity must equal the channel id — the web
+                // player finds the host by `participant.identity === channel.id`
+                // and the webhook detects the host by `identity === room`. Viewers
+                // get a `viewer-` prefixed identity so they never collide with the
+                // publisher (which would kick the broadcaster off the room).
+                identity: isHost ? self.id.toString() : `viewer-${self.id}`,
                 name: self.username,
             },
         );

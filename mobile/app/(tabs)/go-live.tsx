@@ -279,8 +279,8 @@ export default function GoLiveScreen() {
         changeChatSettings({ variables: { data: { isChatEnabled, isChatFollowersOnly, isChatPremiumFollowersOnly } } }),
       ]);
 
-      // Host token: userId === channelId → isHost → canPublish. Room = own id.
-      const tokenRes = await generateToken({ variables: { data: { userId, channelId: userId } } });
+      // Host token: asHost → publish grant + bare channel identity. Room = own id.
+      const tokenRes = await generateToken({ variables: { data: { userId, channelId: userId, asHost: true } } });
       const token = tokenRes.data?.generateStreamToken?.token;
       if (!token) {
         Alert.alert('Error', 'Could not start the stream. Try again.');
