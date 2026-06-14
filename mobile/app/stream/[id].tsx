@@ -10,6 +10,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Dimensions,
+  PanResponder,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -22,7 +23,7 @@ import {
   isTrackReference,
   AudioSession,
 } from '@livekit/react-native';
-import { Track, VideoQuality, type RemoteTrackPublication } from 'livekit-client';
+import { Track, VideoQuality, type RemoteTrackPublication, type RemoteParticipant } from 'livekit-client';
 import { LinearGradient } from 'expo-linear-gradient';
 import {
   IconArrowLeft,
@@ -34,6 +35,10 @@ import {
   IconEye,
   IconSettings,
   IconCheck,
+  IconPlayerPlayFilled,
+  IconPlayerPauseFilled,
+  IconVolume,
+  IconVolumeOff,
 } from '@tabler/icons-react-native';
 import { COLORS } from '@/src/libs/constants/colors';
 import { LIVEKIT_WS_URL } from '@/src/libs/constants/url.constants';
@@ -148,24 +153,85 @@ const QUALITY_MAP: Record<QualityKey, VideoQuality> = {
   '180p': VideoQuality.LOW,
 };
 
+// ── Volume slider (core PanResponder — no extra native deps) ────
+
+const SLIDER_W = 84;
+
+function VolumeSlider({ value, onChange }: { value: number; onChange: (v: number) => void }) {
+  const setFromX = (x: number) => {
+    const clamped = Math.max(0, Math.min(SLIDER_W, x));
+    onChange(Math.round((clamped / SLIDER_W) * 100));
+  };
+
+  const pan = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onMoveShouldSetPanResponder: () => true,
+      onPanResponderGrant: e => setFromX(e.nativeEvent.locationX),
+      onPanResponderMove: e => setFromX(e.nativeEvent.locationX),
+    }),
+  ).current;
+
+  return (
+    <View style={styles.sliderHit} {...pan.panHandlers}>
+      <View style={styles.sliderTrack}>
+        <View style={[styles.sliderFill, { width: `${value}%` }]} />
+        <View style={[styles.sliderThumb, { left: (value / 100) * SLIDER_W - 6 }]} />
+      </View>
+    </View>
+  );
+}
+
 // ── Live video stage (inside LiveKitRoom context) ──────────────
 
 function LiveStage() {
-  // Subscribed camera tracks in the room; the host is the only remote publisher.
-  const tracks = useTracks([Track.Source.Camera], { onlySubscribed: true });
-  const hostTrack = tracks.find(t => isTrackReference(t) && !t.participant.isLocal);
+  // Subscribed camera + mic tracks in the room; the host is the only remote publisher.
+  const tracks = useTracks([Track.Source.Camera, Track.Source.Microphone], { onlySubscribed: true });
+  const hostTrack = tracks.find(
+    t => isTrackReference(t) && t.source === Track.Source.Camera && !t.participant.isLocal,
+  );
 
   const [quality, setQuality] = useState<QualityKey>('720p');
   const [menuOpen, setMenuOpen] = useState(false);
+  const [volume, setVolume] = useState(100);
+  const [isPaused, setIsPaused] = useState(false);
+  const lastVolume = useRef(100);
 
-  // Pin the chosen simulcast layer whenever the track or selection changes.
+  const host =
+    hostTrack && isTrackReference(hostTrack) ? (hostTrack.participant as RemoteParticipant) : undefined;
+  const cameraPub =
+    hostTrack && isTrackReference(hostTrack) ? (hostTrack.publication as RemoteTrackPublication) : undefined;
+
+  // Pin the chosen simulcast layer (skip while paused — the track is disabled).
   useEffect(() => {
-    if (hostTrack && isTrackReference(hostTrack)) {
-      (hostTrack.publication as RemoteTrackPublication | undefined)?.setVideoQuality?.(
-        QUALITY_MAP[quality],
-      );
+    if (!isPaused) cameraPub?.setVideoQuality?.(QUALITY_MAP[quality]);
+  }, [cameraPub, quality, isPaused]);
+
+  // Apply playback volume on the host's microphone (persisted in the participant's volumeMap).
+  useEffect(() => {
+    host?.setVolume(volume / 100, Track.Source.Microphone);
+  }, [host, volume]);
+
+  // Pause/resume: stop receiving the host's media to save bandwidth.
+  useEffect(() => {
+    const micPub = host?.getTrackPublication(Track.Source.Microphone) as RemoteTrackPublication | undefined;
+    cameraPub?.setEnabled(!isPaused);
+    micPub?.setEnabled(!isPaused);
+  }, [host, cameraPub, isPaused]);
+
+  function onVolumeChange(v: number) {
+    setVolume(v);
+    if (v > 0) lastVolume.current = v;
+  }
+
+  function toggleMute() {
+    if (volume === 0) {
+      setVolume(lastVolume.current || 100);
+    } else {
+      lastVolume.current = volume;
+      setVolume(0);
     }
-  }, [hostTrack, quality]);
+  }
 
   if (!hostTrack) {
     return (
@@ -176,9 +242,33 @@ function LiveStage() {
     );
   }
 
+  const VolumeIcon = volume === 0 ? IconVolumeOff : IconVolume;
+
   return (
     <>
       <VideoTrack trackRef={hostTrack} style={StyleSheet.absoluteFill} objectFit="contain" />
+
+      {/* Paused scrim with a centre resume button */}
+      {isPaused && (
+        <View style={[StyleSheet.absoluteFill, styles.pausedScrim]}>
+          <TouchableOpacity style={styles.bigPlay} onPress={() => setIsPaused(false)} activeOpacity={0.85}>
+            <IconPlayerPlayFilled size={26} color="#fff" />
+          </TouchableOpacity>
+        </View>
+      )}
+
+      {/* Bottom-left playback controls: play/pause, mute, volume */}
+      <View style={styles.playback}>
+        <TouchableOpacity style={styles.ctrlBtn} onPress={() => setIsPaused(p => !p)} activeOpacity={0.8}>
+          {isPaused
+            ? <IconPlayerPlayFilled size={15} color="#fff" />
+            : <IconPlayerPauseFilled size={15} color="#fff" />}
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.ctrlBtn} onPress={toggleMute} activeOpacity={0.8}>
+          <VolumeIcon size={16} color="#fff" />
+        </TouchableOpacity>
+        <VolumeSlider value={volume} onChange={onVolumeChange} />
+      </View>
 
       {/* Quality selector */}
       <View style={styles.qualityWrap}>
@@ -557,6 +647,27 @@ const styles = StyleSheet.create({
   },
   qualityItemText: { color: '#fff', fontSize: 13 },
   qualityItemTextActive: { color: COLORS.accent, fontWeight: '700' },
+
+  // ── Playback controls (play/pause, mute, volume)
+  playback: {
+    position: 'absolute', bottom: 12, left: 12,
+    flexDirection: 'row', alignItems: 'center', gap: 8,
+  },
+  ctrlBtn: {
+    width: 30, height: 30, borderRadius: 8,
+    backgroundColor: 'rgba(0,0,0,0.55)',
+    alignItems: 'center', justifyContent: 'center',
+  },
+  sliderHit: { width: SLIDER_W, height: 24, justifyContent: 'center' },
+  sliderTrack: { height: 4, borderRadius: 2, backgroundColor: 'rgba(255,255,255,0.3)' },
+  sliderFill: { position: 'absolute', left: 0, top: 0, height: 4, borderRadius: 2, backgroundColor: '#fff' },
+  sliderThumb: { position: 'absolute', top: -4, width: 12, height: 12, borderRadius: 6, backgroundColor: '#fff' },
+  pausedScrim: { backgroundColor: 'rgba(0,0,0,0.45)', alignItems: 'center', justifyContent: 'center' },
+  bigPlay: {
+    width: 56, height: 56, borderRadius: 28,
+    backgroundColor: 'rgba(0,0,0,0.55)',
+    alignItems: 'center', justifyContent: 'center',
+  },
   liveBadge: {
     position: 'absolute',
     top: 12,
