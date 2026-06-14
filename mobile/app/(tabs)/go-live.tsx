@@ -170,7 +170,7 @@ function BroadcastView({ onEnd, aspect }: { onEnd: () => void; aspect: '16:9' | 
   return (
     <View style={[styles.broadcastStage, { aspectRatio: aspect === '4:3' ? 4 / 3 : 16 / 9 }]}>
       {localCam ? (
-        <VideoTrack trackRef={localCam} style={StyleSheet.absoluteFill} objectFit="contain" mirror />
+        <VideoTrack trackRef={localCam} style={StyleSheet.absoluteFillObject} objectFit="contain" mirror />
       ) : (
         <View style={[StyleSheet.absoluteFill, styles.broadcastConnecting]}>
           <ActivityIndicator color="#fff" />

@@ -253,7 +253,7 @@ function LiveStage() {
 
   return (
     <>
-      <VideoTrack trackRef={hostTrack} style={StyleSheet.absoluteFill} objectFit="contain" />
+      <VideoTrack trackRef={hostTrack} style={StyleSheet.absoluteFillObject} objectFit="contain" />
 
       {/* Paused scrim with a centre resume button */}
       {isPaused && (
