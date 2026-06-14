@@ -34,6 +34,11 @@ export type Token = $Result.DefaultSelection<Prisma.$TokenPayload>
  */
 export type Stream = $Result.DefaultSelection<Prisma.$StreamPayload>
 /**
+ * Model Recording
+ * 
+ */
+export type Recording = $Result.DefaultSelection<Prisma.$RecordingPayload>
+/**
  * Model Category
  * 
  */
@@ -286,6 +291,16 @@ export class PrismaClient<
     * ```
     */
   get stream(): Prisma.StreamDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.recording`: Exposes CRUD operations for the **Recording** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Recordings
+    * const recordings = await prisma.recording.findMany()
+    * ```
+    */
+  get recording(): Prisma.RecordingDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.category`: Exposes CRUD operations for the **Category** model.
@@ -810,6 +825,7 @@ export namespace Prisma {
     SocialLink: 'SocialLink',
     Token: 'Token',
     Stream: 'Stream',
+    Recording: 'Recording',
     Category: 'Category',
     ChatMessage: 'ChatMessage',
     Follow: 'Follow',
@@ -836,7 +852,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "socialLink" | "token" | "stream" | "category" | "chatMessage" | "follow" | "notification" | "notificationSettings" | "transaction" | "sponsorshipPlan" | "sponsorshipSubscription"
+      modelProps: "user" | "socialLink" | "token" | "stream" | "recording" | "category" | "chatMessage" | "follow" | "notification" | "notificationSettings" | "transaction" | "sponsorshipPlan" | "sponsorshipSubscription"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1133,6 +1149,80 @@ export namespace Prisma {
           count: {
             args: Prisma.StreamCountArgs<ExtArgs>
             result: $Utils.Optional<StreamCountAggregateOutputType> | number
+          }
+        }
+      }
+      Recording: {
+        payload: Prisma.$RecordingPayload<ExtArgs>
+        fields: Prisma.RecordingFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.RecordingFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RecordingPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.RecordingFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RecordingPayload>
+          }
+          findFirst: {
+            args: Prisma.RecordingFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RecordingPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.RecordingFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RecordingPayload>
+          }
+          findMany: {
+            args: Prisma.RecordingFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RecordingPayload>[]
+          }
+          create: {
+            args: Prisma.RecordingCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RecordingPayload>
+          }
+          createMany: {
+            args: Prisma.RecordingCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.RecordingCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RecordingPayload>[]
+          }
+          delete: {
+            args: Prisma.RecordingDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RecordingPayload>
+          }
+          update: {
+            args: Prisma.RecordingUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RecordingPayload>
+          }
+          deleteMany: {
+            args: Prisma.RecordingDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.RecordingUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.RecordingUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RecordingPayload>[]
+          }
+          upsert: {
+            args: Prisma.RecordingUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RecordingPayload>
+          }
+          aggregate: {
+            args: Prisma.RecordingAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateRecording>
+          }
+          groupBy: {
+            args: Prisma.RecordingGroupByArgs<ExtArgs>
+            result: $Utils.Optional<RecordingGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.RecordingCountArgs<ExtArgs>
+            result: $Utils.Optional<RecordingCountAggregateOutputType> | number
           }
         }
       }
@@ -1816,6 +1906,7 @@ export namespace Prisma {
     socialLink?: SocialLinkOmit
     token?: TokenOmit
     stream?: StreamOmit
+    recording?: RecordingOmit
     category?: CategoryOmit
     chatMessage?: ChatMessageOmit
     follow?: FollowOmit
@@ -1920,6 +2011,7 @@ export namespace Prisma {
   export type UserCountOutputType = {
     tokens: number
     socialLinks: number
+    recordings: number
     chatMessages: number
     followers: number
     followings: number
@@ -1933,6 +2025,7 @@ export namespace Prisma {
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     tokens?: boolean | UserCountOutputTypeCountTokensArgs
     socialLinks?: boolean | UserCountOutputTypeCountSocialLinksArgs
+    recordings?: boolean | UserCountOutputTypeCountRecordingsArgs
     chatMessages?: boolean | UserCountOutputTypeCountChatMessagesArgs
     followers?: boolean | UserCountOutputTypeCountFollowersArgs
     followings?: boolean | UserCountOutputTypeCountFollowingsArgs
@@ -1966,6 +2059,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountSocialLinksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: SocialLinkWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountRecordingsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: RecordingWhereInput
   }
 
   /**
@@ -2031,10 +2131,12 @@ export namespace Prisma {
 
   export type StreamCountOutputType = {
     chatMessages: number
+    recordings: number
   }
 
   export type StreamCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     chatMessages?: boolean | StreamCountOutputTypeCountChatMessagesArgs
+    recordings?: boolean | StreamCountOutputTypeCountRecordingsArgs
   }
 
   // Custom InputTypes
@@ -2053,6 +2155,13 @@ export namespace Prisma {
    */
   export type StreamCountOutputTypeCountChatMessagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ChatMessageWhereInput
+  }
+
+  /**
+   * StreamCountOutputType without action
+   */
+  export type StreamCountOutputTypeCountRecordingsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: RecordingWhereInput
   }
 
 
@@ -2377,6 +2486,7 @@ export namespace Prisma {
     tokens?: boolean | User$tokensArgs<ExtArgs>
     socialLinks?: boolean | User$socialLinksArgs<ExtArgs>
     stream?: boolean | User$streamArgs<ExtArgs>
+    recordings?: boolean | User$recordingsArgs<ExtArgs>
     chatMessages?: boolean | User$chatMessagesArgs<ExtArgs>
     followers?: boolean | User$followersArgs<ExtArgs>
     followings?: boolean | User$followingsArgs<ExtArgs>
@@ -2451,6 +2561,7 @@ export namespace Prisma {
     tokens?: boolean | User$tokensArgs<ExtArgs>
     socialLinks?: boolean | User$socialLinksArgs<ExtArgs>
     stream?: boolean | User$streamArgs<ExtArgs>
+    recordings?: boolean | User$recordingsArgs<ExtArgs>
     chatMessages?: boolean | User$chatMessagesArgs<ExtArgs>
     followers?: boolean | User$followersArgs<ExtArgs>
     followings?: boolean | User$followingsArgs<ExtArgs>
@@ -2471,6 +2582,7 @@ export namespace Prisma {
       tokens: Prisma.$TokenPayload<ExtArgs>[]
       socialLinks: Prisma.$SocialLinkPayload<ExtArgs>[]
       stream: Prisma.$StreamPayload<ExtArgs> | null
+      recordings: Prisma.$RecordingPayload<ExtArgs>[]
       chatMessages: Prisma.$ChatMessagePayload<ExtArgs>[]
       followers: Prisma.$FollowPayload<ExtArgs>[]
       followings: Prisma.$FollowPayload<ExtArgs>[]
@@ -2895,6 +3007,7 @@ export namespace Prisma {
     tokens<T extends User$tokensArgs<ExtArgs> = {}>(args?: Subset<T, User$tokensArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     socialLinks<T extends User$socialLinksArgs<ExtArgs> = {}>(args?: Subset<T, User$socialLinksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SocialLinkPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     stream<T extends User$streamArgs<ExtArgs> = {}>(args?: Subset<T, User$streamArgs<ExtArgs>>): Prisma__StreamClient<$Result.GetResult<Prisma.$StreamPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    recordings<T extends User$recordingsArgs<ExtArgs> = {}>(args?: Subset<T, User$recordingsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RecordingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     chatMessages<T extends User$chatMessagesArgs<ExtArgs> = {}>(args?: Subset<T, User$chatMessagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ChatMessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     followers<T extends User$followersArgs<ExtArgs> = {}>(args?: Subset<T, User$followersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FollowPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     followings<T extends User$followingsArgs<ExtArgs> = {}>(args?: Subset<T, User$followingsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FollowPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -3401,6 +3514,30 @@ export namespace Prisma {
      */
     include?: StreamInclude<ExtArgs> | null
     where?: StreamWhereInput
+  }
+
+  /**
+   * User.recordings
+   */
+  export type User$recordingsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Recording
+     */
+    select?: RecordingSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Recording
+     */
+    omit?: RecordingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RecordingInclude<ExtArgs> | null
+    where?: RecordingWhereInput
+    orderBy?: RecordingOrderByWithRelationInput | RecordingOrderByWithRelationInput[]
+    cursor?: RecordingWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: RecordingScalarFieldEnum | RecordingScalarFieldEnum[]
   }
 
   /**
@@ -6111,6 +6248,7 @@ export namespace Prisma {
     categoryId?: boolean
     user?: boolean | Stream$userArgs<ExtArgs>
     chatMessages?: boolean | Stream$chatMessagesArgs<ExtArgs>
+    recordings?: boolean | Stream$recordingsArgs<ExtArgs>
     category?: boolean | Stream$categoryArgs<ExtArgs>
     _count?: boolean | StreamCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["stream"]>
@@ -6174,6 +6312,7 @@ export namespace Prisma {
   export type StreamInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | Stream$userArgs<ExtArgs>
     chatMessages?: boolean | Stream$chatMessagesArgs<ExtArgs>
+    recordings?: boolean | Stream$recordingsArgs<ExtArgs>
     category?: boolean | Stream$categoryArgs<ExtArgs>
     _count?: boolean | StreamCountOutputTypeDefaultArgs<ExtArgs>
   }
@@ -6191,6 +6330,7 @@ export namespace Prisma {
     objects: {
       user: Prisma.$UserPayload<ExtArgs> | null
       chatMessages: Prisma.$ChatMessagePayload<ExtArgs>[]
+      recordings: Prisma.$RecordingPayload<ExtArgs>[]
       category: Prisma.$CategoryPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -6604,6 +6744,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     user<T extends Stream$userArgs<ExtArgs> = {}>(args?: Subset<T, Stream$userArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     chatMessages<T extends Stream$chatMessagesArgs<ExtArgs> = {}>(args?: Subset<T, Stream$chatMessagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ChatMessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    recordings<T extends Stream$recordingsArgs<ExtArgs> = {}>(args?: Subset<T, Stream$recordingsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RecordingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     category<T extends Stream$categoryArgs<ExtArgs> = {}>(args?: Subset<T, Stream$categoryArgs<ExtArgs>>): Prisma__CategoryClient<$Result.GetResult<Prisma.$CategoryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -7087,6 +7228,30 @@ export namespace Prisma {
   }
 
   /**
+   * Stream.recordings
+   */
+  export type Stream$recordingsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Recording
+     */
+    select?: RecordingSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Recording
+     */
+    omit?: RecordingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RecordingInclude<ExtArgs> | null
+    where?: RecordingWhereInput
+    orderBy?: RecordingOrderByWithRelationInput | RecordingOrderByWithRelationInput[]
+    cursor?: RecordingWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: RecordingScalarFieldEnum | RecordingScalarFieldEnum[]
+  }
+
+  /**
    * Stream.category
    */
   export type Stream$categoryArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -7121,6 +7286,1196 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: StreamInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model Recording
+   */
+
+  export type AggregateRecording = {
+    _count: RecordingCountAggregateOutputType | null
+    _avg: RecordingAvgAggregateOutputType | null
+    _sum: RecordingSumAggregateOutputType | null
+    _min: RecordingMinAggregateOutputType | null
+    _max: RecordingMaxAggregateOutputType | null
+  }
+
+  export type RecordingAvgAggregateOutputType = {
+    duration: number | null
+  }
+
+  export type RecordingSumAggregateOutputType = {
+    duration: number | null
+  }
+
+  export type RecordingMinAggregateOutputType = {
+    id: string | null
+    title: string | null
+    url: string | null
+    thumbnailUrl: string | null
+    duration: number | null
+    userId: string | null
+    streamId: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type RecordingMaxAggregateOutputType = {
+    id: string | null
+    title: string | null
+    url: string | null
+    thumbnailUrl: string | null
+    duration: number | null
+    userId: string | null
+    streamId: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type RecordingCountAggregateOutputType = {
+    id: number
+    title: number
+    url: number
+    thumbnailUrl: number
+    duration: number
+    userId: number
+    streamId: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type RecordingAvgAggregateInputType = {
+    duration?: true
+  }
+
+  export type RecordingSumAggregateInputType = {
+    duration?: true
+  }
+
+  export type RecordingMinAggregateInputType = {
+    id?: true
+    title?: true
+    url?: true
+    thumbnailUrl?: true
+    duration?: true
+    userId?: true
+    streamId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type RecordingMaxAggregateInputType = {
+    id?: true
+    title?: true
+    url?: true
+    thumbnailUrl?: true
+    duration?: true
+    userId?: true
+    streamId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type RecordingCountAggregateInputType = {
+    id?: true
+    title?: true
+    url?: true
+    thumbnailUrl?: true
+    duration?: true
+    userId?: true
+    streamId?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type RecordingAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Recording to aggregate.
+     */
+    where?: RecordingWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Recordings to fetch.
+     */
+    orderBy?: RecordingOrderByWithRelationInput | RecordingOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: RecordingWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Recordings from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Recordings.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Recordings
+    **/
+    _count?: true | RecordingCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: RecordingAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: RecordingSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: RecordingMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: RecordingMaxAggregateInputType
+  }
+
+  export type GetRecordingAggregateType<T extends RecordingAggregateArgs> = {
+        [P in keyof T & keyof AggregateRecording]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateRecording[P]>
+      : GetScalarType<T[P], AggregateRecording[P]>
+  }
+
+
+
+
+  export type RecordingGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: RecordingWhereInput
+    orderBy?: RecordingOrderByWithAggregationInput | RecordingOrderByWithAggregationInput[]
+    by: RecordingScalarFieldEnum[] | RecordingScalarFieldEnum
+    having?: RecordingScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: RecordingCountAggregateInputType | true
+    _avg?: RecordingAvgAggregateInputType
+    _sum?: RecordingSumAggregateInputType
+    _min?: RecordingMinAggregateInputType
+    _max?: RecordingMaxAggregateInputType
+  }
+
+  export type RecordingGroupByOutputType = {
+    id: string
+    title: string
+    url: string
+    thumbnailUrl: string | null
+    duration: number | null
+    userId: string | null
+    streamId: string | null
+    createdAt: Date
+    updatedAt: Date
+    _count: RecordingCountAggregateOutputType | null
+    _avg: RecordingAvgAggregateOutputType | null
+    _sum: RecordingSumAggregateOutputType | null
+    _min: RecordingMinAggregateOutputType | null
+    _max: RecordingMaxAggregateOutputType | null
+  }
+
+  type GetRecordingGroupByPayload<T extends RecordingGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<RecordingGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof RecordingGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], RecordingGroupByOutputType[P]>
+            : GetScalarType<T[P], RecordingGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type RecordingSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    title?: boolean
+    url?: boolean
+    thumbnailUrl?: boolean
+    duration?: boolean
+    userId?: boolean
+    streamId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | Recording$userArgs<ExtArgs>
+    stream?: boolean | Recording$streamArgs<ExtArgs>
+  }, ExtArgs["result"]["recording"]>
+
+  export type RecordingSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    title?: boolean
+    url?: boolean
+    thumbnailUrl?: boolean
+    duration?: boolean
+    userId?: boolean
+    streamId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | Recording$userArgs<ExtArgs>
+    stream?: boolean | Recording$streamArgs<ExtArgs>
+  }, ExtArgs["result"]["recording"]>
+
+  export type RecordingSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    title?: boolean
+    url?: boolean
+    thumbnailUrl?: boolean
+    duration?: boolean
+    userId?: boolean
+    streamId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | Recording$userArgs<ExtArgs>
+    stream?: boolean | Recording$streamArgs<ExtArgs>
+  }, ExtArgs["result"]["recording"]>
+
+  export type RecordingSelectScalar = {
+    id?: boolean
+    title?: boolean
+    url?: boolean
+    thumbnailUrl?: boolean
+    duration?: boolean
+    userId?: boolean
+    streamId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type RecordingOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "url" | "thumbnailUrl" | "duration" | "userId" | "streamId" | "createdAt" | "updatedAt", ExtArgs["result"]["recording"]>
+  export type RecordingInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | Recording$userArgs<ExtArgs>
+    stream?: boolean | Recording$streamArgs<ExtArgs>
+  }
+  export type RecordingIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | Recording$userArgs<ExtArgs>
+    stream?: boolean | Recording$streamArgs<ExtArgs>
+  }
+  export type RecordingIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | Recording$userArgs<ExtArgs>
+    stream?: boolean | Recording$streamArgs<ExtArgs>
+  }
+
+  export type $RecordingPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Recording"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs> | null
+      stream: Prisma.$StreamPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      title: string
+      url: string
+      thumbnailUrl: string | null
+      duration: number | null
+      userId: string | null
+      streamId: string | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["recording"]>
+    composites: {}
+  }
+
+  type RecordingGetPayload<S extends boolean | null | undefined | RecordingDefaultArgs> = $Result.GetResult<Prisma.$RecordingPayload, S>
+
+  type RecordingCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<RecordingFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: RecordingCountAggregateInputType | true
+    }
+
+  export interface RecordingDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Recording'], meta: { name: 'Recording' } }
+    /**
+     * Find zero or one Recording that matches the filter.
+     * @param {RecordingFindUniqueArgs} args - Arguments to find a Recording
+     * @example
+     * // Get one Recording
+     * const recording = await prisma.recording.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends RecordingFindUniqueArgs>(args: SelectSubset<T, RecordingFindUniqueArgs<ExtArgs>>): Prisma__RecordingClient<$Result.GetResult<Prisma.$RecordingPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Recording that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {RecordingFindUniqueOrThrowArgs} args - Arguments to find a Recording
+     * @example
+     * // Get one Recording
+     * const recording = await prisma.recording.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends RecordingFindUniqueOrThrowArgs>(args: SelectSubset<T, RecordingFindUniqueOrThrowArgs<ExtArgs>>): Prisma__RecordingClient<$Result.GetResult<Prisma.$RecordingPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Recording that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RecordingFindFirstArgs} args - Arguments to find a Recording
+     * @example
+     * // Get one Recording
+     * const recording = await prisma.recording.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends RecordingFindFirstArgs>(args?: SelectSubset<T, RecordingFindFirstArgs<ExtArgs>>): Prisma__RecordingClient<$Result.GetResult<Prisma.$RecordingPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Recording that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RecordingFindFirstOrThrowArgs} args - Arguments to find a Recording
+     * @example
+     * // Get one Recording
+     * const recording = await prisma.recording.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends RecordingFindFirstOrThrowArgs>(args?: SelectSubset<T, RecordingFindFirstOrThrowArgs<ExtArgs>>): Prisma__RecordingClient<$Result.GetResult<Prisma.$RecordingPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Recordings that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RecordingFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Recordings
+     * const recordings = await prisma.recording.findMany()
+     * 
+     * // Get first 10 Recordings
+     * const recordings = await prisma.recording.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const recordingWithIdOnly = await prisma.recording.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends RecordingFindManyArgs>(args?: SelectSubset<T, RecordingFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RecordingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Recording.
+     * @param {RecordingCreateArgs} args - Arguments to create a Recording.
+     * @example
+     * // Create one Recording
+     * const Recording = await prisma.recording.create({
+     *   data: {
+     *     // ... data to create a Recording
+     *   }
+     * })
+     * 
+     */
+    create<T extends RecordingCreateArgs>(args: SelectSubset<T, RecordingCreateArgs<ExtArgs>>): Prisma__RecordingClient<$Result.GetResult<Prisma.$RecordingPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Recordings.
+     * @param {RecordingCreateManyArgs} args - Arguments to create many Recordings.
+     * @example
+     * // Create many Recordings
+     * const recording = await prisma.recording.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends RecordingCreateManyArgs>(args?: SelectSubset<T, RecordingCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Recordings and returns the data saved in the database.
+     * @param {RecordingCreateManyAndReturnArgs} args - Arguments to create many Recordings.
+     * @example
+     * // Create many Recordings
+     * const recording = await prisma.recording.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Recordings and only return the `id`
+     * const recordingWithIdOnly = await prisma.recording.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends RecordingCreateManyAndReturnArgs>(args?: SelectSubset<T, RecordingCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RecordingPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Recording.
+     * @param {RecordingDeleteArgs} args - Arguments to delete one Recording.
+     * @example
+     * // Delete one Recording
+     * const Recording = await prisma.recording.delete({
+     *   where: {
+     *     // ... filter to delete one Recording
+     *   }
+     * })
+     * 
+     */
+    delete<T extends RecordingDeleteArgs>(args: SelectSubset<T, RecordingDeleteArgs<ExtArgs>>): Prisma__RecordingClient<$Result.GetResult<Prisma.$RecordingPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Recording.
+     * @param {RecordingUpdateArgs} args - Arguments to update one Recording.
+     * @example
+     * // Update one Recording
+     * const recording = await prisma.recording.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends RecordingUpdateArgs>(args: SelectSubset<T, RecordingUpdateArgs<ExtArgs>>): Prisma__RecordingClient<$Result.GetResult<Prisma.$RecordingPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Recordings.
+     * @param {RecordingDeleteManyArgs} args - Arguments to filter Recordings to delete.
+     * @example
+     * // Delete a few Recordings
+     * const { count } = await prisma.recording.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends RecordingDeleteManyArgs>(args?: SelectSubset<T, RecordingDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Recordings.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RecordingUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Recordings
+     * const recording = await prisma.recording.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends RecordingUpdateManyArgs>(args: SelectSubset<T, RecordingUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Recordings and returns the data updated in the database.
+     * @param {RecordingUpdateManyAndReturnArgs} args - Arguments to update many Recordings.
+     * @example
+     * // Update many Recordings
+     * const recording = await prisma.recording.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Recordings and only return the `id`
+     * const recordingWithIdOnly = await prisma.recording.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends RecordingUpdateManyAndReturnArgs>(args: SelectSubset<T, RecordingUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RecordingPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Recording.
+     * @param {RecordingUpsertArgs} args - Arguments to update or create a Recording.
+     * @example
+     * // Update or create a Recording
+     * const recording = await prisma.recording.upsert({
+     *   create: {
+     *     // ... data to create a Recording
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Recording we want to update
+     *   }
+     * })
+     */
+    upsert<T extends RecordingUpsertArgs>(args: SelectSubset<T, RecordingUpsertArgs<ExtArgs>>): Prisma__RecordingClient<$Result.GetResult<Prisma.$RecordingPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Recordings.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RecordingCountArgs} args - Arguments to filter Recordings to count.
+     * @example
+     * // Count the number of Recordings
+     * const count = await prisma.recording.count({
+     *   where: {
+     *     // ... the filter for the Recordings we want to count
+     *   }
+     * })
+    **/
+    count<T extends RecordingCountArgs>(
+      args?: Subset<T, RecordingCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], RecordingCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Recording.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RecordingAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends RecordingAggregateArgs>(args: Subset<T, RecordingAggregateArgs>): Prisma.PrismaPromise<GetRecordingAggregateType<T>>
+
+    /**
+     * Group by Recording.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RecordingGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends RecordingGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: RecordingGroupByArgs['orderBy'] }
+        : { orderBy?: RecordingGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, RecordingGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetRecordingGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Recording model
+   */
+  readonly fields: RecordingFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Recording.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__RecordingClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends Recording$userArgs<ExtArgs> = {}>(args?: Subset<T, Recording$userArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    stream<T extends Recording$streamArgs<ExtArgs> = {}>(args?: Subset<T, Recording$streamArgs<ExtArgs>>): Prisma__StreamClient<$Result.GetResult<Prisma.$StreamPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Recording model
+   */
+  interface RecordingFieldRefs {
+    readonly id: FieldRef<"Recording", 'String'>
+    readonly title: FieldRef<"Recording", 'String'>
+    readonly url: FieldRef<"Recording", 'String'>
+    readonly thumbnailUrl: FieldRef<"Recording", 'String'>
+    readonly duration: FieldRef<"Recording", 'Int'>
+    readonly userId: FieldRef<"Recording", 'String'>
+    readonly streamId: FieldRef<"Recording", 'String'>
+    readonly createdAt: FieldRef<"Recording", 'DateTime'>
+    readonly updatedAt: FieldRef<"Recording", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Recording findUnique
+   */
+  export type RecordingFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Recording
+     */
+    select?: RecordingSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Recording
+     */
+    omit?: RecordingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RecordingInclude<ExtArgs> | null
+    /**
+     * Filter, which Recording to fetch.
+     */
+    where: RecordingWhereUniqueInput
+  }
+
+  /**
+   * Recording findUniqueOrThrow
+   */
+  export type RecordingFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Recording
+     */
+    select?: RecordingSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Recording
+     */
+    omit?: RecordingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RecordingInclude<ExtArgs> | null
+    /**
+     * Filter, which Recording to fetch.
+     */
+    where: RecordingWhereUniqueInput
+  }
+
+  /**
+   * Recording findFirst
+   */
+  export type RecordingFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Recording
+     */
+    select?: RecordingSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Recording
+     */
+    omit?: RecordingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RecordingInclude<ExtArgs> | null
+    /**
+     * Filter, which Recording to fetch.
+     */
+    where?: RecordingWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Recordings to fetch.
+     */
+    orderBy?: RecordingOrderByWithRelationInput | RecordingOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Recordings.
+     */
+    cursor?: RecordingWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Recordings from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Recordings.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Recordings.
+     */
+    distinct?: RecordingScalarFieldEnum | RecordingScalarFieldEnum[]
+  }
+
+  /**
+   * Recording findFirstOrThrow
+   */
+  export type RecordingFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Recording
+     */
+    select?: RecordingSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Recording
+     */
+    omit?: RecordingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RecordingInclude<ExtArgs> | null
+    /**
+     * Filter, which Recording to fetch.
+     */
+    where?: RecordingWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Recordings to fetch.
+     */
+    orderBy?: RecordingOrderByWithRelationInput | RecordingOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Recordings.
+     */
+    cursor?: RecordingWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Recordings from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Recordings.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Recordings.
+     */
+    distinct?: RecordingScalarFieldEnum | RecordingScalarFieldEnum[]
+  }
+
+  /**
+   * Recording findMany
+   */
+  export type RecordingFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Recording
+     */
+    select?: RecordingSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Recording
+     */
+    omit?: RecordingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RecordingInclude<ExtArgs> | null
+    /**
+     * Filter, which Recordings to fetch.
+     */
+    where?: RecordingWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Recordings to fetch.
+     */
+    orderBy?: RecordingOrderByWithRelationInput | RecordingOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Recordings.
+     */
+    cursor?: RecordingWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Recordings from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Recordings.
+     */
+    skip?: number
+    distinct?: RecordingScalarFieldEnum | RecordingScalarFieldEnum[]
+  }
+
+  /**
+   * Recording create
+   */
+  export type RecordingCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Recording
+     */
+    select?: RecordingSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Recording
+     */
+    omit?: RecordingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RecordingInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Recording.
+     */
+    data: XOR<RecordingCreateInput, RecordingUncheckedCreateInput>
+  }
+
+  /**
+   * Recording createMany
+   */
+  export type RecordingCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Recordings.
+     */
+    data: RecordingCreateManyInput | RecordingCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Recording createManyAndReturn
+   */
+  export type RecordingCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Recording
+     */
+    select?: RecordingSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Recording
+     */
+    omit?: RecordingOmit<ExtArgs> | null
+    /**
+     * The data used to create many Recordings.
+     */
+    data: RecordingCreateManyInput | RecordingCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RecordingIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Recording update
+   */
+  export type RecordingUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Recording
+     */
+    select?: RecordingSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Recording
+     */
+    omit?: RecordingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RecordingInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Recording.
+     */
+    data: XOR<RecordingUpdateInput, RecordingUncheckedUpdateInput>
+    /**
+     * Choose, which Recording to update.
+     */
+    where: RecordingWhereUniqueInput
+  }
+
+  /**
+   * Recording updateMany
+   */
+  export type RecordingUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Recordings.
+     */
+    data: XOR<RecordingUpdateManyMutationInput, RecordingUncheckedUpdateManyInput>
+    /**
+     * Filter which Recordings to update
+     */
+    where?: RecordingWhereInput
+    /**
+     * Limit how many Recordings to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Recording updateManyAndReturn
+   */
+  export type RecordingUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Recording
+     */
+    select?: RecordingSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Recording
+     */
+    omit?: RecordingOmit<ExtArgs> | null
+    /**
+     * The data used to update Recordings.
+     */
+    data: XOR<RecordingUpdateManyMutationInput, RecordingUncheckedUpdateManyInput>
+    /**
+     * Filter which Recordings to update
+     */
+    where?: RecordingWhereInput
+    /**
+     * Limit how many Recordings to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RecordingIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Recording upsert
+   */
+  export type RecordingUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Recording
+     */
+    select?: RecordingSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Recording
+     */
+    omit?: RecordingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RecordingInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Recording to update in case it exists.
+     */
+    where: RecordingWhereUniqueInput
+    /**
+     * In case the Recording found by the `where` argument doesn't exist, create a new Recording with this data.
+     */
+    create: XOR<RecordingCreateInput, RecordingUncheckedCreateInput>
+    /**
+     * In case the Recording was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<RecordingUpdateInput, RecordingUncheckedUpdateInput>
+  }
+
+  /**
+   * Recording delete
+   */
+  export type RecordingDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Recording
+     */
+    select?: RecordingSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Recording
+     */
+    omit?: RecordingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RecordingInclude<ExtArgs> | null
+    /**
+     * Filter which Recording to delete.
+     */
+    where: RecordingWhereUniqueInput
+  }
+
+  /**
+   * Recording deleteMany
+   */
+  export type RecordingDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Recordings to delete
+     */
+    where?: RecordingWhereInput
+    /**
+     * Limit how many Recordings to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Recording.user
+   */
+  export type Recording$userArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+  }
+
+  /**
+   * Recording.stream
+   */
+  export type Recording$streamArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Stream
+     */
+    select?: StreamSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Stream
+     */
+    omit?: StreamOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StreamInclude<ExtArgs> | null
+    where?: StreamWhereInput
+  }
+
+  /**
+   * Recording without action
+   */
+  export type RecordingDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Recording
+     */
+    select?: RecordingSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Recording
+     */
+    omit?: RecordingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RecordingInclude<ExtArgs> | null
   }
 
 
@@ -16121,6 +17476,21 @@ export namespace Prisma {
   export type StreamScalarFieldEnum = (typeof StreamScalarFieldEnum)[keyof typeof StreamScalarFieldEnum]
 
 
+  export const RecordingScalarFieldEnum: {
+    id: 'id',
+    title: 'title',
+    url: 'url',
+    thumbnailUrl: 'thumbnailUrl',
+    duration: 'duration',
+    userId: 'userId',
+    streamId: 'streamId',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type RecordingScalarFieldEnum = (typeof RecordingScalarFieldEnum)[keyof typeof RecordingScalarFieldEnum]
+
+
   export const CategoryScalarFieldEnum: {
     id: 'id',
     title: 'title',
@@ -16384,6 +17754,7 @@ export namespace Prisma {
     tokens?: TokenListRelationFilter
     socialLinks?: SocialLinkListRelationFilter
     stream?: XOR<StreamNullableScalarRelationFilter, StreamWhereInput> | null
+    recordings?: RecordingListRelationFilter
     chatMessages?: ChatMessageListRelationFilter
     followers?: FollowListRelationFilter
     followings?: FollowListRelationFilter
@@ -16415,6 +17786,7 @@ export namespace Prisma {
     tokens?: TokenOrderByRelationAggregateInput
     socialLinks?: SocialLinkOrderByRelationAggregateInput
     stream?: StreamOrderByWithRelationInput
+    recordings?: RecordingOrderByRelationAggregateInput
     chatMessages?: ChatMessageOrderByRelationAggregateInput
     followers?: FollowOrderByRelationAggregateInput
     followings?: FollowOrderByRelationAggregateInput
@@ -16449,6 +17821,7 @@ export namespace Prisma {
     tokens?: TokenListRelationFilter
     socialLinks?: SocialLinkListRelationFilter
     stream?: XOR<StreamNullableScalarRelationFilter, StreamWhereInput> | null
+    recordings?: RecordingListRelationFilter
     chatMessages?: ChatMessageListRelationFilter
     followers?: FollowListRelationFilter
     followings?: FollowListRelationFilter
@@ -16656,6 +18029,7 @@ export namespace Prisma {
     categoryId?: StringNullableFilter<"Stream"> | string | null
     user?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     chatMessages?: ChatMessageListRelationFilter
+    recordings?: RecordingListRelationFilter
     category?: XOR<CategoryNullableScalarRelationFilter, CategoryWhereInput> | null
   }
 
@@ -16676,6 +18050,7 @@ export namespace Prisma {
     categoryId?: SortOrderInput | SortOrder
     user?: UserOrderByWithRelationInput
     chatMessages?: ChatMessageOrderByRelationAggregateInput
+    recordings?: RecordingOrderByRelationAggregateInput
     category?: CategoryOrderByWithRelationInput
   }
 
@@ -16699,6 +18074,7 @@ export namespace Prisma {
     categoryId?: StringNullableFilter<"Stream"> | string | null
     user?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     chatMessages?: ChatMessageListRelationFilter
+    recordings?: RecordingListRelationFilter
     category?: XOR<CategoryNullableScalarRelationFilter, CategoryWhereInput> | null
   }, "id" | "ingressId" | "userId">
 
@@ -16740,6 +18116,86 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"Stream"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Stream"> | Date | string
     categoryId?: StringNullableWithAggregatesFilter<"Stream"> | string | null
+  }
+
+  export type RecordingWhereInput = {
+    AND?: RecordingWhereInput | RecordingWhereInput[]
+    OR?: RecordingWhereInput[]
+    NOT?: RecordingWhereInput | RecordingWhereInput[]
+    id?: StringFilter<"Recording"> | string
+    title?: StringFilter<"Recording"> | string
+    url?: StringFilter<"Recording"> | string
+    thumbnailUrl?: StringNullableFilter<"Recording"> | string | null
+    duration?: IntNullableFilter<"Recording"> | number | null
+    userId?: StringNullableFilter<"Recording"> | string | null
+    streamId?: StringNullableFilter<"Recording"> | string | null
+    createdAt?: DateTimeFilter<"Recording"> | Date | string
+    updatedAt?: DateTimeFilter<"Recording"> | Date | string
+    user?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+    stream?: XOR<StreamNullableScalarRelationFilter, StreamWhereInput> | null
+  }
+
+  export type RecordingOrderByWithRelationInput = {
+    id?: SortOrder
+    title?: SortOrder
+    url?: SortOrder
+    thumbnailUrl?: SortOrderInput | SortOrder
+    duration?: SortOrderInput | SortOrder
+    userId?: SortOrderInput | SortOrder
+    streamId?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+    stream?: StreamOrderByWithRelationInput
+  }
+
+  export type RecordingWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: RecordingWhereInput | RecordingWhereInput[]
+    OR?: RecordingWhereInput[]
+    NOT?: RecordingWhereInput | RecordingWhereInput[]
+    title?: StringFilter<"Recording"> | string
+    url?: StringFilter<"Recording"> | string
+    thumbnailUrl?: StringNullableFilter<"Recording"> | string | null
+    duration?: IntNullableFilter<"Recording"> | number | null
+    userId?: StringNullableFilter<"Recording"> | string | null
+    streamId?: StringNullableFilter<"Recording"> | string | null
+    createdAt?: DateTimeFilter<"Recording"> | Date | string
+    updatedAt?: DateTimeFilter<"Recording"> | Date | string
+    user?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+    stream?: XOR<StreamNullableScalarRelationFilter, StreamWhereInput> | null
+  }, "id">
+
+  export type RecordingOrderByWithAggregationInput = {
+    id?: SortOrder
+    title?: SortOrder
+    url?: SortOrder
+    thumbnailUrl?: SortOrderInput | SortOrder
+    duration?: SortOrderInput | SortOrder
+    userId?: SortOrderInput | SortOrder
+    streamId?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: RecordingCountOrderByAggregateInput
+    _avg?: RecordingAvgOrderByAggregateInput
+    _max?: RecordingMaxOrderByAggregateInput
+    _min?: RecordingMinOrderByAggregateInput
+    _sum?: RecordingSumOrderByAggregateInput
+  }
+
+  export type RecordingScalarWhereWithAggregatesInput = {
+    AND?: RecordingScalarWhereWithAggregatesInput | RecordingScalarWhereWithAggregatesInput[]
+    OR?: RecordingScalarWhereWithAggregatesInput[]
+    NOT?: RecordingScalarWhereWithAggregatesInput | RecordingScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Recording"> | string
+    title?: StringWithAggregatesFilter<"Recording"> | string
+    url?: StringWithAggregatesFilter<"Recording"> | string
+    thumbnailUrl?: StringNullableWithAggregatesFilter<"Recording"> | string | null
+    duration?: IntNullableWithAggregatesFilter<"Recording"> | number | null
+    userId?: StringNullableWithAggregatesFilter<"Recording"> | string | null
+    streamId?: StringNullableWithAggregatesFilter<"Recording"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"Recording"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Recording"> | Date | string
   }
 
   export type CategoryWhereInput = {
@@ -17297,6 +18753,7 @@ export namespace Prisma {
     tokens?: TokenCreateNestedManyWithoutUserInput
     socialLinks?: SocialLinkCreateNestedManyWithoutUserInput
     stream?: StreamCreateNestedOneWithoutUserInput
+    recordings?: RecordingCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
     followers?: FollowCreateNestedManyWithoutFollowerInput
     followings?: FollowCreateNestedManyWithoutFollowingInput
@@ -17328,6 +18785,7 @@ export namespace Prisma {
     tokens?: TokenUncheckedCreateNestedManyWithoutUserInput
     socialLinks?: SocialLinkUncheckedCreateNestedManyWithoutUserInput
     stream?: StreamUncheckedCreateNestedOneWithoutUserInput
+    recordings?: RecordingUncheckedCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
     followers?: FollowUncheckedCreateNestedManyWithoutFollowerInput
     followings?: FollowUncheckedCreateNestedManyWithoutFollowingInput
@@ -17359,6 +18817,7 @@ export namespace Prisma {
     tokens?: TokenUpdateManyWithoutUserNestedInput
     socialLinks?: SocialLinkUpdateManyWithoutUserNestedInput
     stream?: StreamUpdateOneWithoutUserNestedInput
+    recordings?: RecordingUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
     followers?: FollowUpdateManyWithoutFollowerNestedInput
     followings?: FollowUpdateManyWithoutFollowingNestedInput
@@ -17390,6 +18849,7 @@ export namespace Prisma {
     tokens?: TokenUncheckedUpdateManyWithoutUserNestedInput
     socialLinks?: SocialLinkUncheckedUpdateManyWithoutUserNestedInput
     stream?: StreamUncheckedUpdateOneWithoutUserNestedInput
+    recordings?: RecordingUncheckedUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
     followers?: FollowUncheckedUpdateManyWithoutFollowerNestedInput
     followings?: FollowUncheckedUpdateManyWithoutFollowingNestedInput
@@ -17611,6 +19071,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     user?: UserCreateNestedOneWithoutStreamInput
     chatMessages?: ChatMessageCreateNestedManyWithoutStreamInput
+    recordings?: RecordingCreateNestedManyWithoutStreamInput
     category?: CategoryCreateNestedOneWithoutStreamsInput
   }
 
@@ -17630,6 +19091,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     categoryId?: string | null
     chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutStreamInput
+    recordings?: RecordingUncheckedCreateNestedManyWithoutStreamInput
   }
 
   export type StreamUpdateInput = {
@@ -17647,6 +19109,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneWithoutStreamNestedInput
     chatMessages?: ChatMessageUpdateManyWithoutStreamNestedInput
+    recordings?: RecordingUpdateManyWithoutStreamNestedInput
     category?: CategoryUpdateOneWithoutStreamsNestedInput
   }
 
@@ -17666,6 +19129,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     categoryId?: NullableStringFieldUpdateOperationsInput | string | null
     chatMessages?: ChatMessageUncheckedUpdateManyWithoutStreamNestedInput
+    recordings?: RecordingUncheckedUpdateManyWithoutStreamNestedInput
   }
 
   export type StreamCreateManyInput = {
@@ -17715,6 +19179,88 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     categoryId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type RecordingCreateInput = {
+    id?: string
+    title: string
+    url: string
+    thumbnailUrl?: string | null
+    duration?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user?: UserCreateNestedOneWithoutRecordingsInput
+    stream?: StreamCreateNestedOneWithoutRecordingsInput
+  }
+
+  export type RecordingUncheckedCreateInput = {
+    id?: string
+    title: string
+    url: string
+    thumbnailUrl?: string | null
+    duration?: number | null
+    userId?: string | null
+    streamId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type RecordingUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    thumbnailUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    duration?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneWithoutRecordingsNestedInput
+    stream?: StreamUpdateOneWithoutRecordingsNestedInput
+  }
+
+  export type RecordingUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    thumbnailUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    duration?: NullableIntFieldUpdateOperationsInput | number | null
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    streamId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type RecordingCreateManyInput = {
+    id?: string
+    title: string
+    url: string
+    thumbnailUrl?: string | null
+    duration?: number | null
+    userId?: string | null
+    streamId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type RecordingUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    thumbnailUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    duration?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type RecordingUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    thumbnailUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    duration?: NullableIntFieldUpdateOperationsInput | number | null
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    streamId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type CategoryCreateInput = {
@@ -18341,6 +19887,12 @@ export namespace Prisma {
     isNot?: StreamWhereInput | null
   }
 
+  export type RecordingListRelationFilter = {
+    every?: RecordingWhereInput
+    some?: RecordingWhereInput
+    none?: RecordingWhereInput
+  }
+
   export type ChatMessageListRelationFilter = {
     every?: ChatMessageWhereInput
     some?: ChatMessageWhereInput
@@ -18392,6 +19944,10 @@ export namespace Prisma {
   }
 
   export type SocialLinkOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type RecordingOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -18719,6 +20275,77 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     categoryId?: SortOrder
+  }
+
+  export type IntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type RecordingCountOrderByAggregateInput = {
+    id?: SortOrder
+    title?: SortOrder
+    url?: SortOrder
+    thumbnailUrl?: SortOrder
+    duration?: SortOrder
+    userId?: SortOrder
+    streamId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type RecordingAvgOrderByAggregateInput = {
+    duration?: SortOrder
+  }
+
+  export type RecordingMaxOrderByAggregateInput = {
+    id?: SortOrder
+    title?: SortOrder
+    url?: SortOrder
+    thumbnailUrl?: SortOrder
+    duration?: SortOrder
+    userId?: SortOrder
+    streamId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type RecordingMinOrderByAggregateInput = {
+    id?: SortOrder
+    title?: SortOrder
+    url?: SortOrder
+    thumbnailUrl?: SortOrder
+    duration?: SortOrder
+    userId?: SortOrder
+    streamId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type RecordingSumOrderByAggregateInput = {
+    duration?: SortOrder
+  }
+
+  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
   }
 
   export type StreamListRelationFilter = {
@@ -19085,6 +20712,13 @@ export namespace Prisma {
     connect?: StreamWhereUniqueInput
   }
 
+  export type RecordingCreateNestedManyWithoutUserInput = {
+    create?: XOR<RecordingCreateWithoutUserInput, RecordingUncheckedCreateWithoutUserInput> | RecordingCreateWithoutUserInput[] | RecordingUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: RecordingCreateOrConnectWithoutUserInput | RecordingCreateOrConnectWithoutUserInput[]
+    createMany?: RecordingCreateManyUserInputEnvelope
+    connect?: RecordingWhereUniqueInput | RecordingWhereUniqueInput[]
+  }
+
   export type ChatMessageCreateNestedManyWithoutUserInput = {
     create?: XOR<ChatMessageCreateWithoutUserInput, ChatMessageUncheckedCreateWithoutUserInput> | ChatMessageCreateWithoutUserInput[] | ChatMessageUncheckedCreateWithoutUserInput[]
     connectOrCreate?: ChatMessageCreateOrConnectWithoutUserInput | ChatMessageCreateOrConnectWithoutUserInput[]
@@ -19165,6 +20799,13 @@ export namespace Prisma {
     create?: XOR<StreamCreateWithoutUserInput, StreamUncheckedCreateWithoutUserInput>
     connectOrCreate?: StreamCreateOrConnectWithoutUserInput
     connect?: StreamWhereUniqueInput
+  }
+
+  export type RecordingUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<RecordingCreateWithoutUserInput, RecordingUncheckedCreateWithoutUserInput> | RecordingCreateWithoutUserInput[] | RecordingUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: RecordingCreateOrConnectWithoutUserInput | RecordingCreateOrConnectWithoutUserInput[]
+    createMany?: RecordingCreateManyUserInputEnvelope
+    connect?: RecordingWhereUniqueInput | RecordingWhereUniqueInput[]
   }
 
   export type ChatMessageUncheckedCreateNestedManyWithoutUserInput = {
@@ -19285,6 +20926,20 @@ export namespace Prisma {
     delete?: StreamWhereInput | boolean
     connect?: StreamWhereUniqueInput
     update?: XOR<XOR<StreamUpdateToOneWithWhereWithoutUserInput, StreamUpdateWithoutUserInput>, StreamUncheckedUpdateWithoutUserInput>
+  }
+
+  export type RecordingUpdateManyWithoutUserNestedInput = {
+    create?: XOR<RecordingCreateWithoutUserInput, RecordingUncheckedCreateWithoutUserInput> | RecordingCreateWithoutUserInput[] | RecordingUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: RecordingCreateOrConnectWithoutUserInput | RecordingCreateOrConnectWithoutUserInput[]
+    upsert?: RecordingUpsertWithWhereUniqueWithoutUserInput | RecordingUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: RecordingCreateManyUserInputEnvelope
+    set?: RecordingWhereUniqueInput | RecordingWhereUniqueInput[]
+    disconnect?: RecordingWhereUniqueInput | RecordingWhereUniqueInput[]
+    delete?: RecordingWhereUniqueInput | RecordingWhereUniqueInput[]
+    connect?: RecordingWhereUniqueInput | RecordingWhereUniqueInput[]
+    update?: RecordingUpdateWithWhereUniqueWithoutUserInput | RecordingUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: RecordingUpdateManyWithWhereWithoutUserInput | RecordingUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: RecordingScalarWhereInput | RecordingScalarWhereInput[]
   }
 
   export type ChatMessageUpdateManyWithoutUserNestedInput = {
@@ -19445,6 +21100,20 @@ export namespace Prisma {
     delete?: StreamWhereInput | boolean
     connect?: StreamWhereUniqueInput
     update?: XOR<XOR<StreamUpdateToOneWithWhereWithoutUserInput, StreamUpdateWithoutUserInput>, StreamUncheckedUpdateWithoutUserInput>
+  }
+
+  export type RecordingUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<RecordingCreateWithoutUserInput, RecordingUncheckedCreateWithoutUserInput> | RecordingCreateWithoutUserInput[] | RecordingUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: RecordingCreateOrConnectWithoutUserInput | RecordingCreateOrConnectWithoutUserInput[]
+    upsert?: RecordingUpsertWithWhereUniqueWithoutUserInput | RecordingUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: RecordingCreateManyUserInputEnvelope
+    set?: RecordingWhereUniqueInput | RecordingWhereUniqueInput[]
+    disconnect?: RecordingWhereUniqueInput | RecordingWhereUniqueInput[]
+    delete?: RecordingWhereUniqueInput | RecordingWhereUniqueInput[]
+    connect?: RecordingWhereUniqueInput | RecordingWhereUniqueInput[]
+    update?: RecordingUpdateWithWhereUniqueWithoutUserInput | RecordingUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: RecordingUpdateManyWithWhereWithoutUserInput | RecordingUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: RecordingScalarWhereInput | RecordingScalarWhereInput[]
   }
 
   export type ChatMessageUncheckedUpdateManyWithoutUserNestedInput = {
@@ -19626,6 +21295,13 @@ export namespace Prisma {
     connect?: ChatMessageWhereUniqueInput | ChatMessageWhereUniqueInput[]
   }
 
+  export type RecordingCreateNestedManyWithoutStreamInput = {
+    create?: XOR<RecordingCreateWithoutStreamInput, RecordingUncheckedCreateWithoutStreamInput> | RecordingCreateWithoutStreamInput[] | RecordingUncheckedCreateWithoutStreamInput[]
+    connectOrCreate?: RecordingCreateOrConnectWithoutStreamInput | RecordingCreateOrConnectWithoutStreamInput[]
+    createMany?: RecordingCreateManyStreamInputEnvelope
+    connect?: RecordingWhereUniqueInput | RecordingWhereUniqueInput[]
+  }
+
   export type CategoryCreateNestedOneWithoutStreamsInput = {
     create?: XOR<CategoryCreateWithoutStreamsInput, CategoryUncheckedCreateWithoutStreamsInput>
     connectOrCreate?: CategoryCreateOrConnectWithoutStreamsInput
@@ -19637,6 +21313,13 @@ export namespace Prisma {
     connectOrCreate?: ChatMessageCreateOrConnectWithoutStreamInput | ChatMessageCreateOrConnectWithoutStreamInput[]
     createMany?: ChatMessageCreateManyStreamInputEnvelope
     connect?: ChatMessageWhereUniqueInput | ChatMessageWhereUniqueInput[]
+  }
+
+  export type RecordingUncheckedCreateNestedManyWithoutStreamInput = {
+    create?: XOR<RecordingCreateWithoutStreamInput, RecordingUncheckedCreateWithoutStreamInput> | RecordingCreateWithoutStreamInput[] | RecordingUncheckedCreateWithoutStreamInput[]
+    connectOrCreate?: RecordingCreateOrConnectWithoutStreamInput | RecordingCreateOrConnectWithoutStreamInput[]
+    createMany?: RecordingCreateManyStreamInputEnvelope
+    connect?: RecordingWhereUniqueInput | RecordingWhereUniqueInput[]
   }
 
   export type UserUpdateOneWithoutStreamNestedInput = {
@@ -19663,6 +21346,20 @@ export namespace Prisma {
     deleteMany?: ChatMessageScalarWhereInput | ChatMessageScalarWhereInput[]
   }
 
+  export type RecordingUpdateManyWithoutStreamNestedInput = {
+    create?: XOR<RecordingCreateWithoutStreamInput, RecordingUncheckedCreateWithoutStreamInput> | RecordingCreateWithoutStreamInput[] | RecordingUncheckedCreateWithoutStreamInput[]
+    connectOrCreate?: RecordingCreateOrConnectWithoutStreamInput | RecordingCreateOrConnectWithoutStreamInput[]
+    upsert?: RecordingUpsertWithWhereUniqueWithoutStreamInput | RecordingUpsertWithWhereUniqueWithoutStreamInput[]
+    createMany?: RecordingCreateManyStreamInputEnvelope
+    set?: RecordingWhereUniqueInput | RecordingWhereUniqueInput[]
+    disconnect?: RecordingWhereUniqueInput | RecordingWhereUniqueInput[]
+    delete?: RecordingWhereUniqueInput | RecordingWhereUniqueInput[]
+    connect?: RecordingWhereUniqueInput | RecordingWhereUniqueInput[]
+    update?: RecordingUpdateWithWhereUniqueWithoutStreamInput | RecordingUpdateWithWhereUniqueWithoutStreamInput[]
+    updateMany?: RecordingUpdateManyWithWhereWithoutStreamInput | RecordingUpdateManyWithWhereWithoutStreamInput[]
+    deleteMany?: RecordingScalarWhereInput | RecordingScalarWhereInput[]
+  }
+
   export type CategoryUpdateOneWithoutStreamsNestedInput = {
     create?: XOR<CategoryCreateWithoutStreamsInput, CategoryUncheckedCreateWithoutStreamsInput>
     connectOrCreate?: CategoryCreateOrConnectWithoutStreamsInput
@@ -19685,6 +21382,60 @@ export namespace Prisma {
     update?: ChatMessageUpdateWithWhereUniqueWithoutStreamInput | ChatMessageUpdateWithWhereUniqueWithoutStreamInput[]
     updateMany?: ChatMessageUpdateManyWithWhereWithoutStreamInput | ChatMessageUpdateManyWithWhereWithoutStreamInput[]
     deleteMany?: ChatMessageScalarWhereInput | ChatMessageScalarWhereInput[]
+  }
+
+  export type RecordingUncheckedUpdateManyWithoutStreamNestedInput = {
+    create?: XOR<RecordingCreateWithoutStreamInput, RecordingUncheckedCreateWithoutStreamInput> | RecordingCreateWithoutStreamInput[] | RecordingUncheckedCreateWithoutStreamInput[]
+    connectOrCreate?: RecordingCreateOrConnectWithoutStreamInput | RecordingCreateOrConnectWithoutStreamInput[]
+    upsert?: RecordingUpsertWithWhereUniqueWithoutStreamInput | RecordingUpsertWithWhereUniqueWithoutStreamInput[]
+    createMany?: RecordingCreateManyStreamInputEnvelope
+    set?: RecordingWhereUniqueInput | RecordingWhereUniqueInput[]
+    disconnect?: RecordingWhereUniqueInput | RecordingWhereUniqueInput[]
+    delete?: RecordingWhereUniqueInput | RecordingWhereUniqueInput[]
+    connect?: RecordingWhereUniqueInput | RecordingWhereUniqueInput[]
+    update?: RecordingUpdateWithWhereUniqueWithoutStreamInput | RecordingUpdateWithWhereUniqueWithoutStreamInput[]
+    updateMany?: RecordingUpdateManyWithWhereWithoutStreamInput | RecordingUpdateManyWithWhereWithoutStreamInput[]
+    deleteMany?: RecordingScalarWhereInput | RecordingScalarWhereInput[]
+  }
+
+  export type UserCreateNestedOneWithoutRecordingsInput = {
+    create?: XOR<UserCreateWithoutRecordingsInput, UserUncheckedCreateWithoutRecordingsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutRecordingsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type StreamCreateNestedOneWithoutRecordingsInput = {
+    create?: XOR<StreamCreateWithoutRecordingsInput, StreamUncheckedCreateWithoutRecordingsInput>
+    connectOrCreate?: StreamCreateOrConnectWithoutRecordingsInput
+    connect?: StreamWhereUniqueInput
+  }
+
+  export type NullableIntFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type UserUpdateOneWithoutRecordingsNestedInput = {
+    create?: XOR<UserCreateWithoutRecordingsInput, UserUncheckedCreateWithoutRecordingsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutRecordingsInput
+    upsert?: UserUpsertWithoutRecordingsInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutRecordingsInput, UserUpdateWithoutRecordingsInput>, UserUncheckedUpdateWithoutRecordingsInput>
+  }
+
+  export type StreamUpdateOneWithoutRecordingsNestedInput = {
+    create?: XOR<StreamCreateWithoutRecordingsInput, StreamUncheckedCreateWithoutRecordingsInput>
+    connectOrCreate?: StreamCreateOrConnectWithoutRecordingsInput
+    upsert?: StreamUpsertWithoutRecordingsInput
+    disconnect?: StreamWhereInput | boolean
+    delete?: StreamWhereInput | boolean
+    connect?: StreamWhereUniqueInput
+    update?: XOR<XOR<StreamUpdateToOneWithWhereWithoutRecordingsInput, StreamUpdateWithoutRecordingsInput>, StreamUncheckedUpdateWithoutRecordingsInput>
   }
 
   export type StreamCreateNestedManyWithoutCategoryInput = {
@@ -20144,6 +21895,33 @@ export namespace Prisma {
     _max?: NestedEnumTokenTypeFilter<$PrismaModel>
   }
 
+  export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
+  export type NestedFloatNullableFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
+  }
+
   export type NestedEnumNotificationTypeFilter<$PrismaModel = never> = {
     equals?: $Enums.NotificationType | EnumNotificationTypeFieldRefInput<$PrismaModel>
     in?: $Enums.NotificationType[] | ListEnumNotificationTypeFieldRefInput<$PrismaModel>
@@ -20264,6 +22042,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     chatMessages?: ChatMessageCreateNestedManyWithoutStreamInput
+    recordings?: RecordingCreateNestedManyWithoutStreamInput
     category?: CategoryCreateNestedOneWithoutStreamsInput
   }
 
@@ -20282,11 +22061,44 @@ export namespace Prisma {
     updatedAt?: Date | string
     categoryId?: string | null
     chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutStreamInput
+    recordings?: RecordingUncheckedCreateNestedManyWithoutStreamInput
   }
 
   export type StreamCreateOrConnectWithoutUserInput = {
     where: StreamWhereUniqueInput
     create: XOR<StreamCreateWithoutUserInput, StreamUncheckedCreateWithoutUserInput>
+  }
+
+  export type RecordingCreateWithoutUserInput = {
+    id?: string
+    title: string
+    url: string
+    thumbnailUrl?: string | null
+    duration?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    stream?: StreamCreateNestedOneWithoutRecordingsInput
+  }
+
+  export type RecordingUncheckedCreateWithoutUserInput = {
+    id?: string
+    title: string
+    url: string
+    thumbnailUrl?: string | null
+    duration?: number | null
+    streamId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type RecordingCreateOrConnectWithoutUserInput = {
+    where: RecordingWhereUniqueInput
+    create: XOR<RecordingCreateWithoutUserInput, RecordingUncheckedCreateWithoutUserInput>
+  }
+
+  export type RecordingCreateManyUserInputEnvelope = {
+    data: RecordingCreateManyUserInput | RecordingCreateManyUserInput[]
+    skipDuplicates?: boolean
   }
 
   export type ChatMessageCreateWithoutUserInput = {
@@ -20615,6 +22427,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     chatMessages?: ChatMessageUpdateManyWithoutStreamNestedInput
+    recordings?: RecordingUpdateManyWithoutStreamNestedInput
     category?: CategoryUpdateOneWithoutStreamsNestedInput
   }
 
@@ -20633,6 +22446,38 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     categoryId?: NullableStringFieldUpdateOperationsInput | string | null
     chatMessages?: ChatMessageUncheckedUpdateManyWithoutStreamNestedInput
+    recordings?: RecordingUncheckedUpdateManyWithoutStreamNestedInput
+  }
+
+  export type RecordingUpsertWithWhereUniqueWithoutUserInput = {
+    where: RecordingWhereUniqueInput
+    update: XOR<RecordingUpdateWithoutUserInput, RecordingUncheckedUpdateWithoutUserInput>
+    create: XOR<RecordingCreateWithoutUserInput, RecordingUncheckedCreateWithoutUserInput>
+  }
+
+  export type RecordingUpdateWithWhereUniqueWithoutUserInput = {
+    where: RecordingWhereUniqueInput
+    data: XOR<RecordingUpdateWithoutUserInput, RecordingUncheckedUpdateWithoutUserInput>
+  }
+
+  export type RecordingUpdateManyWithWhereWithoutUserInput = {
+    where: RecordingScalarWhereInput
+    data: XOR<RecordingUpdateManyMutationInput, RecordingUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type RecordingScalarWhereInput = {
+    AND?: RecordingScalarWhereInput | RecordingScalarWhereInput[]
+    OR?: RecordingScalarWhereInput[]
+    NOT?: RecordingScalarWhereInput | RecordingScalarWhereInput[]
+    id?: StringFilter<"Recording"> | string
+    title?: StringFilter<"Recording"> | string
+    url?: StringFilter<"Recording"> | string
+    thumbnailUrl?: StringNullableFilter<"Recording"> | string | null
+    duration?: IntNullableFilter<"Recording"> | number | null
+    userId?: StringNullableFilter<"Recording"> | string | null
+    streamId?: StringNullableFilter<"Recording"> | string | null
+    createdAt?: DateTimeFilter<"Recording"> | Date | string
+    updatedAt?: DateTimeFilter<"Recording"> | Date | string
   }
 
   export type ChatMessageUpsertWithWhereUniqueWithoutUserInput = {
@@ -20887,6 +22732,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     tokens?: TokenCreateNestedManyWithoutUserInput
     stream?: StreamCreateNestedOneWithoutUserInput
+    recordings?: RecordingCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
     followers?: FollowCreateNestedManyWithoutFollowerInput
     followings?: FollowCreateNestedManyWithoutFollowingInput
@@ -20917,6 +22763,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     tokens?: TokenUncheckedCreateNestedManyWithoutUserInput
     stream?: StreamUncheckedCreateNestedOneWithoutUserInput
+    recordings?: RecordingUncheckedCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
     followers?: FollowUncheckedCreateNestedManyWithoutFollowerInput
     followings?: FollowUncheckedCreateNestedManyWithoutFollowingInput
@@ -20963,6 +22810,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tokens?: TokenUpdateManyWithoutUserNestedInput
     stream?: StreamUpdateOneWithoutUserNestedInput
+    recordings?: RecordingUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
     followers?: FollowUpdateManyWithoutFollowerNestedInput
     followings?: FollowUpdateManyWithoutFollowingNestedInput
@@ -20993,6 +22841,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tokens?: TokenUncheckedUpdateManyWithoutUserNestedInput
     stream?: StreamUncheckedUpdateOneWithoutUserNestedInput
+    recordings?: RecordingUncheckedUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
     followers?: FollowUncheckedUpdateManyWithoutFollowerNestedInput
     followings?: FollowUncheckedUpdateManyWithoutFollowingNestedInput
@@ -21023,6 +22872,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     socialLinks?: SocialLinkCreateNestedManyWithoutUserInput
     stream?: StreamCreateNestedOneWithoutUserInput
+    recordings?: RecordingCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
     followers?: FollowCreateNestedManyWithoutFollowerInput
     followings?: FollowCreateNestedManyWithoutFollowingInput
@@ -21053,6 +22903,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     socialLinks?: SocialLinkUncheckedCreateNestedManyWithoutUserInput
     stream?: StreamUncheckedCreateNestedOneWithoutUserInput
+    recordings?: RecordingUncheckedCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
     followers?: FollowUncheckedCreateNestedManyWithoutFollowerInput
     followings?: FollowUncheckedCreateNestedManyWithoutFollowingInput
@@ -21099,6 +22950,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     socialLinks?: SocialLinkUpdateManyWithoutUserNestedInput
     stream?: StreamUpdateOneWithoutUserNestedInput
+    recordings?: RecordingUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
     followers?: FollowUpdateManyWithoutFollowerNestedInput
     followings?: FollowUpdateManyWithoutFollowingNestedInput
@@ -21129,6 +22981,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     socialLinks?: SocialLinkUncheckedUpdateManyWithoutUserNestedInput
     stream?: StreamUncheckedUpdateOneWithoutUserNestedInput
+    recordings?: RecordingUncheckedUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
     followers?: FollowUncheckedUpdateManyWithoutFollowerNestedInput
     followings?: FollowUncheckedUpdateManyWithoutFollowingNestedInput
@@ -21159,6 +23012,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     tokens?: TokenCreateNestedManyWithoutUserInput
     socialLinks?: SocialLinkCreateNestedManyWithoutUserInput
+    recordings?: RecordingCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
     followers?: FollowCreateNestedManyWithoutFollowerInput
     followings?: FollowCreateNestedManyWithoutFollowingInput
@@ -21189,6 +23043,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     tokens?: TokenUncheckedCreateNestedManyWithoutUserInput
     socialLinks?: SocialLinkUncheckedCreateNestedManyWithoutUserInput
+    recordings?: RecordingUncheckedCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
     followers?: FollowUncheckedCreateNestedManyWithoutFollowerInput
     followings?: FollowUncheckedCreateNestedManyWithoutFollowingInput
@@ -21228,6 +23083,38 @@ export namespace Prisma {
 
   export type ChatMessageCreateManyStreamInputEnvelope = {
     data: ChatMessageCreateManyStreamInput | ChatMessageCreateManyStreamInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type RecordingCreateWithoutStreamInput = {
+    id?: string
+    title: string
+    url: string
+    thumbnailUrl?: string | null
+    duration?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user?: UserCreateNestedOneWithoutRecordingsInput
+  }
+
+  export type RecordingUncheckedCreateWithoutStreamInput = {
+    id?: string
+    title: string
+    url: string
+    thumbnailUrl?: string | null
+    duration?: number | null
+    userId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type RecordingCreateOrConnectWithoutStreamInput = {
+    where: RecordingWhereUniqueInput
+    create: XOR<RecordingCreateWithoutStreamInput, RecordingUncheckedCreateWithoutStreamInput>
+  }
+
+  export type RecordingCreateManyStreamInputEnvelope = {
+    data: RecordingCreateManyStreamInput | RecordingCreateManyStreamInput[]
     skipDuplicates?: boolean
   }
 
@@ -21286,6 +23173,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tokens?: TokenUpdateManyWithoutUserNestedInput
     socialLinks?: SocialLinkUpdateManyWithoutUserNestedInput
+    recordings?: RecordingUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
     followers?: FollowUpdateManyWithoutFollowerNestedInput
     followings?: FollowUpdateManyWithoutFollowingNestedInput
@@ -21316,6 +23204,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tokens?: TokenUncheckedUpdateManyWithoutUserNestedInput
     socialLinks?: SocialLinkUncheckedUpdateManyWithoutUserNestedInput
+    recordings?: RecordingUncheckedUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
     followers?: FollowUncheckedUpdateManyWithoutFollowerNestedInput
     followings?: FollowUncheckedUpdateManyWithoutFollowingNestedInput
@@ -21341,6 +23230,22 @@ export namespace Prisma {
   export type ChatMessageUpdateManyWithWhereWithoutStreamInput = {
     where: ChatMessageScalarWhereInput
     data: XOR<ChatMessageUpdateManyMutationInput, ChatMessageUncheckedUpdateManyWithoutStreamInput>
+  }
+
+  export type RecordingUpsertWithWhereUniqueWithoutStreamInput = {
+    where: RecordingWhereUniqueInput
+    update: XOR<RecordingUpdateWithoutStreamInput, RecordingUncheckedUpdateWithoutStreamInput>
+    create: XOR<RecordingCreateWithoutStreamInput, RecordingUncheckedCreateWithoutStreamInput>
+  }
+
+  export type RecordingUpdateWithWhereUniqueWithoutStreamInput = {
+    where: RecordingWhereUniqueInput
+    data: XOR<RecordingUpdateWithoutStreamInput, RecordingUncheckedUpdateWithoutStreamInput>
+  }
+
+  export type RecordingUpdateManyWithWhereWithoutStreamInput = {
+    where: RecordingScalarWhereInput
+    data: XOR<RecordingUpdateManyMutationInput, RecordingUncheckedUpdateManyWithoutStreamInput>
   }
 
   export type CategoryUpsertWithoutStreamsInput = {
@@ -21374,6 +23279,234 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type UserCreateWithoutRecordingsInput = {
+    id?: string
+    email: string
+    password: string
+    username: string
+    displayName: string
+    avatar?: string | null
+    bio?: string | null
+    telegramId?: string | null
+    isVerified?: boolean
+    isEmailVerified?: boolean
+    isTotpEnabled?: boolean
+    totpSecret?: string | null
+    isDeactivated?: boolean
+    deactivatedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    tokens?: TokenCreateNestedManyWithoutUserInput
+    socialLinks?: SocialLinkCreateNestedManyWithoutUserInput
+    stream?: StreamCreateNestedOneWithoutUserInput
+    chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
+    followers?: FollowCreateNestedManyWithoutFollowerInput
+    followings?: FollowCreateNestedManyWithoutFollowingInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+    notificationSettings?: NotificationSettingsCreateNestedOneWithoutUserInput
+    transactions?: TransactionCreateNestedManyWithoutUserInput
+    sponsorshipPlans?: SponsorshipPlanCreateNestedManyWithoutChannelInput
+    sponsorshipSubscriptions?: SponsorshipSubscriptionCreateNestedManyWithoutUserInput
+    sponsors?: SponsorshipSubscriptionCreateNestedManyWithoutChannelInput
+  }
+
+  export type UserUncheckedCreateWithoutRecordingsInput = {
+    id?: string
+    email: string
+    password: string
+    username: string
+    displayName: string
+    avatar?: string | null
+    bio?: string | null
+    telegramId?: string | null
+    isVerified?: boolean
+    isEmailVerified?: boolean
+    isTotpEnabled?: boolean
+    totpSecret?: string | null
+    isDeactivated?: boolean
+    deactivatedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    tokens?: TokenUncheckedCreateNestedManyWithoutUserInput
+    socialLinks?: SocialLinkUncheckedCreateNestedManyWithoutUserInput
+    stream?: StreamUncheckedCreateNestedOneWithoutUserInput
+    chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
+    followers?: FollowUncheckedCreateNestedManyWithoutFollowerInput
+    followings?: FollowUncheckedCreateNestedManyWithoutFollowingInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    notificationSettings?: NotificationSettingsUncheckedCreateNestedOneWithoutUserInput
+    transactions?: TransactionUncheckedCreateNestedManyWithoutUserInput
+    sponsorshipPlans?: SponsorshipPlanUncheckedCreateNestedManyWithoutChannelInput
+    sponsorshipSubscriptions?: SponsorshipSubscriptionUncheckedCreateNestedManyWithoutUserInput
+    sponsors?: SponsorshipSubscriptionUncheckedCreateNestedManyWithoutChannelInput
+  }
+
+  export type UserCreateOrConnectWithoutRecordingsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutRecordingsInput, UserUncheckedCreateWithoutRecordingsInput>
+  }
+
+  export type StreamCreateWithoutRecordingsInput = {
+    id?: string
+    title: string
+    thumbnailUrl?: string | null
+    ingressId?: string | null
+    serverUrl?: string | null
+    streamKey?: string | null
+    isLive?: boolean
+    isChatEnabled?: boolean
+    isChatFollowersOnly?: boolean
+    isChatPremiumFollowersOnly?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user?: UserCreateNestedOneWithoutStreamInput
+    chatMessages?: ChatMessageCreateNestedManyWithoutStreamInput
+    category?: CategoryCreateNestedOneWithoutStreamsInput
+  }
+
+  export type StreamUncheckedCreateWithoutRecordingsInput = {
+    id?: string
+    title: string
+    thumbnailUrl?: string | null
+    ingressId?: string | null
+    serverUrl?: string | null
+    streamKey?: string | null
+    isLive?: boolean
+    userId?: string | null
+    isChatEnabled?: boolean
+    isChatFollowersOnly?: boolean
+    isChatPremiumFollowersOnly?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    categoryId?: string | null
+    chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutStreamInput
+  }
+
+  export type StreamCreateOrConnectWithoutRecordingsInput = {
+    where: StreamWhereUniqueInput
+    create: XOR<StreamCreateWithoutRecordingsInput, StreamUncheckedCreateWithoutRecordingsInput>
+  }
+
+  export type UserUpsertWithoutRecordingsInput = {
+    update: XOR<UserUpdateWithoutRecordingsInput, UserUncheckedUpdateWithoutRecordingsInput>
+    create: XOR<UserCreateWithoutRecordingsInput, UserUncheckedCreateWithoutRecordingsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutRecordingsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutRecordingsInput, UserUncheckedUpdateWithoutRecordingsInput>
+  }
+
+  export type UserUpdateWithoutRecordingsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    username?: StringFieldUpdateOperationsInput | string
+    displayName?: StringFieldUpdateOperationsInput | string
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    telegramId?: NullableStringFieldUpdateOperationsInput | string | null
+    isVerified?: BoolFieldUpdateOperationsInput | boolean
+    isEmailVerified?: BoolFieldUpdateOperationsInput | boolean
+    isTotpEnabled?: BoolFieldUpdateOperationsInput | boolean
+    totpSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    isDeactivated?: BoolFieldUpdateOperationsInput | boolean
+    deactivatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tokens?: TokenUpdateManyWithoutUserNestedInput
+    socialLinks?: SocialLinkUpdateManyWithoutUserNestedInput
+    stream?: StreamUpdateOneWithoutUserNestedInput
+    chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
+    followers?: FollowUpdateManyWithoutFollowerNestedInput
+    followings?: FollowUpdateManyWithoutFollowingNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    notificationSettings?: NotificationSettingsUpdateOneWithoutUserNestedInput
+    transactions?: TransactionUpdateManyWithoutUserNestedInput
+    sponsorshipPlans?: SponsorshipPlanUpdateManyWithoutChannelNestedInput
+    sponsorshipSubscriptions?: SponsorshipSubscriptionUpdateManyWithoutUserNestedInput
+    sponsors?: SponsorshipSubscriptionUpdateManyWithoutChannelNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutRecordingsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    username?: StringFieldUpdateOperationsInput | string
+    displayName?: StringFieldUpdateOperationsInput | string
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    telegramId?: NullableStringFieldUpdateOperationsInput | string | null
+    isVerified?: BoolFieldUpdateOperationsInput | boolean
+    isEmailVerified?: BoolFieldUpdateOperationsInput | boolean
+    isTotpEnabled?: BoolFieldUpdateOperationsInput | boolean
+    totpSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    isDeactivated?: BoolFieldUpdateOperationsInput | boolean
+    deactivatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tokens?: TokenUncheckedUpdateManyWithoutUserNestedInput
+    socialLinks?: SocialLinkUncheckedUpdateManyWithoutUserNestedInput
+    stream?: StreamUncheckedUpdateOneWithoutUserNestedInput
+    chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
+    followers?: FollowUncheckedUpdateManyWithoutFollowerNestedInput
+    followings?: FollowUncheckedUpdateManyWithoutFollowingNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    notificationSettings?: NotificationSettingsUncheckedUpdateOneWithoutUserNestedInput
+    transactions?: TransactionUncheckedUpdateManyWithoutUserNestedInput
+    sponsorshipPlans?: SponsorshipPlanUncheckedUpdateManyWithoutChannelNestedInput
+    sponsorshipSubscriptions?: SponsorshipSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+    sponsors?: SponsorshipSubscriptionUncheckedUpdateManyWithoutChannelNestedInput
+  }
+
+  export type StreamUpsertWithoutRecordingsInput = {
+    update: XOR<StreamUpdateWithoutRecordingsInput, StreamUncheckedUpdateWithoutRecordingsInput>
+    create: XOR<StreamCreateWithoutRecordingsInput, StreamUncheckedCreateWithoutRecordingsInput>
+    where?: StreamWhereInput
+  }
+
+  export type StreamUpdateToOneWithWhereWithoutRecordingsInput = {
+    where?: StreamWhereInput
+    data: XOR<StreamUpdateWithoutRecordingsInput, StreamUncheckedUpdateWithoutRecordingsInput>
+  }
+
+  export type StreamUpdateWithoutRecordingsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    thumbnailUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    ingressId?: NullableStringFieldUpdateOperationsInput | string | null
+    serverUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    streamKey?: NullableStringFieldUpdateOperationsInput | string | null
+    isLive?: BoolFieldUpdateOperationsInput | boolean
+    isChatEnabled?: BoolFieldUpdateOperationsInput | boolean
+    isChatFollowersOnly?: BoolFieldUpdateOperationsInput | boolean
+    isChatPremiumFollowersOnly?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneWithoutStreamNestedInput
+    chatMessages?: ChatMessageUpdateManyWithoutStreamNestedInput
+    category?: CategoryUpdateOneWithoutStreamsNestedInput
+  }
+
+  export type StreamUncheckedUpdateWithoutRecordingsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    thumbnailUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    ingressId?: NullableStringFieldUpdateOperationsInput | string | null
+    serverUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    streamKey?: NullableStringFieldUpdateOperationsInput | string | null
+    isLive?: BoolFieldUpdateOperationsInput | boolean
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    isChatEnabled?: BoolFieldUpdateOperationsInput | boolean
+    isChatFollowersOnly?: BoolFieldUpdateOperationsInput | boolean
+    isChatPremiumFollowersOnly?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    categoryId?: NullableStringFieldUpdateOperationsInput | string | null
+    chatMessages?: ChatMessageUncheckedUpdateManyWithoutStreamNestedInput
+  }
+
   export type StreamCreateWithoutCategoryInput = {
     id?: string
     title: string
@@ -21389,6 +23522,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     user?: UserCreateNestedOneWithoutStreamInput
     chatMessages?: ChatMessageCreateNestedManyWithoutStreamInput
+    recordings?: RecordingCreateNestedManyWithoutStreamInput
   }
 
   export type StreamUncheckedCreateWithoutCategoryInput = {
@@ -21406,6 +23540,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutStreamInput
+    recordings?: RecordingUncheckedCreateNestedManyWithoutStreamInput
   }
 
   export type StreamCreateOrConnectWithoutCategoryInput = {
@@ -21474,6 +23609,7 @@ export namespace Prisma {
     tokens?: TokenCreateNestedManyWithoutUserInput
     socialLinks?: SocialLinkCreateNestedManyWithoutUserInput
     stream?: StreamCreateNestedOneWithoutUserInput
+    recordings?: RecordingCreateNestedManyWithoutUserInput
     followers?: FollowCreateNestedManyWithoutFollowerInput
     followings?: FollowCreateNestedManyWithoutFollowingInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
@@ -21504,6 +23640,7 @@ export namespace Prisma {
     tokens?: TokenUncheckedCreateNestedManyWithoutUserInput
     socialLinks?: SocialLinkUncheckedCreateNestedManyWithoutUserInput
     stream?: StreamUncheckedCreateNestedOneWithoutUserInput
+    recordings?: RecordingUncheckedCreateNestedManyWithoutUserInput
     followers?: FollowUncheckedCreateNestedManyWithoutFollowerInput
     followings?: FollowUncheckedCreateNestedManyWithoutFollowingInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
@@ -21533,6 +23670,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     user?: UserCreateNestedOneWithoutStreamInput
+    recordings?: RecordingCreateNestedManyWithoutStreamInput
     category?: CategoryCreateNestedOneWithoutStreamsInput
   }
 
@@ -21551,6 +23689,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     categoryId?: string | null
+    recordings?: RecordingUncheckedCreateNestedManyWithoutStreamInput
   }
 
   export type StreamCreateOrConnectWithoutChatMessagesInput = {
@@ -21589,6 +23728,7 @@ export namespace Prisma {
     tokens?: TokenUpdateManyWithoutUserNestedInput
     socialLinks?: SocialLinkUpdateManyWithoutUserNestedInput
     stream?: StreamUpdateOneWithoutUserNestedInput
+    recordings?: RecordingUpdateManyWithoutUserNestedInput
     followers?: FollowUpdateManyWithoutFollowerNestedInput
     followings?: FollowUpdateManyWithoutFollowingNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
@@ -21619,6 +23759,7 @@ export namespace Prisma {
     tokens?: TokenUncheckedUpdateManyWithoutUserNestedInput
     socialLinks?: SocialLinkUncheckedUpdateManyWithoutUserNestedInput
     stream?: StreamUncheckedUpdateOneWithoutUserNestedInput
+    recordings?: RecordingUncheckedUpdateManyWithoutUserNestedInput
     followers?: FollowUncheckedUpdateManyWithoutFollowerNestedInput
     followings?: FollowUncheckedUpdateManyWithoutFollowingNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -21654,6 +23795,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneWithoutStreamNestedInput
+    recordings?: RecordingUpdateManyWithoutStreamNestedInput
     category?: CategoryUpdateOneWithoutStreamsNestedInput
   }
 
@@ -21672,6 +23814,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     categoryId?: NullableStringFieldUpdateOperationsInput | string | null
+    recordings?: RecordingUncheckedUpdateManyWithoutStreamNestedInput
   }
 
   export type UserCreateWithoutFollowersInput = {
@@ -21694,6 +23837,7 @@ export namespace Prisma {
     tokens?: TokenCreateNestedManyWithoutUserInput
     socialLinks?: SocialLinkCreateNestedManyWithoutUserInput
     stream?: StreamCreateNestedOneWithoutUserInput
+    recordings?: RecordingCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
     followings?: FollowCreateNestedManyWithoutFollowingInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
@@ -21724,6 +23868,7 @@ export namespace Prisma {
     tokens?: TokenUncheckedCreateNestedManyWithoutUserInput
     socialLinks?: SocialLinkUncheckedCreateNestedManyWithoutUserInput
     stream?: StreamUncheckedCreateNestedOneWithoutUserInput
+    recordings?: RecordingUncheckedCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
     followings?: FollowUncheckedCreateNestedManyWithoutFollowingInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
@@ -21759,6 +23904,7 @@ export namespace Prisma {
     tokens?: TokenCreateNestedManyWithoutUserInput
     socialLinks?: SocialLinkCreateNestedManyWithoutUserInput
     stream?: StreamCreateNestedOneWithoutUserInput
+    recordings?: RecordingCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
     followers?: FollowCreateNestedManyWithoutFollowerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
@@ -21789,6 +23935,7 @@ export namespace Prisma {
     tokens?: TokenUncheckedCreateNestedManyWithoutUserInput
     socialLinks?: SocialLinkUncheckedCreateNestedManyWithoutUserInput
     stream?: StreamUncheckedCreateNestedOneWithoutUserInput
+    recordings?: RecordingUncheckedCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
     followers?: FollowUncheckedCreateNestedManyWithoutFollowerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
@@ -21835,6 +23982,7 @@ export namespace Prisma {
     tokens?: TokenUpdateManyWithoutUserNestedInput
     socialLinks?: SocialLinkUpdateManyWithoutUserNestedInput
     stream?: StreamUpdateOneWithoutUserNestedInput
+    recordings?: RecordingUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
     followings?: FollowUpdateManyWithoutFollowingNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
@@ -21865,6 +24013,7 @@ export namespace Prisma {
     tokens?: TokenUncheckedUpdateManyWithoutUserNestedInput
     socialLinks?: SocialLinkUncheckedUpdateManyWithoutUserNestedInput
     stream?: StreamUncheckedUpdateOneWithoutUserNestedInput
+    recordings?: RecordingUncheckedUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
     followings?: FollowUncheckedUpdateManyWithoutFollowingNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -21906,6 +24055,7 @@ export namespace Prisma {
     tokens?: TokenUpdateManyWithoutUserNestedInput
     socialLinks?: SocialLinkUpdateManyWithoutUserNestedInput
     stream?: StreamUpdateOneWithoutUserNestedInput
+    recordings?: RecordingUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
     followers?: FollowUpdateManyWithoutFollowerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
@@ -21936,6 +24086,7 @@ export namespace Prisma {
     tokens?: TokenUncheckedUpdateManyWithoutUserNestedInput
     socialLinks?: SocialLinkUncheckedUpdateManyWithoutUserNestedInput
     stream?: StreamUncheckedUpdateOneWithoutUserNestedInput
+    recordings?: RecordingUncheckedUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
     followers?: FollowUncheckedUpdateManyWithoutFollowerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -21966,6 +24117,7 @@ export namespace Prisma {
     tokens?: TokenCreateNestedManyWithoutUserInput
     socialLinks?: SocialLinkCreateNestedManyWithoutUserInput
     stream?: StreamCreateNestedOneWithoutUserInput
+    recordings?: RecordingCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
     followers?: FollowCreateNestedManyWithoutFollowerInput
     followings?: FollowCreateNestedManyWithoutFollowingInput
@@ -21996,6 +24148,7 @@ export namespace Prisma {
     tokens?: TokenUncheckedCreateNestedManyWithoutUserInput
     socialLinks?: SocialLinkUncheckedCreateNestedManyWithoutUserInput
     stream?: StreamUncheckedCreateNestedOneWithoutUserInput
+    recordings?: RecordingUncheckedCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
     followers?: FollowUncheckedCreateNestedManyWithoutFollowerInput
     followings?: FollowUncheckedCreateNestedManyWithoutFollowingInput
@@ -22042,6 +24195,7 @@ export namespace Prisma {
     tokens?: TokenUpdateManyWithoutUserNestedInput
     socialLinks?: SocialLinkUpdateManyWithoutUserNestedInput
     stream?: StreamUpdateOneWithoutUserNestedInput
+    recordings?: RecordingUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
     followers?: FollowUpdateManyWithoutFollowerNestedInput
     followings?: FollowUpdateManyWithoutFollowingNestedInput
@@ -22072,6 +24226,7 @@ export namespace Prisma {
     tokens?: TokenUncheckedUpdateManyWithoutUserNestedInput
     socialLinks?: SocialLinkUncheckedUpdateManyWithoutUserNestedInput
     stream?: StreamUncheckedUpdateOneWithoutUserNestedInput
+    recordings?: RecordingUncheckedUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
     followers?: FollowUncheckedUpdateManyWithoutFollowerNestedInput
     followings?: FollowUncheckedUpdateManyWithoutFollowingNestedInput
@@ -22102,6 +24257,7 @@ export namespace Prisma {
     tokens?: TokenCreateNestedManyWithoutUserInput
     socialLinks?: SocialLinkCreateNestedManyWithoutUserInput
     stream?: StreamCreateNestedOneWithoutUserInput
+    recordings?: RecordingCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
     followers?: FollowCreateNestedManyWithoutFollowerInput
     followings?: FollowCreateNestedManyWithoutFollowingInput
@@ -22132,6 +24288,7 @@ export namespace Prisma {
     tokens?: TokenUncheckedCreateNestedManyWithoutUserInput
     socialLinks?: SocialLinkUncheckedCreateNestedManyWithoutUserInput
     stream?: StreamUncheckedCreateNestedOneWithoutUserInput
+    recordings?: RecordingUncheckedCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
     followers?: FollowUncheckedCreateNestedManyWithoutFollowerInput
     followings?: FollowUncheckedCreateNestedManyWithoutFollowingInput
@@ -22178,6 +24335,7 @@ export namespace Prisma {
     tokens?: TokenUpdateManyWithoutUserNestedInput
     socialLinks?: SocialLinkUpdateManyWithoutUserNestedInput
     stream?: StreamUpdateOneWithoutUserNestedInput
+    recordings?: RecordingUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
     followers?: FollowUpdateManyWithoutFollowerNestedInput
     followings?: FollowUpdateManyWithoutFollowingNestedInput
@@ -22208,6 +24366,7 @@ export namespace Prisma {
     tokens?: TokenUncheckedUpdateManyWithoutUserNestedInput
     socialLinks?: SocialLinkUncheckedUpdateManyWithoutUserNestedInput
     stream?: StreamUncheckedUpdateOneWithoutUserNestedInput
+    recordings?: RecordingUncheckedUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
     followers?: FollowUncheckedUpdateManyWithoutFollowerNestedInput
     followings?: FollowUncheckedUpdateManyWithoutFollowingNestedInput
@@ -22238,6 +24397,7 @@ export namespace Prisma {
     tokens?: TokenCreateNestedManyWithoutUserInput
     socialLinks?: SocialLinkCreateNestedManyWithoutUserInput
     stream?: StreamCreateNestedOneWithoutUserInput
+    recordings?: RecordingCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
     followers?: FollowCreateNestedManyWithoutFollowerInput
     followings?: FollowCreateNestedManyWithoutFollowingInput
@@ -22268,6 +24428,7 @@ export namespace Prisma {
     tokens?: TokenUncheckedCreateNestedManyWithoutUserInput
     socialLinks?: SocialLinkUncheckedCreateNestedManyWithoutUserInput
     stream?: StreamUncheckedCreateNestedOneWithoutUserInput
+    recordings?: RecordingUncheckedCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
     followers?: FollowUncheckedCreateNestedManyWithoutFollowerInput
     followings?: FollowUncheckedCreateNestedManyWithoutFollowingInput
@@ -22314,6 +24475,7 @@ export namespace Prisma {
     tokens?: TokenUpdateManyWithoutUserNestedInput
     socialLinks?: SocialLinkUpdateManyWithoutUserNestedInput
     stream?: StreamUpdateOneWithoutUserNestedInput
+    recordings?: RecordingUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
     followers?: FollowUpdateManyWithoutFollowerNestedInput
     followings?: FollowUpdateManyWithoutFollowingNestedInput
@@ -22344,6 +24506,7 @@ export namespace Prisma {
     tokens?: TokenUncheckedUpdateManyWithoutUserNestedInput
     socialLinks?: SocialLinkUncheckedUpdateManyWithoutUserNestedInput
     stream?: StreamUncheckedUpdateOneWithoutUserNestedInput
+    recordings?: RecordingUncheckedUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
     followers?: FollowUncheckedUpdateManyWithoutFollowerNestedInput
     followings?: FollowUncheckedUpdateManyWithoutFollowingNestedInput
@@ -22374,6 +24537,7 @@ export namespace Prisma {
     tokens?: TokenCreateNestedManyWithoutUserInput
     socialLinks?: SocialLinkCreateNestedManyWithoutUserInput
     stream?: StreamCreateNestedOneWithoutUserInput
+    recordings?: RecordingCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
     followers?: FollowCreateNestedManyWithoutFollowerInput
     followings?: FollowCreateNestedManyWithoutFollowingInput
@@ -22404,6 +24568,7 @@ export namespace Prisma {
     tokens?: TokenUncheckedCreateNestedManyWithoutUserInput
     socialLinks?: SocialLinkUncheckedCreateNestedManyWithoutUserInput
     stream?: StreamUncheckedCreateNestedOneWithoutUserInput
+    recordings?: RecordingUncheckedCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
     followers?: FollowUncheckedCreateNestedManyWithoutFollowerInput
     followings?: FollowUncheckedCreateNestedManyWithoutFollowingInput
@@ -22478,6 +24643,7 @@ export namespace Prisma {
     tokens?: TokenUpdateManyWithoutUserNestedInput
     socialLinks?: SocialLinkUpdateManyWithoutUserNestedInput
     stream?: StreamUpdateOneWithoutUserNestedInput
+    recordings?: RecordingUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
     followers?: FollowUpdateManyWithoutFollowerNestedInput
     followings?: FollowUpdateManyWithoutFollowingNestedInput
@@ -22508,6 +24674,7 @@ export namespace Prisma {
     tokens?: TokenUncheckedUpdateManyWithoutUserNestedInput
     socialLinks?: SocialLinkUncheckedUpdateManyWithoutUserNestedInput
     stream?: StreamUncheckedUpdateOneWithoutUserNestedInput
+    recordings?: RecordingUncheckedUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
     followers?: FollowUncheckedUpdateManyWithoutFollowerNestedInput
     followings?: FollowUncheckedUpdateManyWithoutFollowingNestedInput
@@ -22583,6 +24750,7 @@ export namespace Prisma {
     tokens?: TokenCreateNestedManyWithoutUserInput
     socialLinks?: SocialLinkCreateNestedManyWithoutUserInput
     stream?: StreamCreateNestedOneWithoutUserInput
+    recordings?: RecordingCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
     followers?: FollowCreateNestedManyWithoutFollowerInput
     followings?: FollowCreateNestedManyWithoutFollowingInput
@@ -22613,6 +24781,7 @@ export namespace Prisma {
     tokens?: TokenUncheckedCreateNestedManyWithoutUserInput
     socialLinks?: SocialLinkUncheckedCreateNestedManyWithoutUserInput
     stream?: StreamUncheckedCreateNestedOneWithoutUserInput
+    recordings?: RecordingUncheckedCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
     followers?: FollowUncheckedCreateNestedManyWithoutFollowerInput
     followings?: FollowUncheckedCreateNestedManyWithoutFollowingInput
@@ -22648,6 +24817,7 @@ export namespace Prisma {
     tokens?: TokenCreateNestedManyWithoutUserInput
     socialLinks?: SocialLinkCreateNestedManyWithoutUserInput
     stream?: StreamCreateNestedOneWithoutUserInput
+    recordings?: RecordingCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageCreateNestedManyWithoutUserInput
     followers?: FollowCreateNestedManyWithoutFollowerInput
     followings?: FollowCreateNestedManyWithoutFollowingInput
@@ -22678,6 +24848,7 @@ export namespace Prisma {
     tokens?: TokenUncheckedCreateNestedManyWithoutUserInput
     socialLinks?: SocialLinkUncheckedCreateNestedManyWithoutUserInput
     stream?: StreamUncheckedCreateNestedOneWithoutUserInput
+    recordings?: RecordingUncheckedCreateNestedManyWithoutUserInput
     chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
     followers?: FollowUncheckedCreateNestedManyWithoutFollowerInput
     followings?: FollowUncheckedCreateNestedManyWithoutFollowingInput
@@ -22759,6 +24930,7 @@ export namespace Prisma {
     tokens?: TokenUpdateManyWithoutUserNestedInput
     socialLinks?: SocialLinkUpdateManyWithoutUserNestedInput
     stream?: StreamUpdateOneWithoutUserNestedInput
+    recordings?: RecordingUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
     followers?: FollowUpdateManyWithoutFollowerNestedInput
     followings?: FollowUpdateManyWithoutFollowingNestedInput
@@ -22789,6 +24961,7 @@ export namespace Prisma {
     tokens?: TokenUncheckedUpdateManyWithoutUserNestedInput
     socialLinks?: SocialLinkUncheckedUpdateManyWithoutUserNestedInput
     stream?: StreamUncheckedUpdateOneWithoutUserNestedInput
+    recordings?: RecordingUncheckedUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
     followers?: FollowUncheckedUpdateManyWithoutFollowerNestedInput
     followings?: FollowUncheckedUpdateManyWithoutFollowingNestedInput
@@ -22830,6 +25003,7 @@ export namespace Prisma {
     tokens?: TokenUpdateManyWithoutUserNestedInput
     socialLinks?: SocialLinkUpdateManyWithoutUserNestedInput
     stream?: StreamUpdateOneWithoutUserNestedInput
+    recordings?: RecordingUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUpdateManyWithoutUserNestedInput
     followers?: FollowUpdateManyWithoutFollowerNestedInput
     followings?: FollowUpdateManyWithoutFollowingNestedInput
@@ -22860,6 +25034,7 @@ export namespace Prisma {
     tokens?: TokenUncheckedUpdateManyWithoutUserNestedInput
     socialLinks?: SocialLinkUncheckedUpdateManyWithoutUserNestedInput
     stream?: StreamUncheckedUpdateOneWithoutUserNestedInput
+    recordings?: RecordingUncheckedUpdateManyWithoutUserNestedInput
     chatMessages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
     followers?: FollowUncheckedUpdateManyWithoutFollowerNestedInput
     followings?: FollowUncheckedUpdateManyWithoutFollowingNestedInput
@@ -22884,6 +25059,17 @@ export namespace Prisma {
     title: string
     url: string
     position: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type RecordingCreateManyUserInput = {
+    id?: string
+    title: string
+    url: string
+    thumbnailUrl?: string | null
+    duration?: number | null
+    streamId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -23008,6 +25194,39 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     url?: StringFieldUpdateOperationsInput | string
     position?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type RecordingUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    thumbnailUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    duration?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    stream?: StreamUpdateOneWithoutRecordingsNestedInput
+  }
+
+  export type RecordingUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    thumbnailUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    duration?: NullableIntFieldUpdateOperationsInput | number | null
+    streamId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type RecordingUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    thumbnailUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    duration?: NullableIntFieldUpdateOperationsInput | number | null
+    streamId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -23232,6 +25451,17 @@ export namespace Prisma {
     userId: string
   }
 
+  export type RecordingCreateManyStreamInput = {
+    id?: string
+    title: string
+    url: string
+    thumbnailUrl?: string | null
+    duration?: number | null
+    userId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type ChatMessageUpdateWithoutStreamInput = {
     id?: StringFieldUpdateOperationsInput | string
     text?: StringFieldUpdateOperationsInput | string
@@ -23254,6 +25484,39 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type RecordingUpdateWithoutStreamInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    thumbnailUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    duration?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneWithoutRecordingsNestedInput
+  }
+
+  export type RecordingUncheckedUpdateWithoutStreamInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    thumbnailUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    duration?: NullableIntFieldUpdateOperationsInput | number | null
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type RecordingUncheckedUpdateManyWithoutStreamInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    thumbnailUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    duration?: NullableIntFieldUpdateOperationsInput | number | null
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type StreamCreateManyCategoryInput = {
@@ -23287,6 +25550,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneWithoutStreamNestedInput
     chatMessages?: ChatMessageUpdateManyWithoutStreamNestedInput
+    recordings?: RecordingUpdateManyWithoutStreamNestedInput
   }
 
   export type StreamUncheckedUpdateWithoutCategoryInput = {
@@ -23304,6 +25568,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     chatMessages?: ChatMessageUncheckedUpdateManyWithoutStreamNestedInput
+    recordings?: RecordingUncheckedUpdateManyWithoutStreamNestedInput
   }
 
   export type StreamUncheckedUpdateManyWithoutCategoryInput = {

@@ -1,11 +1,12 @@
 import {Inject, Injectable} from '@nestjs/common';
-import {IngressClient, RoomServiceClient, WebhookReceiver} from "livekit-server-sdk";
+import {EgressClient, IngressClient, RoomServiceClient, WebhookReceiver} from "livekit-server-sdk";
 import {LiveKitOptionsSymbol, TypeLiveKitOptions} from "@/src/modules/libs/livekit/types/livekit.types";
 
 @Injectable()
 export class LivekitService {
     private roomService: RoomServiceClient;
     private ingressClient: IngressClient;
+    private egressClient: EgressClient;
     private webhookReceiver: WebhookReceiver;
 
     public constructor(
@@ -13,11 +14,16 @@ export class LivekitService {
     ) {
         this.roomService = new RoomServiceClient(this.options.apiUrl, this.options.apiKey, this.options.apiSecret);
         this.ingressClient = new IngressClient(this.options.apiUrl);
+        this.egressClient = new EgressClient(this.options.apiUrl, this.options.apiKey, this.options.apiSecret);
         this.webhookReceiver = new WebhookReceiver(this.options.apiKey, this.options.apiSecret);
     }
 
     public get ingress(): IngressClient {
         return this.createProxy(this.ingressClient);
+    }
+
+    public get egress(): EgressClient {
+        return this.createProxy(this.egressClient);
     }
 
     public get room(): RoomServiceClient {

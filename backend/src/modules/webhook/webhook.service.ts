@@ -1,4 +1,5 @@
-import {Injectable} from '@nestjs/common';
+import {Injectable, Logger} from '@nestjs/common';
+import {EncodedFileType} from "livekit-server-sdk";
 import {LivekitService} from "@/src/modules/libs/livekit/livekit.service";
 import {PrismaService} from "@/src/core/prisma/prisma.service";
 import {NotificationService} from "@/src/modules/notification/notification.service";
@@ -10,6 +11,8 @@ import {ConfigService} from "@nestjs/config";
 
 @Injectable()
 export class WebhookService {
+    private readonly logger = new Logger(WebhookService.name);
+
     public constructor(
         private readonly prismaService: PrismaService,
         private readonly livekitService: LivekitService,
@@ -44,6 +47,7 @@ export class WebhookService {
             })
 
             await this.notifyFollowersStreamStart(stream)
+            await this.startRecording(stream)
         }
 
         // Direct in-app broadcasting (no ingress): the host joins the LiveKit room
@@ -65,6 +69,7 @@ export class WebhookService {
             })
 
             await this.notifyFollowersStreamStart(stream)
+            await this.startRecording(stream)
         }
 
         if (event.event === 'participant_left' && this.isHostPublisher(event)) {
@@ -104,6 +109,86 @@ export class WebhookService {
                 }
             })
         }
+
+        // Participant egress finished uploading the MP4 to MinIO — persist it as a
+        // recording on the channel. Egress auto-stops when the host leaves, so this
+        // fires after the stream ends.
+        if (event.event === 'egress_ended') {
+            const info = event.egressInfo;
+            const roomName = info?.roomName; // === the channel owner's user id
+
+            const fileResult = info?.fileResults?.[0] ?? info?.file;
+            const key = fileResult?.filename; // object key within the recordings bucket
+
+            if (!roomName || !key) return;
+
+            const stream = await this.prismaService.stream.findUnique({
+                where: { userId: roomName }
+            })
+
+            if (!stream || !stream.userId) return;
+
+            // LiveKit reports duration in nanoseconds (string) — store whole seconds.
+            const durationNs = fileResult?.duration;
+            const duration = durationNs ? Math.round(Number(durationNs) / 1e9) : null;
+
+            await this.prismaService.recording.create({
+                data: {
+                    title: stream.title,
+                    url: key,
+                    thumbnailUrl: stream.thumbnailUrl,
+                    duration,
+                    userId: stream.userId,
+                    streamId: stream.id
+                }
+            })
+        }
+    }
+
+    // Record the host's published track (participant egress, identity === room ===
+    // userId) to an MP4 in the MinIO recordings bucket. Best-effort: egress errors
+    // must never block the stream from going live.
+    private async startRecording(stream: { userId: string | null }) {
+        if (!stream.userId) return;
+
+        try {
+            // Idempotent: a reconnecting publisher can re-fire go-live, so don't
+            // start a second recording if one is already running for this room.
+            const active = await this.livekitService.egress.listEgress({
+                roomName: stream.userId,
+                active: true
+            })
+            if (active.length > 0) return;
+
+            await this.livekitService.egress.startParticipantEgress(
+                stream.userId,
+                stream.userId,
+                {
+                    file: {
+                        fileType: EncodedFileType.MP4,
+                        filepath: `${stream.userId}/${Date.now()}.mp4`,
+                        disableManifest: true,
+                        s3: this.egressS3()
+                    }
+                }
+            )
+        } catch (error) {
+            this.logger.error('Failed to start participant egress', error as Error)
+        }
+    }
+
+    // MinIO/S3 upload target for egress. The egress container reaches MinIO over
+    // the docker network, so the endpoint is the internal service name, not localhost.
+    private egressS3() {
+        const cfg = this.configService;
+        return {
+            endpoint: cfg.get<string>('LIVEKIT_EGRESS_S3_ENDPOINT') ?? 'http://minio:9000',
+            bucket: cfg.get<string>('LIVEKIT_EGRESS_S3_BUCKET') ?? 'spaik-recordings',
+            accessKey: cfg.get<string>('LIVEKIT_EGRESS_S3_ACCESS_KEY') ?? 'spaik_admin',
+            secret: cfg.get<string>('LIVEKIT_EGRESS_S3_SECRET') ?? 'spaik_password_123',
+            region: cfg.get<string>('LIVEKIT_EGRESS_S3_REGION') ?? 'us-east-1',
+            forcePathStyle: true
+        };
     }
 
     // The host publishes with identity === the room name (the channel owner's

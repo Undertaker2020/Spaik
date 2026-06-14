@@ -1,0 +1,12 @@
+log_level: info
+api_key: spaik_dev_key
+api_secret: spaik_dev_secret_min_32_chars_long
+# Reach the livekit-server and redis over the docker network (service names).
+# Egress registers with the server via redis, then joins rooms over ws_url.
+ws_url: ws://livekit:7880
+redis:
+  address: redis:6379
+  password: redis_pass
+# We run participant egress only (records the single host track → MP4), so no
+# headless Chrome is needed and the container can stay on the bridge network.
+# The S3/MinIO upload destination is supplied per-request by the backend.

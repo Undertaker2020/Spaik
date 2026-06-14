@@ -27,6 +27,7 @@ model User {
   socialLinks     SocialLink[]
 
   stream                   Stream?
+  recordings               Recording[]
   chatMessages             ChatMessage[]
   followers                Follow[]                  @relation(name: "followers")
   followings               Follow[]                  @relation(name: "followings")
@@ -91,6 +92,7 @@ model Stream {
   userId String? @unique @map("user_id")
 
   chatMessages ChatMessage[]
+  recordings   Recording[]
 
   isChatEnabled              Boolean @default(true) @map("is_chat_enabled")
   isChatFollowersOnly        Boolean @default(false) @map("is_chat_followers_only")
@@ -101,6 +103,29 @@ model Stream {
 
   category   Category? @relation(fields: [categoryId], references: [id])
   categoryId String?   @map("category_id")
+}
+
+// A finished stream's recording (participant egress → MP4 in MinIO). Written by
+// the monolith webhook on `egress_ended`, read by this service's API.
+model Recording {
+  id String @id @default(uuid())
+
+  title        String
+  url          String
+  thumbnailUrl String? @map("thumbnail_url")
+  duration     Int? // seconds
+
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String? @map("user_id")
+
+  // Keep the recording if its stream is later deleted.
+  stream   Stream? @relation(fields: [streamId], references: [id], onDelete: SetNull)
+  streamId String? @map("stream_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("recordings")
 }
 
 model Category {

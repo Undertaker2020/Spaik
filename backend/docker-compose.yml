@@ -74,6 +74,22 @@ services:
     networks:
       - spaik-backend
 
+  livekit-egress:
+    container_name: spaik-livekit-egress
+    image: livekit/egress:latest
+    restart: always
+    environment:
+      EGRESS_CONFIG_FILE: /etc/egress.yaml
+    volumes:
+      - ./egress.yaml:/etc/egress.yaml
+    # Participant egress (no headless Chrome) doesn't need SYS_ADMIN; add it
+    # only if we ever switch to room-composite egress.
+    depends_on:
+      - livekit
+      - redis
+    networks:
+      - spaik-backend
+
 volumes:
   spaik_postgres_data:
   spaik_redis_data:
