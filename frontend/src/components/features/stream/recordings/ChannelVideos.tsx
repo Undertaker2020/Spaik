@@ -29,9 +29,18 @@ function formatDuration(seconds?: number | null) {
 
 interface ChannelVideosProps {
 	channelId: string
+	title?: string
+	limit?: number
+	/** Render an empty-state instead of nothing when there are no recordings. */
+	showEmpty?: boolean
 }
 
-export function ChannelVideos({ channelId }: ChannelVideosProps) {
+export function ChannelVideos({
+	channelId,
+	title = 'Videos',
+	limit,
+	showEmpty = false
+}: ChannelVideosProps) {
 	const { data, loading, refetch } = useFindRecordingsByChannelQuery({
 		variables: { channelId },
 		skip: !channelId
@@ -56,15 +65,29 @@ export function ChannelVideos({ channelId }: ChannelVideosProps) {
 		deleteRecording({ variables: { id: recording.id } })
 	}
 
-	const recordings = data?.findRecordingsByChannel ?? []
+	const all = data?.findRecordingsByChannel ?? []
+	const recordings = limit ? all.slice(0, limit) : all
 
-	if (!loading && recordings.length === 0) return null
+	if (!loading && recordings.length === 0) {
+		if (!showEmpty) return null
+		return (
+			<section>
+				<div className='mb-4 flex items-center gap-x-2'>
+					<Video className='size-5 text-[#18B9AE]' />
+					<h2 className='text-lg font-semibold'>{title}</h2>
+				</div>
+				<p className='py-10 text-center text-sm text-muted-foreground'>
+					No videos yet
+				</p>
+			</section>
+		)
+	}
 
 	return (
-		<section className='mx-auto mt-8 max-w-screen-xl'>
+		<section>
 			<div className='mb-4 flex items-center gap-x-2'>
 				<Video className='size-5 text-[#18B9AE]' />
-				<h2 className='text-lg font-semibold'>Videos</h2>
+				<h2 className='text-lg font-semibold'>{title}</h2>
 			</div>
 
 			{loading ? (
