@@ -13,9 +13,14 @@ interface StreamCardProps {
 }
 
 export function StreamCard({ stream }: StreamCardProps) {
+	// Live cards jump straight to the watch page; offline cards open the channel home.
+	const href = stream.isLive
+		? `/${stream.user.username}/live`
+		: `/${stream.user.username}`
+
 	return (
 		<div className='h-full w-full'>
-			<Link href={`/${stream.user.username}`}>
+			<Link href={href}>
 				<StreamThumbnail
 					url={stream.thumbnailUrl}
 					user={stream.user}
