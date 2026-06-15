@@ -366,7 +366,7 @@ export default function ChannelScreen() {
       setSubscribeOpen(false);
       Linking.openURL(d.makePayment.url);
     },
-    onError: (e) => Alert.alert('Error', e.message),
+    onError: () => Alert.alert('Payment unavailable', 'Could not start the payment right now. Please try again later.'),
   });
 
   const isBusy = following || unfollowing;
