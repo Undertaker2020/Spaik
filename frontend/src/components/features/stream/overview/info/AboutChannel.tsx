@@ -1,10 +1,12 @@
+'use client'
+
 import {useTranslations} from 'next-intl'
 import Link from 'next/link'
 
 import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/common/Card'
 import {Skeleton} from '@/components/ui/common/Skeleton'
 
-import type {FindChannelByUsernameQuery} from '@/graphql/generated/output'
+import {type FindChannelByUsernameQuery, useFindFollowersCountByChannelQuery} from '@/graphql/generated/output'
 
 import {getSocialIcon} from '@/utils/get-social-icon'
 
@@ -14,6 +16,11 @@ interface AboutChannelProps {
 
 export function AboutChannel({channel}: AboutChannelProps) {
     const t = useTranslations('stream.aboutChannel')
+
+    const {data} = useFindFollowersCountByChannelQuery({
+        variables: {channelId: channel.id}
+    })
+    const followersCount = data?.findFollowersCountByChannel ?? 0
 
     return (
         <Card className='mt-6'>
@@ -25,7 +32,7 @@ export function AboutChannel({channel}: AboutChannelProps) {
             <CardContent className='-mt-1 space-y-2 px-4'>
                 <div className='text-[15px] text-foreground'>
 					<span className='font-semibold'>
-						{channel.followings?.length ?? 0}
+						{followersCount}
 					</span>{' '}
                     {t('followersCount')}
                 </div>
