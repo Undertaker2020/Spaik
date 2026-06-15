@@ -6,7 +6,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
 import { IconShieldCheck, IconShield } from '@tabler/icons-react-native';
-import { COLORS } from '@/src/libs/constants/colors';
+import { useColors, useThemedStyles } from '@/src/libs/theme/use-theme';
+import type { Palette } from '@/src/libs/theme/palettes';
 import { SettingsHeader } from '@/src/components/settings/SettingsHeader';
 import {
   GENERATE_TOTP_SECRET,
@@ -16,6 +17,8 @@ import {
 import { FIND_MY_PROFILE, type MyProfile } from '@/src/graphql/queries/profile.queries';
 
 export default function TwoFactorScreen() {
+  const c = useColors();
+  const styles = useThemedStyles(makeStyles);
   const { data: profileData, refetch: refetchProfile } = useQuery<{ findProfile: MyProfile }>(FIND_MY_PROFILE);
   const isEnabled = profileData?.findProfile.isTotpEnabled ?? false;
 
@@ -75,7 +78,7 @@ export default function TwoFactorScreen() {
         <ScrollView contentContainerStyle={styles.content}>
           <View style={styles.statusCard}>
             <View style={styles.statusIcon}>
-              <IconShieldCheck size={32} color={COLORS.accent} />
+              <IconShieldCheck size={32} color={c.accent} />
             </View>
             <Text style={styles.statusTitle}>2FA is enabled</Text>
             <Text style={styles.statusDesc}>
@@ -90,7 +93,7 @@ export default function TwoFactorScreen() {
             activeOpacity={0.85}
           >
             {disabling
-              ? <ActivityIndicator size="small" color={COLORS.danger} />
+              ? <ActivityIndicator size="small" color={c.danger} />
               : <Text style={styles.dangerBtnText}>Disable Two-Factor Auth</Text>
             }
           </TouchableOpacity>
@@ -110,7 +113,7 @@ export default function TwoFactorScreen() {
           <>
             <View style={styles.statusCard}>
               <View style={[styles.statusIcon, styles.statusIconOff]}>
-                <IconShield size={32} color={COLORS.textMuted} />
+                <IconShield size={32} color={c.textMuted} />
               </View>
               <Text style={styles.statusTitle}>2FA is disabled</Text>
               <Text style={styles.statusDesc}>
@@ -137,7 +140,7 @@ export default function TwoFactorScreen() {
 
             {loadingSecret ? (
               <View style={styles.qrPlaceholder}>
-                <ActivityIndicator color={COLORS.accent} />
+                <ActivityIndicator color={c.accent} />
               </View>
             ) : qrcodeUrl ? (
               <View style={styles.qrWrap}>
@@ -161,14 +164,14 @@ export default function TwoFactorScreen() {
               <View style={styles.pinField}>
                 <Text style={styles.fieldLabel}>Verification code</Text>
                 <TextInput
-                  style={[styles.pinInput, { color: COLORS.textPrimary }]}
+                  style={[styles.pinInput, { color: c.textPrimary }]}
                   value={pin}
                   onChangeText={v => setPin(v.replace(/\D/g, '').slice(0, 6))}
                   keyboardType="number-pad"
                   maxLength={6}
                   placeholder="000000"
-                  placeholderTextColor={COLORS.textMuted}
-                  selectionColor={COLORS.accent}
+                  placeholderTextColor={c.textMuted}
+                  selectionColor={c.accent}
                 />
               </View>
             </View>
@@ -195,13 +198,14 @@ export default function TwoFactorScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  root:    { flex: 1, backgroundColor: COLORS.bg },
+const makeStyles = (c: Palette) =>
+  StyleSheet.create({
+  root:    { flex: 1, backgroundColor: c.bg },
   content: { padding: 16, gap: 14 },
 
   statusCard: {
-    backgroundColor: COLORS.card, borderRadius: 14,
-    borderWidth: 1, borderColor: COLORS.border,
+    backgroundColor: c.card, borderRadius: 14,
+    borderWidth: 1, borderColor: c.border,
     padding: 24, alignItems: 'center', gap: 10,
   },
   statusIcon: {
@@ -209,11 +213,11 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(24,185,174,0.1)',
     alignItems: 'center', justifyContent: 'center',
   },
-  statusIconOff: { backgroundColor: COLORS.bg },
-  statusTitle: { fontSize: 17, fontWeight: '700', color: COLORS.textPrimary },
-  statusDesc:  { fontSize: 13, color: COLORS.textSecondary, textAlign: 'center', lineHeight: 19 },
+  statusIconOff: { backgroundColor: c.bg },
+  statusTitle: { fontSize: 17, fontWeight: '700', color: c.textPrimary },
+  statusDesc:  { fontSize: 13, color: c.textSecondary, textAlign: 'center', lineHeight: 19 },
 
-  btn: { backgroundColor: COLORS.accent, borderRadius: 14, paddingVertical: 15, alignItems: 'center' },
+  btn: { backgroundColor: c.accent, borderRadius: 14, paddingVertical: 15, alignItems: 'center' },
   btnDisabled: { opacity: 0.4 },
   btnText: { color: '#000', fontWeight: '700', fontSize: 15 },
 
@@ -222,10 +226,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(229,62,62,0.08)',
     borderWidth: 1, borderColor: 'rgba(229,62,62,0.2)',
   },
-  dangerBtnText: { color: COLORS.danger, fontWeight: '700', fontSize: 15 },
+  dangerBtnText: { color: c.danger, fontWeight: '700', fontSize: 15 },
 
-  stepTitle: { fontSize: 15, fontWeight: '700', color: COLORS.textPrimary },
-  stepDesc:  { fontSize: 13, color: COLORS.textSecondary, lineHeight: 19 },
+  stepTitle: { fontSize: 15, fontWeight: '700', color: c.textPrimary },
+  stepDesc:  { fontSize: 13, color: c.textSecondary, lineHeight: 19 },
 
   qrWrap: {
     backgroundColor: '#fff', borderRadius: 14, padding: 16,
@@ -235,18 +239,18 @@ const styles = StyleSheet.create({
   qrPlaceholder: { height: 232, alignItems: 'center', justifyContent: 'center' },
 
   secretBox: {
-    backgroundColor: COLORS.card, borderRadius: 12,
-    borderWidth: 1, borderColor: COLORS.border,
+    backgroundColor: c.card, borderRadius: 12,
+    borderWidth: 1, borderColor: c.border,
     padding: 14, gap: 4,
   },
-  secretLabel: { fontSize: 11, fontWeight: '600', color: COLORS.textSecondary, textTransform: 'uppercase', letterSpacing: 0.5 },
-  secretValue: { fontSize: 14, fontWeight: '600', color: COLORS.accent, fontFamily: 'monospace', letterSpacing: 1 },
+  secretLabel: { fontSize: 11, fontWeight: '600', color: c.textSecondary, textTransform: 'uppercase', letterSpacing: 0.5 },
+  secretValue: { fontSize: 14, fontWeight: '600', color: c.accent, fontFamily: 'monospace', letterSpacing: 1 },
 
-  card:     { backgroundColor: COLORS.card, borderRadius: 14, borderWidth: 1, borderColor: COLORS.border },
+  card:     { backgroundColor: c.card, borderRadius: 14, borderWidth: 1, borderColor: c.border },
   pinField: { padding: 14, gap: 6 },
-  fieldLabel: { fontSize: 12, fontWeight: '600', color: COLORS.textSecondary, textTransform: 'uppercase', letterSpacing: 0.5 },
+  fieldLabel: { fontSize: 12, fontWeight: '600', color: c.textSecondary, textTransform: 'uppercase', letterSpacing: 0.5 },
   pinInput: { fontSize: 24, letterSpacing: 8, paddingVertical: 4, textAlign: 'center' },
 
   cancelBtn:     { alignItems: 'center', paddingVertical: 10 },
-  cancelBtnText: { fontSize: 14, color: COLORS.textSecondary },
-});
+  cancelBtnText: { fontSize: 14, color: c.textSecondary },
+  });

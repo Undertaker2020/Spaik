@@ -4,30 +4,33 @@ import { useState } from 'react';
 import { useRouter } from 'expo-router';
 import { useMutation } from '@apollo/client';
 import { IconEye, IconEyeOff } from '@tabler/icons-react-native';
-import { COLORS } from '@/src/libs/constants/colors';
+import { useColors, useThemedStyles } from '@/src/libs/theme/use-theme';
+import type { Palette } from '@/src/libs/theme/palettes';
 import { SettingsHeader } from '@/src/components/settings/SettingsHeader';
 import { CHANGE_PASSWORD } from '@/src/graphql/queries/settings.queries';
 
 function PasswordField({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
+  const c = useColors();
+  const styles = useThemedStyles(makeStyles);
   const [visible, setVisible] = useState(false);
   return (
     <View style={styles.field}>
       <Text style={styles.fieldLabel}>{label}</Text>
       <View style={styles.inputWrap}>
         <TextInput
-          style={[styles.input, { color: COLORS.textPrimary }]}
+          style={[styles.input, { color: c.textPrimary }]}
           value={value}
           onChangeText={onChange}
           secureTextEntry={!visible}
           autoCapitalize="none"
-          placeholderTextColor={COLORS.textMuted}
+          placeholderTextColor={c.textMuted}
           placeholder="••••••••"
-          selectionColor={COLORS.accent}
+          selectionColor={c.accent}
         />
         <TouchableOpacity onPress={() => setVisible(v => !v)} hitSlop={8}>
           {visible
-            ? <IconEyeOff size={18} color={COLORS.textMuted} />
-            : <IconEye    size={18} color={COLORS.textMuted} />
+            ? <IconEyeOff size={18} color={c.textMuted} />
+            : <IconEye    size={18} color={c.textMuted} />
           }
         </TouchableOpacity>
       </View>
@@ -37,6 +40,7 @@ function PasswordField({ label, value, onChange }: { label: string; value: strin
 
 export default function ChangePasswordScreen() {
   const router = useRouter();
+  const styles = useThemedStyles(makeStyles);
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirm,     setConfirm]     = useState('');
@@ -95,22 +99,23 @@ export default function ChangePasswordScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  root:    { flex: 1, backgroundColor: COLORS.bg },
-  content: { padding: 20, gap: 16 },
-  card: {
-    backgroundColor: COLORS.card, borderRadius: 14,
-    borderWidth: 1, borderColor: COLORS.border, overflow: 'hidden',
-  },
-  divider: { height: 1, backgroundColor: COLORS.border },
-  field:   { padding: 14, gap: 6 },
-  fieldLabel: { fontSize: 12, fontWeight: '600', color: COLORS.textSecondary, textTransform: 'uppercase', letterSpacing: 0.5 },
-  inputWrap: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  input: { flex: 1, fontSize: 15, paddingVertical: 4 },
-  btn: {
-    backgroundColor: COLORS.accent, borderRadius: 14,
-    paddingVertical: 15, alignItems: 'center',
-  },
-  btnDisabled: { opacity: 0.4 },
-  btnText: { color: '#000', fontWeight: '700', fontSize: 15 },
-});
+const makeStyles = (c: Palette) =>
+  StyleSheet.create({
+    root:    { flex: 1, backgroundColor: c.bg },
+    content: { padding: 20, gap: 16 },
+    card: {
+      backgroundColor: c.card, borderRadius: 14,
+      borderWidth: 1, borderColor: c.border, overflow: 'hidden',
+    },
+    divider: { height: 1, backgroundColor: c.border },
+    field:   { padding: 14, gap: 6 },
+    fieldLabel: { fontSize: 12, fontWeight: '600', color: c.textSecondary, textTransform: 'uppercase', letterSpacing: 0.5 },
+    inputWrap: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+    input: { flex: 1, fontSize: 15, paddingVertical: 4 },
+    btn: {
+      backgroundColor: c.accent, borderRadius: 14,
+      paddingVertical: 15, alignItems: 'center',
+    },
+    btnDisabled: { opacity: 0.4 },
+    btnText: { color: '#000', fontWeight: '700', fontSize: 15 },
+  });

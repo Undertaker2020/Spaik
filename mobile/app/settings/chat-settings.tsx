@@ -2,7 +2,8 @@ import { View, Text, Switch, TouchableOpacity, StyleSheet, ActivityIndicator, Al
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
-import { COLORS } from '@/src/libs/constants/colors';
+import { useColors, useThemedStyles } from '@/src/libs/theme/use-theme';
+import type { Palette } from '@/src/libs/theme/palettes';
 import { SettingsHeader } from '@/src/components/settings/SettingsHeader';
 import { CHANGE_CHAT_SETTINGS } from '@/src/graphql/queries/settings.queries';
 import { FIND_MY_PROFILE, type MyProfile } from '@/src/graphql/queries/profile.queries';
@@ -20,6 +21,8 @@ function Toggle({
   onChange: (v: boolean) => void;
   disabled?: boolean;
 }) {
+  const c = useColors();
+  const styles = useThemedStyles(makeStyles);
   return (
     <View style={[styles.toggleRow, disabled && styles.toggleRowDisabled]}>
       <View style={styles.toggleInfo}>
@@ -30,15 +33,17 @@ function Toggle({
         value={value}
         onValueChange={onChange}
         disabled={disabled}
-        trackColor={{ false: COLORS.border, true: COLORS.accent }}
+        trackColor={{ false: c.border, true: c.accent }}
         thumbColor="#fff"
-        ios_backgroundColor={COLORS.border}
+        ios_backgroundColor={c.border}
       />
     </View>
   );
 }
 
 export default function ChatSettingsScreen() {
+  const c = useColors();
+  const styles = useThemedStyles(makeStyles);
   const { data, refetch } = useQuery<{ findProfile: MyProfile }>(FIND_MY_PROFILE);
   const stream = data?.findProfile.stream;
 
@@ -84,7 +89,7 @@ export default function ChatSettingsScreen() {
           isDirty ? (
             <TouchableOpacity onPress={onSave} disabled={loading} style={styles.saveBtn}>
               {loading
-                ? <ActivityIndicator size="small" color={COLORS.accent} />
+                ? <ActivityIndicator size="small" color={c.accent} />
                 : <Text style={styles.saveBtnText}>Save</Text>
               }
             </TouchableOpacity>
@@ -127,26 +132,27 @@ export default function ChatSettingsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  root:    { flex: 1, backgroundColor: COLORS.bg },
-  content: { padding: 16, gap: 14 },
+const makeStyles = (c: Palette) =>
+  StyleSheet.create({
+    root:    { flex: 1, backgroundColor: c.bg },
+    content: { padding: 16, gap: 14 },
 
-  card: { backgroundColor: COLORS.card, borderRadius: 14, borderWidth: 1, borderColor: COLORS.border, overflow: 'hidden' },
-  divider: { height: 1, backgroundColor: COLORS.border },
+    card: { backgroundColor: c.card, borderRadius: 14, borderWidth: 1, borderColor: c.border, overflow: 'hidden' },
+    divider: { height: 1, backgroundColor: c.border },
 
-  toggleRow: { flexDirection: 'row', alignItems: 'center', padding: 14, gap: 12 },
-  toggleRowDisabled: { opacity: 0.45 },
-  toggleInfo: { flex: 1 },
-  toggleLabel: { fontSize: 15, fontWeight: '600', color: COLORS.textPrimary, marginBottom: 3 },
-  toggleDesc:  { fontSize: 12, color: COLORS.textSecondary, lineHeight: 17 },
+    toggleRow: { flexDirection: 'row', alignItems: 'center', padding: 14, gap: 12 },
+    toggleRowDisabled: { opacity: 0.45 },
+    toggleInfo: { flex: 1 },
+    toggleLabel: { fontSize: 15, fontWeight: '600', color: c.textPrimary, marginBottom: 3 },
+    toggleDesc:  { fontSize: 12, color: c.textSecondary, lineHeight: 17 },
 
-  saveBtn: { paddingHorizontal: 12, paddingVertical: 5, borderRadius: 8, backgroundColor: 'rgba(24,185,174,0.15)' },
-  saveBtnText: { fontSize: 14, fontWeight: '700', color: COLORS.accent },
+    saveBtn: { paddingHorizontal: 12, paddingVertical: 5, borderRadius: 8, backgroundColor: 'rgba(24,185,174,0.15)' },
+    saveBtnText: { fontSize: 14, fontWeight: '700', color: c.accent },
 
-  infoBox: {
-    backgroundColor: 'rgba(229,62,62,0.08)',
-    borderRadius: 12, padding: 14,
-    borderWidth: 1, borderColor: 'rgba(229,62,62,0.2)',
-  },
-  infoText: { fontSize: 13, color: COLORS.danger, lineHeight: 19 },
-});
+    infoBox: {
+      backgroundColor: 'rgba(229,62,62,0.08)',
+      borderRadius: 12, padding: 14,
+      borderWidth: 1, borderColor: 'rgba(229,62,62,0.2)',
+    },
+    infoText: { fontSize: 13, color: c.danger, lineHeight: 19 },
+  });
