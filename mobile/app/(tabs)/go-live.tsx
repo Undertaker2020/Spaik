@@ -42,7 +42,8 @@ import {
   IconMicrophoneOff,
   IconPlayerStopFilled,
 } from '@tabler/icons-react-native';
-import { COLORS } from '@/src/libs/constants/colors';
+import { useColors, useThemedStyles } from '@/src/libs/theme/use-theme';
+import type { Palette } from '@/src/libs/theme/palettes';
 import { LIVEKIT_WS_URL } from '@/src/libs/constants/url.constants';
 import {
   FIND_MY_STREAM,
@@ -58,6 +59,8 @@ import {
 // ── Copy button ───────────────────────────────────────────────
 
 function CopyButton({ value }: { value: string }) {
+  const c = useColors();
+  const styles = useThemedStyles(makeStyles);
   const [copied, setCopied] = useState(false);
 
   const onCopy = () => {
@@ -69,8 +72,8 @@ function CopyButton({ value }: { value: string }) {
   return (
     <TouchableOpacity onPress={onCopy} style={styles.copyBtn} activeOpacity={0.7}>
       {copied
-        ? <IconCheck size={16} color={COLORS.accent} />
-        : <IconCopy size={16} color={COLORS.textSecondary} />
+        ? <IconCheck size={16} color={c.accent} />
+        : <IconCopy size={16} color={c.textSecondary} />
       }
     </TouchableOpacity>
   );
@@ -83,6 +86,8 @@ function KeyField({ label, value, icon: Icon }: {
   value: string | null;
   icon: React.ComponentType<{ size: number; color: string }>;
 }) {
+  const c = useColors();
+  const styles = useThemedStyles(makeStyles);
   const [visible, setVisible] = useState(false);
   const display = value ?? '—';
   const masked = value ? '•'.repeat(Math.min(value.length, 24)) : '—';
@@ -90,7 +95,7 @@ function KeyField({ label, value, icon: Icon }: {
   return (
     <View style={styles.keyField}>
       <View style={styles.keyFieldHeader}>
-        <Icon size={14} color={COLORS.textSecondary} />
+        <Icon size={14} color={c.textSecondary} />
         <Text style={styles.keyFieldLabel}>{label}</Text>
       </View>
       <View style={styles.keyFieldRow}>
@@ -113,6 +118,8 @@ function CategoryPicker({ categories, selectedId, onSelect }: {
   selectedId: string;
   onSelect: (id: string, title: string) => void;
 }) {
+  const c = useColors();
+  const styles = useThemedStyles(makeStyles);
   const [open, setOpen] = useState(false);
   const selected = categories.find(c => c.id === selectedId);
 
@@ -122,7 +129,7 @@ function CategoryPicker({ categories, selectedId, onSelect }: {
         <Text style={[styles.pickerText, !selected && styles.pickerPlaceholder]}>
           {selected?.title ?? 'Select category'}
         </Text>
-        <IconChevronDown size={16} color={COLORS.textSecondary} />
+        <IconChevronDown size={16} color={c.textSecondary} />
       </TouchableOpacity>
 
       <Modal visible={open} transparent animationType="slide" onRequestClose={() => setOpen(false)}>
@@ -142,7 +149,7 @@ function CategoryPicker({ categories, selectedId, onSelect }: {
                   <Text style={[styles.modalItemText, item.id === selectedId && styles.modalItemTextActive]}>
                     {item.title}
                   </Text>
-                  {item.id === selectedId && <IconCheck size={16} color={COLORS.accent} />}
+                  {item.id === selectedId && <IconCheck size={16} color={c.accent} />}
                 </TouchableOpacity>
               )}
             />
@@ -156,6 +163,8 @@ function CategoryPicker({ categories, selectedId, onSelect }: {
 // ── Broadcast view (inside LiveKitRoom; publishes local camera) ─
 
 function BroadcastView({ onEnd, aspect }: { onEnd: () => void; aspect: '16:9' | '4:3' }) {
+  const c = useColors();
+  const styles = useThemedStyles(makeStyles);
   const tracks = useTracks([Track.Source.Camera]);
   const localCam = tracks.find(t => isTrackReference(t) && t.participant.isLocal);
   const { localParticipant } = useLocalParticipant();
@@ -187,7 +196,7 @@ function BroadcastView({ onEnd, aspect }: { onEnd: () => void; aspect: '16:9' | 
         <TouchableOpacity onPress={toggleMic} style={styles.ctrlBtn} activeOpacity={0.8}>
           {micOn
             ? <IconMicrophone size={20} color="#fff" />
-            : <IconMicrophoneOff size={20} color={COLORS.live} />}
+            : <IconMicrophoneOff size={20} color={c.live} />}
         </TouchableOpacity>
         <TouchableOpacity onPress={onEnd} style={styles.endBtn} activeOpacity={0.85}>
           <IconPlayerStopFilled size={16} color="#fff" />
@@ -202,6 +211,8 @@ function BroadcastView({ onEnd, aspect }: { onEnd: () => void; aspect: '16:9' | 
 
 export default function GoLiveScreen() {
   const router = useRouter();
+  const c = useColors();
+  const styles = useThemedStyles(makeStyles);
   const [title, setTitle] = useState('');
   const [categoryId, setCategoryId] = useState('');
   const [isChatEnabled, setIsChatEnabled] = useState(true);
@@ -354,7 +365,7 @@ export default function GoLiveScreen() {
 
       {loadingProfile && !stream ? (
         <View style={styles.loader}>
-          <ActivityIndicator size="large" color={COLORS.accent} />
+          <ActivityIndicator size="large" color={c.accent} />
         </View>
       ) : (
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll}>
@@ -374,7 +385,7 @@ export default function GoLiveScreen() {
             </LiveKitRoom>
           ) : (
             <View style={styles.cameraPlaceholder}>
-              <IconVideo size={36} color={COLORS.textMuted} />
+              <IconVideo size={36} color={c.textMuted} />
               <Text style={styles.cameraNote}>Broadcast live from your phone</Text>
 
               <View style={styles.aspectRow}>
@@ -414,7 +425,7 @@ export default function GoLiveScreen() {
               value={title}
               onChangeText={setTitle}
               placeholder="Add a title for your stream..."
-              placeholderTextColor={COLORS.textMuted}
+              placeholderTextColor={c.textMuted}
               maxLength={100}
             />
 
@@ -432,26 +443,26 @@ export default function GoLiveScreen() {
 
             <View style={styles.toggle}>
               <View style={styles.toggleLeft}>
-                <IconMessageCircle size={16} color={COLORS.textSecondary} />
+                <IconMessageCircle size={16} color={c.textSecondary} />
                 <Text style={styles.toggleLabel}>Enable chat</Text>
               </View>
               <Switch
                 value={isChatEnabled}
                 onValueChange={setIsChatEnabled}
-                trackColor={{ false: COLORS.card, true: COLORS.accent }}
+                trackColor={{ false: c.card, true: c.accent }}
                 thumbColor="#fff"
               />
             </View>
 
             <View style={styles.toggle}>
               <View style={styles.toggleLeft}>
-                <IconUsers size={16} color={COLORS.textSecondary} />
+                <IconUsers size={16} color={c.textSecondary} />
                 <Text style={styles.toggleLabel}>Followers only</Text>
               </View>
               <Switch
                 value={isChatFollowersOnly}
                 onValueChange={setIsChatFollowersOnly}
-                trackColor={{ false: COLORS.card, true: COLORS.accent }}
+                trackColor={{ false: c.card, true: c.accent }}
                 thumbColor="#fff"
                 disabled={!isChatEnabled}
               />
@@ -459,13 +470,13 @@ export default function GoLiveScreen() {
 
             <View style={styles.toggle}>
               <View style={styles.toggleLeft}>
-                <IconCrown size={16} color={COLORS.textSecondary} />
+                <IconCrown size={16} color={c.textSecondary} />
                 <Text style={styles.toggleLabel}>Subscribers only</Text>
               </View>
               <Switch
                 value={isChatPremiumFollowersOnly}
                 onValueChange={setIsChatPremiumFollowersOnly}
-                trackColor={{ false: COLORS.card, true: COLORS.accent }}
+                trackColor={{ false: c.card, true: c.accent }}
                 thumbColor="#fff"
                 disabled={!isChatEnabled}
               />
@@ -483,8 +494,8 @@ export default function GoLiveScreen() {
                 activeOpacity={0.75}
               >
                 {generatingIngress
-                  ? <ActivityIndicator size="small" color={COLORS.accent} />
-                  : <IconRefresh size={16} color={COLORS.accent} />
+                  ? <ActivityIndicator size="small" color={c.accent} />
+                  : <IconRefresh size={16} color={c.accent} />
                 }
                 <Text style={styles.refreshBtnText}>New Ingress</Text>
               </TouchableOpacity>
@@ -521,8 +532,9 @@ export default function GoLiveScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: COLORS.bg },
+const makeStyles = (c: Palette) =>
+  StyleSheet.create({
+  root: { flex: 1, backgroundColor: c.bg },
 
   header: {
     flexDirection: 'row',
@@ -532,14 +544,14 @@ const styles = StyleSheet.create({
     paddingTop: 8,
     paddingBottom: 14,
   },
-  title: { fontSize: 24, fontWeight: '700', color: COLORS.textPrimary },
+  title: { fontSize: 24, fontWeight: '700', color: c.textPrimary },
   headerRight: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   dashBtn: {
     paddingHorizontal: 12, paddingVertical: 6,
-    borderRadius: 8, backgroundColor: COLORS.card,
-    borderWidth: 1, borderColor: COLORS.border,
+    borderRadius: 8, backgroundColor: c.card,
+    borderWidth: 1, borderColor: c.border,
   },
-  dashBtnText: { fontSize: 12, fontWeight: '600', color: COLORS.textSecondary },
+  dashBtnText: { fontSize: 12, fontWeight: '600', color: c.textSecondary },
   livePill: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -551,8 +563,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(229,62,62,0.3)',
   },
-  liveDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: COLORS.live },
-  liveText: { fontSize: 12, fontWeight: '700', color: COLORS.live },
+  liveDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: c.live },
+  liveText: { fontSize: 12, fontWeight: '700', color: c.live },
 
   loader: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   scroll: { paddingHorizontal: 16, paddingBottom: 32, gap: 16 },
@@ -560,20 +572,20 @@ const styles = StyleSheet.create({
   // Camera
   cameraPlaceholder: {
     height: 180,
-    backgroundColor: COLORS.card,
+    backgroundColor: c.card,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: c.border,
     borderStyle: 'dashed',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
     paddingHorizontal: 24,
   },
-  cameraNote: { fontSize: 14, fontWeight: '600', color: COLORS.textSecondary, textAlign: 'center' },
-  cameraNoteSub: { fontSize: 12, color: COLORS.textMuted, textAlign: 'center' },
+  cameraNote: { fontSize: 14, fontWeight: '600', color: c.textSecondary, textAlign: 'center' },
+  cameraNoteSub: { fontSize: 12, color: c.textMuted, textAlign: 'center' },
   goLiveBtn: {
-    backgroundColor: COLORS.accent,
+    backgroundColor: c.accent,
     borderRadius: 12,
     paddingHorizontal: 28,
     paddingVertical: 11,
@@ -588,12 +600,12 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: COLORS.border,
-    backgroundColor: COLORS.bg,
+    borderColor: c.border,
+    backgroundColor: c.bg,
   },
-  aspectBtnActive: { backgroundColor: 'rgba(24,185,174,0.12)', borderColor: COLORS.accent },
-  aspectBtnText: { fontSize: 13, fontWeight: '600', color: COLORS.textSecondary },
-  aspectBtnTextActive: { color: COLORS.accent },
+  aspectBtnActive: { backgroundColor: 'rgba(24,185,174,0.12)', borderColor: c.accent },
+  aspectBtnText: { fontSize: 13, fontWeight: '600', color: c.textSecondary },
+  aspectBtnTextActive: { color: c.accent },
 
   // Broadcast stage
   broadcastStage: {
@@ -609,7 +621,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 5,
-    backgroundColor: COLORS.live,
+    backgroundColor: c.live,
     borderRadius: 6,
     paddingHorizontal: 9,
     paddingVertical: 4,
@@ -637,7 +649,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: COLORS.live,
+    backgroundColor: c.live,
     borderRadius: 22,
     paddingHorizontal: 18,
     paddingVertical: 11,
@@ -646,27 +658,27 @@ const styles = StyleSheet.create({
 
   // Card
   card: {
-    backgroundColor: COLORS.card,
+    backgroundColor: c.card,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: c.border,
     padding: 16,
     gap: 12,
   },
-  cardTitle: { fontSize: 15, fontWeight: '700', color: COLORS.textPrimary },
+  cardTitle: { fontSize: 15, fontWeight: '700', color: c.textPrimary },
   cardTitleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
 
   // Fields
-  fieldLabel: { fontSize: 12, fontWeight: '600', color: COLORS.textSecondary, marginBottom: -6 },
+  fieldLabel: { fontSize: 12, fontWeight: '600', color: c.textSecondary, marginBottom: -6 },
   input: {
-    backgroundColor: COLORS.bg,
+    backgroundColor: c.bg,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: c.border,
     paddingHorizontal: 12,
     paddingVertical: 10,
     fontSize: 14,
-    color: COLORS.textPrimary,
+    color: c.textPrimary,
   },
 
   // Picker
@@ -674,20 +686,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: COLORS.bg,
+    backgroundColor: c.bg,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: c.border,
     paddingHorizontal: 12,
     paddingVertical: 10,
   },
-  pickerText: { fontSize: 14, color: COLORS.textPrimary },
-  pickerPlaceholder: { color: COLORS.textMuted },
+  pickerText: { fontSize: 14, color: c.textPrimary },
+  pickerPlaceholder: { color: c.textMuted },
 
   // Modal
   modalOverlay: { flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.5)' },
   modalSheet: {
-    backgroundColor: COLORS.card,
+    backgroundColor: c.card,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     padding: 16,
@@ -696,12 +708,12 @@ const styles = StyleSheet.create({
   modalHandle: {
     width: 36,
     height: 4,
-    backgroundColor: COLORS.border,
+    backgroundColor: c.border,
     borderRadius: 2,
     alignSelf: 'center',
     marginBottom: 14,
   },
-  modalTitle: { fontSize: 16, fontWeight: '700', color: COLORS.textPrimary, marginBottom: 12 },
+  modalTitle: { fontSize: 16, fontWeight: '700', color: c.textPrimary, marginBottom: 12 },
   modalItem: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -709,11 +721,11 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 4,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    borderBottomColor: c.border,
   },
   modalItemActive: {},
-  modalItemText: { fontSize: 15, color: COLORS.textPrimary },
-  modalItemTextActive: { color: COLORS.accent, fontWeight: '600' },
+  modalItemText: { fontSize: 15, color: c.textPrimary },
+  modalItemTextActive: { color: c.accent, fontWeight: '600' },
 
   // Toggle
   toggle: {
@@ -722,30 +734,30 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   toggleLeft: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  toggleLabel: { fontSize: 14, color: COLORS.textPrimary },
+  toggleLabel: { fontSize: 14, color: c.textPrimary },
 
   // Key fields
   keyField: { gap: 6 },
   keyFieldHeader: { flexDirection: 'row', alignItems: 'center', gap: 5 },
-  keyFieldLabel: { fontSize: 12, fontWeight: '600', color: COLORS.textSecondary },
+  keyFieldLabel: { fontSize: 12, fontWeight: '600', color: c.textSecondary },
   keyFieldRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.bg,
+    backgroundColor: c.bg,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: c.border,
     paddingHorizontal: 12,
     paddingVertical: 10,
     gap: 8,
   },
-  keyFieldValue: { flex: 1, fontSize: 13, color: COLORS.textPrimary, fontFamily: 'monospace' },
-  toggleText: { fontSize: 12, color: COLORS.accent },
+  keyFieldValue: { flex: 1, fontSize: 13, color: c.textPrimary, fontFamily: 'monospace' },
+  toggleText: { fontSize: 12, color: c.accent },
   copyBtn: { padding: 2 },
 
   // Refresh
   refreshBtn: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  refreshBtnText: { fontSize: 13, color: COLORS.accent, fontWeight: '600' },
+  refreshBtnText: { fontSize: 13, color: c.accent, fontWeight: '600' },
 
   // Create ingress
   createIngressBtn: {
@@ -756,11 +768,11 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     alignItems: 'center',
   },
-  createIngressBtnText: { color: COLORS.accent, fontWeight: '600', fontSize: 14 },
+  createIngressBtnText: { color: c.accent, fontWeight: '600', fontSize: 14 },
 
   // Save
   saveBtn: {
-    backgroundColor: COLORS.accent,
+    backgroundColor: c.accent,
     borderRadius: 14,
     paddingVertical: 15,
     alignItems: 'center',
