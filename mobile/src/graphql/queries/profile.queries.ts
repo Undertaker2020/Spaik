@@ -20,8 +20,15 @@ export const FIND_MY_PROFILE = gql`
         isChatEnabled
         isChatFollowersOnly
         isChatPremiumFollowersOnly
+        isRecordingEnabled
       }
     }
+  }
+`;
+
+export const CHANGE_STREAM_RECORDING = gql`
+  mutation ChangeStreamRecording($isEnabled: Boolean!) {
+    changeStreamRecording(isEnabled: $isEnabled)
   }
 `;
 
@@ -61,5 +68,6 @@ export interface MyProfile {
     isChatEnabled: boolean;
     isChatFollowersOnly: boolean;
     isChatPremiumFollowersOnly: boolean;
+    isRecordingEnabled: boolean;
   } | null;
 }

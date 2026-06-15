@@ -178,6 +178,7 @@ export type Mutation = {
   changeProfileAvatar: Scalars['Boolean']['output'];
   changeProfileInfo: Scalars['Boolean']['output'];
   changeStreamInfo: Scalars['Boolean']['output'];
+  changeStreamRecording: Scalars['Boolean']['output'];
   changeStreamThumbnail: Scalars['Boolean']['output'];
   clearSessionCookie: Scalars['Boolean']['output'];
   createIngress: Scalars['Boolean']['output'];
@@ -247,6 +248,11 @@ export type MutationChangeProfileInfoArgs = {
 
 export type MutationChangeStreamInfoArgs = {
   data: ChangeStreamInfoInput;
+};
+
+
+export type MutationChangeStreamRecordingArgs = {
+  isEnabled: Scalars['Boolean']['input'];
 };
 
 
@@ -552,6 +558,7 @@ export type StreamModel = {
   isChatFollowersOnly: Scalars['Boolean']['output'];
   isChatPremiumFollowersOnly: Scalars['Boolean']['output'];
   isLive: Scalars['Boolean']['output'];
+  isRecordingEnabled: Scalars['Boolean']['output'];
   serverUrl?: Maybe<Scalars['String']['output']>;
   streamKey?: Maybe<Scalars['String']['output']>;
   thumbnailUrl?: Maybe<Scalars['String']['output']>;
@@ -739,6 +746,13 @@ export type ChangeStreamInfoMutationVariables = Exact<{
 
 
 export type ChangeStreamInfoMutation = { __typename?: 'Mutation', changeStreamInfo: boolean };
+
+export type ChangeStreamRecordingMutationVariables = Exact<{
+  isEnabled: Scalars['Boolean']['input'];
+}>;
+
+
+export type ChangeStreamRecordingMutation = { __typename?: 'Mutation', changeStreamRecording: boolean };
 
 export type ChangeStreamThumbnailMutationVariables = Exact<{
   thumbnail: Scalars['Upload']['input'];
@@ -990,7 +1004,7 @@ export type FindNotificationUnreadCountQuery = { __typename?: 'Query', findNotif
 export type FindProfileQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type FindProfileQuery = { __typename?: 'Query', findProfile: { __typename?: 'UserModel', id: string, username: string, displayName: string, email: string, avatar?: string | null, banner?: string | null, bio?: string | null, isTotpEnabled: boolean, isVerified: boolean, notificationSettings?: { __typename?: 'NotificationSettingsModel', siteNotifications: boolean, telegramNotifications: boolean } | null, stream?: { __typename?: 'StreamModel', serverUrl?: string | null, streamKey?: string | null, isChatEnabled: boolean, isChatFollowersOnly: boolean, isChatPremiumFollowersOnly: boolean } | null } };
+export type FindProfileQuery = { __typename?: 'Query', findProfile: { __typename?: 'UserModel', id: string, username: string, displayName: string, email: string, avatar?: string | null, banner?: string | null, bio?: string | null, isTotpEnabled: boolean, isVerified: boolean, notificationSettings?: { __typename?: 'NotificationSettingsModel', siteNotifications: boolean, telegramNotifications: boolean } | null, stream?: { __typename?: 'StreamModel', serverUrl?: string | null, streamKey?: string | null, isChatEnabled: boolean, isChatFollowersOnly: boolean, isChatPremiumFollowersOnly: boolean, isRecordingEnabled: boolean } | null } };
 
 export type FindSessionsByUserQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1462,6 +1476,37 @@ export function useChangeStreamInfoMutation(baseOptions?: Apollo.MutationHookOpt
 export type ChangeStreamInfoMutationHookResult = ReturnType<typeof useChangeStreamInfoMutation>;
 export type ChangeStreamInfoMutationResult = Apollo.MutationResult<ChangeStreamInfoMutation>;
 export type ChangeStreamInfoMutationOptions = Apollo.BaseMutationOptions<ChangeStreamInfoMutation, ChangeStreamInfoMutationVariables>;
+export const ChangeStreamRecordingDocument = gql`
+    mutation ChangeStreamRecording($isEnabled: Boolean!) {
+  changeStreamRecording(isEnabled: $isEnabled)
+}
+    `;
+export type ChangeStreamRecordingMutationFn = Apollo.MutationFunction<ChangeStreamRecordingMutation, ChangeStreamRecordingMutationVariables>;
+
+/**
+ * __useChangeStreamRecordingMutation__
+ *
+ * To run a mutation, you first call `useChangeStreamRecordingMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useChangeStreamRecordingMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [changeStreamRecordingMutation, { data, loading, error }] = useChangeStreamRecordingMutation({
+ *   variables: {
+ *      isEnabled: // value for 'isEnabled'
+ *   },
+ * });
+ */
+export function useChangeStreamRecordingMutation(baseOptions?: Apollo.MutationHookOptions<ChangeStreamRecordingMutation, ChangeStreamRecordingMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<ChangeStreamRecordingMutation, ChangeStreamRecordingMutationVariables>(ChangeStreamRecordingDocument, options);
+      }
+export type ChangeStreamRecordingMutationHookResult = ReturnType<typeof useChangeStreamRecordingMutation>;
+export type ChangeStreamRecordingMutationResult = Apollo.MutationResult<ChangeStreamRecordingMutation>;
+export type ChangeStreamRecordingMutationOptions = Apollo.BaseMutationOptions<ChangeStreamRecordingMutation, ChangeStreamRecordingMutationVariables>;
 export const ChangeStreamThumbnailDocument = gql`
     mutation ChangeStreamThumbnail($thumbnail: Upload!) {
   changeStreamThumbnail(thumbnail: $thumbnail)
@@ -3016,6 +3061,7 @@ export const FindProfileDocument = gql`
       isChatEnabled
       isChatFollowersOnly
       isChatPremiumFollowersOnly
+      isRecordingEnabled
     }
   }
 }

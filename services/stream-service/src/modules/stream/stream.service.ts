@@ -74,6 +74,15 @@ export class StreamService {
         return true;
     }
 
+    public async changeRecording(user: User, isEnabled: boolean) {
+        await this.prismaService.stream.update({
+            where: { userId: user.id },
+            data: { isRecordingEnabled: isEnabled },
+        });
+
+        return true;
+    }
+
     public async generateToken(input: GenerateStreamTokenInput) {
         const { userId, channelId } = input;
 

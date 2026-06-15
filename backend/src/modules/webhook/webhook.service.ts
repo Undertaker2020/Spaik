@@ -148,8 +148,9 @@ export class WebhookService {
     // Record the host's published track (participant egress, identity === room ===
     // userId) to an MP4 in the MinIO recordings bucket. Best-effort: egress errors
     // must never block the stream from going live.
-    private async startRecording(stream: { userId: string | null }) {
-        if (!stream.userId) return;
+    private async startRecording(stream: { userId: string | null; isRecordingEnabled?: boolean }) {
+        // Opt-in: only record when the channel owner enabled recording for the stream.
+        if (!stream.userId || !stream.isRecordingEnabled) return;
 
         try {
             // Idempotent: a reconnecting publisher can re-fire go-live, so don't

@@ -1,9 +1,13 @@
 'use client'
 
 import {useTranslations} from 'next-intl'
+import {useEffect, useState} from 'react'
+import {toast} from 'sonner'
 
 import {Heading} from '@/components/ui/elements/Heading'
-import {ToggleCardSkeleton} from '@/components/ui/elements/ToggleCard'
+import {ToggleCard, ToggleCardSkeleton} from '@/components/ui/elements/ToggleCard'
+
+import {useChangeStreamRecordingMutation} from '@/graphql/generated/output'
 
 import {useCurrent} from '@/hooks/useCurrent'
 import {InstructionModal} from "@/components/features/keys/settings/InstructionModal";
@@ -15,7 +19,28 @@ import {StreamKey} from "@/components/features/keys/settings/forms/StreamKey";
 export function KeysSettings() {
     const t = useTranslations('dashboard.keys.header')
 
-    const {user, isLoadingProfile} = useCurrent()
+    const {user, isLoadingProfile, refetch} = useCurrent()
+
+    const [isRecording, setIsRecording] = useState(false)
+
+    useEffect(() => {
+        if (user?.stream) setIsRecording(user.stream.isRecordingEnabled)
+    }, [user?.stream?.isRecordingEnabled])
+
+    const [changeRecording, {loading: isLoadingRecording}] = useChangeStreamRecordingMutation({
+        onCompleted() {
+            refetch()
+            toast.success('Recording setting updated')
+        },
+        onError() {
+            toast.error('Failed to update the recording setting')
+        }
+    })
+
+    function onToggleRecording(value: boolean) {
+        setIsRecording(value)
+        changeRecording({variables: {isEnabled: value}})
+    }
 
     return (
         <div className='lg:px-10'>
@@ -39,6 +64,13 @@ export function KeysSettings() {
                     <>
                         <StreamURL value={user?.stream?.serverUrl!}/>
                         <StreamKey value={user?.stream?.streamKey!}/>
+                        <ToggleCard
+                            heading='Record streams'
+                            description='Save your live streams as videos on your channel.'
+                            value={isRecording}
+                            onChange={onToggleRecording}
+                            isDisabled={isLoadingRecording}
+                        />
                     </>
                 )}
             </div>

@@ -6045,6 +6045,7 @@ export namespace Prisma {
     isChatEnabled: boolean | null
     isChatFollowersOnly: boolean | null
     isChatPremiumFollowersOnly: boolean | null
+    isRecordingEnabled: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
     categoryId: string | null
@@ -6062,6 +6063,7 @@ export namespace Prisma {
     isChatEnabled: boolean | null
     isChatFollowersOnly: boolean | null
     isChatPremiumFollowersOnly: boolean | null
+    isRecordingEnabled: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
     categoryId: string | null
@@ -6079,6 +6081,7 @@ export namespace Prisma {
     isChatEnabled: number
     isChatFollowersOnly: number
     isChatPremiumFollowersOnly: number
+    isRecordingEnabled: number
     createdAt: number
     updatedAt: number
     categoryId: number
@@ -6098,6 +6101,7 @@ export namespace Prisma {
     isChatEnabled?: true
     isChatFollowersOnly?: true
     isChatPremiumFollowersOnly?: true
+    isRecordingEnabled?: true
     createdAt?: true
     updatedAt?: true
     categoryId?: true
@@ -6115,6 +6119,7 @@ export namespace Prisma {
     isChatEnabled?: true
     isChatFollowersOnly?: true
     isChatPremiumFollowersOnly?: true
+    isRecordingEnabled?: true
     createdAt?: true
     updatedAt?: true
     categoryId?: true
@@ -6132,6 +6137,7 @@ export namespace Prisma {
     isChatEnabled?: true
     isChatFollowersOnly?: true
     isChatPremiumFollowersOnly?: true
+    isRecordingEnabled?: true
     createdAt?: true
     updatedAt?: true
     categoryId?: true
@@ -6222,6 +6228,7 @@ export namespace Prisma {
     isChatEnabled: boolean
     isChatFollowersOnly: boolean
     isChatPremiumFollowersOnly: boolean
+    isRecordingEnabled: boolean
     createdAt: Date
     updatedAt: Date
     categoryId: string | null
@@ -6256,6 +6263,7 @@ export namespace Prisma {
     isChatEnabled?: boolean
     isChatFollowersOnly?: boolean
     isChatPremiumFollowersOnly?: boolean
+    isRecordingEnabled?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     categoryId?: boolean
@@ -6278,6 +6286,7 @@ export namespace Prisma {
     isChatEnabled?: boolean
     isChatFollowersOnly?: boolean
     isChatPremiumFollowersOnly?: boolean
+    isRecordingEnabled?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     categoryId?: boolean
@@ -6297,6 +6306,7 @@ export namespace Prisma {
     isChatEnabled?: boolean
     isChatFollowersOnly?: boolean
     isChatPremiumFollowersOnly?: boolean
+    isRecordingEnabled?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     categoryId?: boolean
@@ -6316,12 +6326,13 @@ export namespace Prisma {
     isChatEnabled?: boolean
     isChatFollowersOnly?: boolean
     isChatPremiumFollowersOnly?: boolean
+    isRecordingEnabled?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     categoryId?: boolean
   }
 
-  export type StreamOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "thumbnailUrl" | "ingressId" | "serverUrl" | "streamKey" | "isLive" | "userId" | "isChatEnabled" | "isChatFollowersOnly" | "isChatPremiumFollowersOnly" | "createdAt" | "updatedAt" | "categoryId", ExtArgs["result"]["stream"]>
+  export type StreamOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "thumbnailUrl" | "ingressId" | "serverUrl" | "streamKey" | "isLive" | "userId" | "isChatEnabled" | "isChatFollowersOnly" | "isChatPremiumFollowersOnly" | "isRecordingEnabled" | "createdAt" | "updatedAt" | "categoryId", ExtArgs["result"]["stream"]>
   export type StreamInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | Stream$userArgs<ExtArgs>
     chatMessages?: boolean | Stream$chatMessagesArgs<ExtArgs>
@@ -6358,6 +6369,7 @@ export namespace Prisma {
       isChatEnabled: boolean
       isChatFollowersOnly: boolean
       isChatPremiumFollowersOnly: boolean
+      isRecordingEnabled: boolean
       createdAt: Date
       updatedAt: Date
       categoryId: string | null
@@ -6799,6 +6811,7 @@ export namespace Prisma {
     readonly isChatEnabled: FieldRef<"Stream", 'Boolean'>
     readonly isChatFollowersOnly: FieldRef<"Stream", 'Boolean'>
     readonly isChatPremiumFollowersOnly: FieldRef<"Stream", 'Boolean'>
+    readonly isRecordingEnabled: FieldRef<"Stream", 'Boolean'>
     readonly createdAt: FieldRef<"Stream", 'DateTime'>
     readonly updatedAt: FieldRef<"Stream", 'DateTime'>
     readonly categoryId: FieldRef<"Stream", 'String'>
@@ -17482,6 +17495,7 @@ export namespace Prisma {
     isChatEnabled: 'isChatEnabled',
     isChatFollowersOnly: 'isChatFollowersOnly',
     isChatPremiumFollowersOnly: 'isChatPremiumFollowersOnly',
+    isRecordingEnabled: 'isRecordingEnabled',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     categoryId: 'categoryId'
@@ -18043,6 +18057,7 @@ export namespace Prisma {
     isChatEnabled?: BoolFilter<"Stream"> | boolean
     isChatFollowersOnly?: BoolFilter<"Stream"> | boolean
     isChatPremiumFollowersOnly?: BoolFilter<"Stream"> | boolean
+    isRecordingEnabled?: BoolFilter<"Stream"> | boolean
     createdAt?: DateTimeFilter<"Stream"> | Date | string
     updatedAt?: DateTimeFilter<"Stream"> | Date | string
     categoryId?: StringNullableFilter<"Stream"> | string | null
@@ -18064,6 +18079,7 @@ export namespace Prisma {
     isChatEnabled?: SortOrder
     isChatFollowersOnly?: SortOrder
     isChatPremiumFollowersOnly?: SortOrder
+    isRecordingEnabled?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     categoryId?: SortOrderInput | SortOrder
@@ -18088,6 +18104,7 @@ export namespace Prisma {
     isChatEnabled?: BoolFilter<"Stream"> | boolean
     isChatFollowersOnly?: BoolFilter<"Stream"> | boolean
     isChatPremiumFollowersOnly?: BoolFilter<"Stream"> | boolean
+    isRecordingEnabled?: BoolFilter<"Stream"> | boolean
     createdAt?: DateTimeFilter<"Stream"> | Date | string
     updatedAt?: DateTimeFilter<"Stream"> | Date | string
     categoryId?: StringNullableFilter<"Stream"> | string | null
@@ -18109,6 +18126,7 @@ export namespace Prisma {
     isChatEnabled?: SortOrder
     isChatFollowersOnly?: SortOrder
     isChatPremiumFollowersOnly?: SortOrder
+    isRecordingEnabled?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     categoryId?: SortOrderInput | SortOrder
@@ -18132,6 +18150,7 @@ export namespace Prisma {
     isChatEnabled?: BoolWithAggregatesFilter<"Stream"> | boolean
     isChatFollowersOnly?: BoolWithAggregatesFilter<"Stream"> | boolean
     isChatPremiumFollowersOnly?: BoolWithAggregatesFilter<"Stream"> | boolean
+    isRecordingEnabled?: BoolWithAggregatesFilter<"Stream"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"Stream"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Stream"> | Date | string
     categoryId?: StringNullableWithAggregatesFilter<"Stream"> | string | null
@@ -19093,6 +19112,7 @@ export namespace Prisma {
     isChatEnabled?: boolean
     isChatFollowersOnly?: boolean
     isChatPremiumFollowersOnly?: boolean
+    isRecordingEnabled?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     user?: UserCreateNestedOneWithoutStreamInput
@@ -19113,6 +19133,7 @@ export namespace Prisma {
     isChatEnabled?: boolean
     isChatFollowersOnly?: boolean
     isChatPremiumFollowersOnly?: boolean
+    isRecordingEnabled?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     categoryId?: string | null
@@ -19131,6 +19152,7 @@ export namespace Prisma {
     isChatEnabled?: BoolFieldUpdateOperationsInput | boolean
     isChatFollowersOnly?: BoolFieldUpdateOperationsInput | boolean
     isChatPremiumFollowersOnly?: BoolFieldUpdateOperationsInput | boolean
+    isRecordingEnabled?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneWithoutStreamNestedInput
@@ -19151,6 +19173,7 @@ export namespace Prisma {
     isChatEnabled?: BoolFieldUpdateOperationsInput | boolean
     isChatFollowersOnly?: BoolFieldUpdateOperationsInput | boolean
     isChatPremiumFollowersOnly?: BoolFieldUpdateOperationsInput | boolean
+    isRecordingEnabled?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     categoryId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -19170,6 +19193,7 @@ export namespace Prisma {
     isChatEnabled?: boolean
     isChatFollowersOnly?: boolean
     isChatPremiumFollowersOnly?: boolean
+    isRecordingEnabled?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     categoryId?: string | null
@@ -19186,6 +19210,7 @@ export namespace Prisma {
     isChatEnabled?: BoolFieldUpdateOperationsInput | boolean
     isChatFollowersOnly?: BoolFieldUpdateOperationsInput | boolean
     isChatPremiumFollowersOnly?: BoolFieldUpdateOperationsInput | boolean
+    isRecordingEnabled?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -19202,6 +19227,7 @@ export namespace Prisma {
     isChatEnabled?: BoolFieldUpdateOperationsInput | boolean
     isChatFollowersOnly?: BoolFieldUpdateOperationsInput | boolean
     isChatPremiumFollowersOnly?: BoolFieldUpdateOperationsInput | boolean
+    isRecordingEnabled?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     categoryId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -20267,6 +20293,7 @@ export namespace Prisma {
     isChatEnabled?: SortOrder
     isChatFollowersOnly?: SortOrder
     isChatPremiumFollowersOnly?: SortOrder
+    isRecordingEnabled?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     categoryId?: SortOrder
@@ -20284,6 +20311,7 @@ export namespace Prisma {
     isChatEnabled?: SortOrder
     isChatFollowersOnly?: SortOrder
     isChatPremiumFollowersOnly?: SortOrder
+    isRecordingEnabled?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     categoryId?: SortOrder
@@ -20301,6 +20329,7 @@ export namespace Prisma {
     isChatEnabled?: SortOrder
     isChatFollowersOnly?: SortOrder
     isChatPremiumFollowersOnly?: SortOrder
+    isRecordingEnabled?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     categoryId?: SortOrder
@@ -22068,6 +22097,7 @@ export namespace Prisma {
     isChatEnabled?: boolean
     isChatFollowersOnly?: boolean
     isChatPremiumFollowersOnly?: boolean
+    isRecordingEnabled?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     chatMessages?: ChatMessageCreateNestedManyWithoutStreamInput
@@ -22086,6 +22116,7 @@ export namespace Prisma {
     isChatEnabled?: boolean
     isChatFollowersOnly?: boolean
     isChatPremiumFollowersOnly?: boolean
+    isRecordingEnabled?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     categoryId?: string | null
@@ -22453,6 +22484,7 @@ export namespace Prisma {
     isChatEnabled?: BoolFieldUpdateOperationsInput | boolean
     isChatFollowersOnly?: BoolFieldUpdateOperationsInput | boolean
     isChatPremiumFollowersOnly?: BoolFieldUpdateOperationsInput | boolean
+    isRecordingEnabled?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     chatMessages?: ChatMessageUpdateManyWithoutStreamNestedInput
@@ -22471,6 +22503,7 @@ export namespace Prisma {
     isChatEnabled?: BoolFieldUpdateOperationsInput | boolean
     isChatFollowersOnly?: BoolFieldUpdateOperationsInput | boolean
     isChatPremiumFollowersOnly?: BoolFieldUpdateOperationsInput | boolean
+    isRecordingEnabled?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     categoryId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -23400,6 +23433,7 @@ export namespace Prisma {
     isChatEnabled?: boolean
     isChatFollowersOnly?: boolean
     isChatPremiumFollowersOnly?: boolean
+    isRecordingEnabled?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     user?: UserCreateNestedOneWithoutStreamInput
@@ -23419,6 +23453,7 @@ export namespace Prisma {
     isChatEnabled?: boolean
     isChatFollowersOnly?: boolean
     isChatPremiumFollowersOnly?: boolean
+    isRecordingEnabled?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     categoryId?: string | null
@@ -23527,6 +23562,7 @@ export namespace Prisma {
     isChatEnabled?: BoolFieldUpdateOperationsInput | boolean
     isChatFollowersOnly?: BoolFieldUpdateOperationsInput | boolean
     isChatPremiumFollowersOnly?: BoolFieldUpdateOperationsInput | boolean
+    isRecordingEnabled?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneWithoutStreamNestedInput
@@ -23546,6 +23582,7 @@ export namespace Prisma {
     isChatEnabled?: BoolFieldUpdateOperationsInput | boolean
     isChatFollowersOnly?: BoolFieldUpdateOperationsInput | boolean
     isChatPremiumFollowersOnly?: BoolFieldUpdateOperationsInput | boolean
+    isRecordingEnabled?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     categoryId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -23563,6 +23600,7 @@ export namespace Prisma {
     isChatEnabled?: boolean
     isChatFollowersOnly?: boolean
     isChatPremiumFollowersOnly?: boolean
+    isRecordingEnabled?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     user?: UserCreateNestedOneWithoutStreamInput
@@ -23582,6 +23620,7 @@ export namespace Prisma {
     isChatEnabled?: boolean
     isChatFollowersOnly?: boolean
     isChatPremiumFollowersOnly?: boolean
+    isRecordingEnabled?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     chatMessages?: ChatMessageUncheckedCreateNestedManyWithoutStreamInput
@@ -23629,6 +23668,7 @@ export namespace Prisma {
     isChatEnabled?: BoolFilter<"Stream"> | boolean
     isChatFollowersOnly?: BoolFilter<"Stream"> | boolean
     isChatPremiumFollowersOnly?: BoolFilter<"Stream"> | boolean
+    isRecordingEnabled?: BoolFilter<"Stream"> | boolean
     createdAt?: DateTimeFilter<"Stream"> | Date | string
     updatedAt?: DateTimeFilter<"Stream"> | Date | string
     categoryId?: StringNullableFilter<"Stream"> | string | null
@@ -23714,6 +23754,7 @@ export namespace Prisma {
     isChatEnabled?: boolean
     isChatFollowersOnly?: boolean
     isChatPremiumFollowersOnly?: boolean
+    isRecordingEnabled?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     user?: UserCreateNestedOneWithoutStreamInput
@@ -23733,6 +23774,7 @@ export namespace Prisma {
     isChatEnabled?: boolean
     isChatFollowersOnly?: boolean
     isChatPremiumFollowersOnly?: boolean
+    isRecordingEnabled?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     categoryId?: string | null
@@ -23841,6 +23883,7 @@ export namespace Prisma {
     isChatEnabled?: BoolFieldUpdateOperationsInput | boolean
     isChatFollowersOnly?: BoolFieldUpdateOperationsInput | boolean
     isChatPremiumFollowersOnly?: BoolFieldUpdateOperationsInput | boolean
+    isRecordingEnabled?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneWithoutStreamNestedInput
@@ -23860,6 +23903,7 @@ export namespace Prisma {
     isChatEnabled?: BoolFieldUpdateOperationsInput | boolean
     isChatFollowersOnly?: BoolFieldUpdateOperationsInput | boolean
     isChatPremiumFollowersOnly?: BoolFieldUpdateOperationsInput | boolean
+    isRecordingEnabled?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     categoryId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -25612,6 +25656,7 @@ export namespace Prisma {
     isChatEnabled?: boolean
     isChatFollowersOnly?: boolean
     isChatPremiumFollowersOnly?: boolean
+    isRecordingEnabled?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -25627,6 +25672,7 @@ export namespace Prisma {
     isChatEnabled?: BoolFieldUpdateOperationsInput | boolean
     isChatFollowersOnly?: BoolFieldUpdateOperationsInput | boolean
     isChatPremiumFollowersOnly?: BoolFieldUpdateOperationsInput | boolean
+    isRecordingEnabled?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneWithoutStreamNestedInput
@@ -25646,6 +25692,7 @@ export namespace Prisma {
     isChatEnabled?: BoolFieldUpdateOperationsInput | boolean
     isChatFollowersOnly?: BoolFieldUpdateOperationsInput | boolean
     isChatPremiumFollowersOnly?: BoolFieldUpdateOperationsInput | boolean
+    isRecordingEnabled?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     chatMessages?: ChatMessageUncheckedUpdateManyWithoutStreamNestedInput
@@ -25664,6 +25711,7 @@ export namespace Prisma {
     isChatEnabled?: BoolFieldUpdateOperationsInput | boolean
     isChatFollowersOnly?: BoolFieldUpdateOperationsInput | boolean
     isChatPremiumFollowersOnly?: BoolFieldUpdateOperationsInput | boolean
+    isRecordingEnabled?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

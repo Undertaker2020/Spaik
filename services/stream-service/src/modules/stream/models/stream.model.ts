@@ -49,6 +49,9 @@ export class StreamModel {
     @Field(() => Boolean)
     public isChatPremiumFollowersOnly: boolean;
 
+    @Field(() => Boolean)
+    public isRecordingEnabled: boolean;
+
     @Field(() => Date)
     public createdAt: Date;
 

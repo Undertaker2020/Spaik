@@ -51,6 +51,15 @@ export class StreamResolver {
         return this.streamService.generateToken(input);
     }
 
+    @Authorization()
+    @Mutation(() => Boolean, { name: 'changeStreamRecording' })
+    public async changeStreamRecording(
+        @Authorized() user: User,
+        @Args('isEnabled') isEnabled: boolean,
+    ) {
+        return this.streamService.changeRecording(user, isEnabled);
+    }
+
     @Query(() => [RecordingModel], { name: 'findRecordingsByChannel' })
     public async findRecordingsByChannel(@Args('channelId') channelId: string) {
         return this.streamService.findRecordingsByChannel(channelId);

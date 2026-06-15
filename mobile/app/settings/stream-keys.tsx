@@ -1,15 +1,15 @@
 import {
   View, Text, TouchableOpacity, StyleSheet,
-  ActivityIndicator, Alert, ScrollView, Clipboard,
+  ActivityIndicator, Alert, ScrollView, Clipboard, Switch,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
 import { IconCopy, IconRefresh, IconEye, IconEyeOff, IconServer, IconKey } from '@tabler/icons-react-native';
 import { COLORS } from '@/src/libs/constants/colors';
 import { SettingsHeader } from '@/src/components/settings/SettingsHeader';
 import { CREATE_INGRESS } from '@/src/graphql/queries/settings.queries';
-import { FIND_MY_PROFILE, type MyProfile } from '@/src/graphql/queries/profile.queries';
+import { FIND_MY_PROFILE, CHANGE_STREAM_RECORDING, type MyProfile } from '@/src/graphql/queries/profile.queries';
 
 const INGRESS_TYPES = [
   { label: 'RTMP', value: 0 },
@@ -74,6 +74,18 @@ export default function StreamKeysScreen() {
     onError: (e) => Alert.alert('Error', e.message),
   });
 
+  const [isRecording, setIsRecording] = useState(false);
+  useEffect(() => { if (stream) setIsRecording(stream.isRecordingEnabled); }, [stream?.isRecordingEnabled]);
+
+  const [changeRecording] = useMutation(CHANGE_STREAM_RECORDING, {
+    onError: (e) => Alert.alert('Error', e.message),
+  });
+
+  function onToggleRecording(value: boolean) {
+    setIsRecording(value);
+    changeRecording({ variables: { isEnabled: value } });
+  }
+
   function onGenerate() {
     Alert.alert(
       'Generate new keys',
@@ -102,6 +114,20 @@ export default function StreamKeysScreen() {
             value={stream?.streamKey ?? null}
             icon={<IconKey size={14} color={COLORS.textMuted} />}
             secret
+          />
+        </View>
+
+        <View style={styles.recCard}>
+          <View style={styles.recInfo}>
+            <Text style={styles.recLabel}>Record streams</Text>
+            <Text style={styles.recDesc}>Save your live streams as videos on your channel.</Text>
+          </View>
+          <Switch
+            value={isRecording}
+            onValueChange={onToggleRecording}
+            trackColor={{ false: COLORS.border, true: COLORS.accent }}
+            thumbColor="#fff"
+            ios_backgroundColor={COLORS.border}
           />
         </View>
 
@@ -145,6 +171,15 @@ const styles = StyleSheet.create({
 
   card: { backgroundColor: COLORS.card, borderRadius: 14, borderWidth: 1, borderColor: COLORS.border, overflow: 'hidden' },
   divider: { height: 1, backgroundColor: COLORS.border },
+
+  recCard: {
+    flexDirection: 'row', alignItems: 'center', gap: 12,
+    backgroundColor: COLORS.card, borderRadius: 14, borderWidth: 1, borderColor: COLORS.border,
+    padding: 14,
+  },
+  recInfo: { flex: 1, gap: 3 },
+  recLabel: { fontSize: 14, fontWeight: '600', color: COLORS.textPrimary },
+  recDesc: { fontSize: 12, color: COLORS.textSecondary, lineHeight: 16 },
 
   keyField: { padding: 14, gap: 8 },
   keyFieldHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },

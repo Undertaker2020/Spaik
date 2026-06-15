@@ -1,0 +1,3 @@
+mutation ChangeStreamRecording($isEnabled: Boolean!) {
+	changeStreamRecording(isEnabled: $isEnabled)
+}

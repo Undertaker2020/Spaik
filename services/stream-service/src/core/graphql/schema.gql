@@ -35,6 +35,7 @@ type GenerateStreamTokenModel {
 
 type Mutation {
   changeStreamInfo(data: ChangeStreamInfoInput!): Boolean!
+  changeStreamRecording(isEnabled: Boolean!): Boolean!
   createIngress(ingressType: Float!): Boolean!
   deleteRecording(id: String!): Boolean!
   generateStreamToken(data: GenerateStreamTokenInput!): GenerateStreamTokenModel!
@@ -67,6 +68,7 @@ type StreamModel {
   isChatFollowersOnly: Boolean!
   isChatPremiumFollowersOnly: Boolean!
   isLive: Boolean!
+  isRecordingEnabled: Boolean!
   serverUrl: String
   streamKey: String
   thumbnailUrl: String
