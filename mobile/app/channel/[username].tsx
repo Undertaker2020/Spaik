@@ -39,7 +39,8 @@ import {
   IconHeart,
   IconStar,
 } from '@tabler/icons-react-native';
-import { COLORS } from '@/src/libs/constants/colors';
+import { useColors, useThemedStyles } from '@/src/libs/theme/use-theme';
+import type { Palette } from '@/src/libs/theme/palettes';
 import { MEDIA_SERVICE_URL } from '@/src/libs/constants/url.constants';
 import { getMediaSource } from '@/src/libs/utils/get-media-source';
 import { getRecordingSource } from '@/src/libs/utils/get-recording-source';
@@ -105,6 +106,8 @@ function StreamPreviewCard({
   channel: ChannelInfo;
   onPress: () => void;
 }) {
+  const c = useColors();
+  const styles = useThemedStyles(makeStyles);
   const isLive = channel.stream?.isLive ?? false;
   const thumb = getMediaSource(channel.stream?.thumbnailUrl ?? null);
 
@@ -159,6 +162,8 @@ function StreamPreviewCard({
 // ── VOD player modal ───────────────────────────────────────────
 
 function VodPlayerModal({ recording, onClose }: { recording: Recording; onClose: () => void }) {
+  const c = useColors();
+  const styles = useThemedStyles(makeStyles);
   const uri = getRecordingSource(recording.url) ?? '';
   const player = useVideoPlayer(uri, p => { p.play(); });
 
@@ -180,6 +185,8 @@ function VodPlayerModal({ recording, onClose }: { recording: Recording; onClose:
 // ── Clips tab (channel recordings) ─────────────────────────────
 
 function ClipsTab({ channelId, isOwner }: { channelId: string; isOwner: boolean }) {
+  const c = useColors();
+  const styles = useThemedStyles(makeStyles);
   const { data, refetch, loading } = useQuery<{ findRecordingsByChannel: Recording[] }>(
     FIND_RECORDINGS_BY_CHANNEL,
     { variables: { channelId }, skip: !channelId },
@@ -210,7 +217,7 @@ function ClipsTab({ channelId, isOwner }: { channelId: string; isOwner: boolean 
   if (loading && recordings.length === 0) {
     return (
       <View style={styles.clipsEmpty}>
-        <ActivityIndicator color={COLORS.accent} />
+        <ActivityIndicator color={c.accent} />
       </View>
     );
   }
@@ -218,7 +225,7 @@ function ClipsTab({ channelId, isOwner }: { channelId: string; isOwner: boolean 
   if (recordings.length === 0) {
     return (
       <View style={styles.clipsEmpty}>
-        <IconVideo size={28} color={COLORS.textMuted} />
+        <IconVideo size={28} color={c.textMuted} />
         <Text style={styles.clipsEmptyText}>No clips yet</Text>
       </View>
     );
@@ -236,7 +243,7 @@ function ClipsTab({ channelId, isOwner }: { channelId: string; isOwner: boolean 
                 <Image source={{ uri: thumb }} style={StyleSheet.absoluteFillObject} resizeMode="cover" />
               ) : (
                 <View style={[StyleSheet.absoluteFillObject, styles.clipThumbFallback]}>
-                  <IconVideo size={20} color={COLORS.textMuted} />
+                  <IconVideo size={20} color={c.textMuted} />
                 </View>
               )}
               <View style={styles.clipPlay}>
@@ -266,6 +273,8 @@ function ClipsTab({ channelId, isOwner }: { channelId: string; isOwner: boolean 
 // ── About tab ─────────────────────────────────────────────────
 
 function AboutTab({ channel }: { channel: ChannelInfo }) {
+  const c = useColors();
+  const styles = useThemedStyles(makeStyles);
   return (
     <View style={styles.aboutWrap}>
       {channel.bio ? (
@@ -279,7 +288,7 @@ function AboutTab({ channel }: { channel: ChannelInfo }) {
         <View style={styles.aboutSection}>
           <Text style={styles.aboutSectionTitle}>Stream</Text>
           <View style={styles.streamRow}>
-            <IconBroadcast size={14} color={COLORS.accent} />
+            <IconBroadcast size={14} color={c.accent} />
             <Text style={styles.streamRowText}>{channel.stream.title}</Text>
             {channel.stream.category && (
               <Text style={styles.streamRowCategory}>{channel.stream.category.title}</Text>
@@ -300,7 +309,7 @@ function AboutTab({ channel }: { channel: ChannelInfo }) {
                 onPress={() => Linking.openURL(link.url)}
                 activeOpacity={0.7}
               >
-                <Icon size={16} color={COLORS.accent} />
+                <Icon size={16} color={c.accent} />
                 <Text style={styles.socialTitle}>{link.title}</Text>
               </TouchableOpacity>
             );
@@ -314,6 +323,8 @@ function AboutTab({ channel }: { channel: ChannelInfo }) {
 // ── Screen ────────────────────────────────────────────────────
 
 export default function ChannelScreen() {
+  const c = useColors();
+  const styles = useThemedStyles(makeStyles);
   const router   = useRouter();
   const insets   = useSafeAreaInsets();
   const { username } = useLocalSearchParams<{ username: string }>();
@@ -438,12 +449,12 @@ export default function ChannelScreen() {
         onPress={() => router.back()}
         activeOpacity={0.8}
       >
-        <IconArrowLeft size={20} color={COLORS.textPrimary} />
+        <IconArrowLeft size={20} color={c.textPrimary} />
       </TouchableOpacity>
 
       {loading ? (
         <View style={styles.center}>
-          <ActivityIndicator size="large" color={COLORS.accent} />
+          <ActivityIndicator size="large" color={c.accent} />
         </View>
       ) : error || !channel ? (
         <View style={styles.center}>
@@ -508,7 +519,7 @@ export default function ChannelScreen() {
             <View style={styles.identityMeta}>
               <View style={styles.nameRow}>
                 <Text style={styles.displayName} numberOfLines={1}>{channel.displayName}</Text>
-                {channel.isVerified && <IconBadge size={16} color={COLORS.accent} />}
+                {channel.isVerified && <IconBadge size={16} color={c.accent} />}
               </View>
               {isLive ? (
                 <View style={styles.liveLine}>
@@ -549,7 +560,7 @@ export default function ChannelScreen() {
                     onPress={() => Linking.openURL(link.url)}
                     activeOpacity={0.7}
                   >
-                    <Icon size={15} color={COLORS.accent} />
+                    <Icon size={15} color={c.accent} />
                     <Text style={styles.socialChipText} numberOfLines={1}>{link.title}</Text>
                   </TouchableOpacity>
                 );
@@ -567,10 +578,10 @@ export default function ChannelScreen() {
                 onPress={() => isFollowing ? unfollow() : follow()}
               >
                 {isBusy ? (
-                  <ActivityIndicator size="small" color={isFollowing ? COLORS.textPrimary : '#000'} />
+                  <ActivityIndicator size="small" color={isFollowing ? c.textPrimary : '#000'} />
                 ) : (
                   <>
-                    <IconHeart size={16} color={isFollowing ? COLORS.textPrimary : '#000'} />
+                    <IconHeart size={16} color={isFollowing ? c.textPrimary : '#000'} />
                     <Text style={[styles.followBtnText, isFollowing && styles.followBtnTextActive]}>
                       {isFollowing ? 'Following' : 'Follow'}
                     </Text>
@@ -581,7 +592,7 @@ export default function ChannelScreen() {
               {channel.isVerified && plans.length > 0 && (
                 isSponsor ? (
                   <View style={[styles.subscribeBtn, styles.actionFlex, styles.subscribedBtn]}>
-                    <IconStar size={16} color={COLORS.textSecondary} />
+                    <IconStar size={16} color={c.textSecondary} />
                     <Text style={styles.subscribedText}>Subscribed</Text>
                   </View>
                 ) : (
@@ -648,7 +659,7 @@ export default function ChannelScreen() {
               <View style={styles.subHeader}>
                 <Text style={styles.subTitle} numberOfLines={1}>Support {channel.displayName}</Text>
                 <TouchableOpacity onPress={() => setSubscribeOpen(false)} hitSlop={8}>
-                  <IconX size={22} color={COLORS.textPrimary} />
+                  <IconX size={22} color={c.textPrimary} />
                 </TouchableOpacity>
               </View>
 
@@ -670,7 +681,7 @@ export default function ChannelScreen() {
                 </TouchableOpacity>
               ))}
 
-              {paying && <ActivityIndicator color={COLORS.accent} style={{ marginTop: 8 }} />}
+              {paying && <ActivityIndicator color={c.accent} style={{ marginTop: 8 }} />}
               <Text style={styles.subHint}>Payment opens securely in your browser.</Text>
             </View>
           </View>
@@ -680,10 +691,11 @@ export default function ChannelScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  root:      { flex: 1, backgroundColor: COLORS.bg },
+const makeStyles = (c: Palette) =>
+  StyleSheet.create({
+  root:      { flex: 1, backgroundColor: c.bg },
   center:    { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  errorText: { color: COLORS.danger, textAlign: 'center', padding: 20 },
+  errorText: { color: c.danger, textAlign: 'center', padding: 20 },
 
   backBtn: {
     position: 'absolute',
@@ -720,7 +732,7 @@ const styles = StyleSheet.create({
   avatarWrap: {
     borderRadius: (AVATAR_SIZE + 6) / 2,
     padding: 3,
-    backgroundColor: COLORS.bg,
+    backgroundColor: c.bg,
   },
   avatar: {
     width: AVATAR_SIZE,
@@ -728,94 +740,94 @@ const styles = StyleSheet.create({
     borderRadius: AVATAR_SIZE / 2,
   },
   avatarFallback: {
-    backgroundColor: COLORS.card,
+    backgroundColor: c.card,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  avatarInitial: { fontSize: 22, fontWeight: '700', color: COLORS.accent },
+  avatarInitial: { fontSize: 22, fontWeight: '700', color: c.accent },
 
   identityMeta: { flex: 1, paddingBottom: 4 },
   nameRow:  { flexDirection: 'row', alignItems: 'center', gap: 5 },
-  displayName: { fontSize: 20, fontWeight: '800', color: COLORS.textPrimary, flexShrink: 1 },
+  displayName: { fontSize: 20, fontWeight: '800', color: c.textPrimary, flexShrink: 1 },
   liveLine: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 5 },
   livePill: {
-    backgroundColor: COLORS.live,
+    backgroundColor: c.live,
     borderRadius: 4,
     paddingHorizontal: 7,
     paddingVertical: 2,
   },
   liveText: { color: '#fff', fontSize: 10, fontWeight: '700' },
-  identityCategory: { flexShrink: 1, fontSize: 13, color: COLORS.textSecondary },
-  username: { fontSize: 13, color: COLORS.textSecondary, marginTop: 5 },
+  identityCategory: { flexShrink: 1, fontSize: 13, color: c.textSecondary },
+  username: { fontSize: 13, color: c.textSecondary, marginTop: 5 },
 
-  bioLine: { paddingHorizontal: 16, fontSize: 13, color: COLORS.textSecondary, lineHeight: 18, marginBottom: 8 },
+  bioLine: { paddingHorizontal: 16, fontSize: 13, color: c.textSecondary, lineHeight: 18, marginBottom: 8 },
 
-  followers: { paddingHorizontal: 16, fontSize: 13, color: COLORS.textSecondary, marginBottom: 8 },
-  followersCount: { fontWeight: '800', color: COLORS.textPrimary },
+  followers: { paddingHorizontal: 16, fontSize: 13, color: c.textSecondary, marginBottom: 8 },
+  followersCount: { fontWeight: '800', color: c.textPrimary },
 
   socialChips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, paddingHorizontal: 16, marginBottom: 8 },
   socialChip: {
     flexDirection: 'row', alignItems: 'center', gap: 6,
-    backgroundColor: COLORS.card, borderWidth: 1, borderColor: COLORS.border,
+    backgroundColor: c.card, borderWidth: 1, borderColor: c.border,
     borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6,
   },
-  socialChipText: { fontSize: 12, color: COLORS.textPrimary, fontWeight: '600' },
+  socialChipText: { fontSize: 12, color: c.textPrimary, fontWeight: '600' },
 
   actionRow: { flexDirection: 'row', gap: 10, marginHorizontal: 16, marginBottom: 12 },
   actionFlex: { flex: 1 },
   followBtn: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
     height: 42, borderRadius: 8,
-    backgroundColor: COLORS.accent,
+    backgroundColor: c.accent,
   },
   followBtnActive: {
     backgroundColor: 'transparent',
     borderWidth: 1.5,
-    borderColor: COLORS.border,
+    borderColor: c.border,
   },
   followBtnText:       { fontSize: 14, fontWeight: '700', color: '#000' },
-  followBtnTextActive: { color: COLORS.textPrimary },
+  followBtnTextActive: { color: c.textPrimary },
   subscribeBtn: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
     height: 42, borderRadius: 8,
-    backgroundColor: COLORS.card, borderWidth: 1, borderColor: COLORS.border,
+    backgroundColor: c.card, borderWidth: 1, borderColor: c.border,
   },
-  subscribeText:   { fontSize: 14, fontWeight: '700', color: COLORS.textPrimary },
+  subscribeText:   { fontSize: 14, fontWeight: '700', color: c.textPrimary },
   subscribedBtn:   { opacity: 0.7 },
-  subscribedText:  { fontSize: 14, fontWeight: '700', color: COLORS.textSecondary },
+  subscribedText:  { fontSize: 14, fontWeight: '700', color: c.textSecondary },
 
   // ── Subscribe sheet
   subBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'flex-end' },
   subSheet: {
-    backgroundColor: COLORS.bg, borderTopLeftRadius: 18, borderTopRightRadius: 18,
+    backgroundColor: c.bg, borderTopLeftRadius: 18, borderTopRightRadius: 18,
     padding: 18, paddingBottom: 32, gap: 12,
-    borderTopWidth: 1, borderColor: COLORS.border,
+    borderTopWidth: 1, borderColor: c.border,
   },
   subHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  subTitle:  { flex: 1, fontSize: 16, fontWeight: '700', color: COLORS.textPrimary },
+  subTitle:  { flex: 1, fontSize: 16, fontWeight: '700', color: c.textPrimary },
   planCard: {
     flexDirection: 'row', alignItems: 'center', gap: 12,
-    backgroundColor: COLORS.card, borderRadius: 12, borderWidth: 1, borderColor: COLORS.border,
+    backgroundColor: c.card, borderRadius: 12, borderWidth: 1, borderColor: c.border,
     padding: 14,
   },
   planInfo:  { flex: 1, gap: 3 },
-  planTitle: { fontSize: 14, fontWeight: '700', color: COLORS.textPrimary },
-  planDesc:  { fontSize: 12, color: COLORS.textSecondary, lineHeight: 16 },
-  planPrice: { fontSize: 15, fontWeight: '800', color: COLORS.accent },
-  subHint:   { fontSize: 12, color: COLORS.textMuted, textAlign: 'center', marginTop: 4 },
+  planTitle: { fontSize: 14, fontWeight: '700', color: c.textPrimary },
+  planDesc:  { fontSize: 12, color: c.textSecondary, lineHeight: 16 },
+  planPrice: { fontSize: 15, fontWeight: '800', color: c.accent },
+  subHint:   { fontSize: 12, color: c.textMuted, textAlign: 'center', marginTop: 4 },
 
   // ── Stream preview card
   streamCardWrap: { paddingHorizontal: 16, paddingTop: 12, paddingBottom: 2 },
   streamCard: {
     borderRadius: 12, overflow: 'hidden',
-    backgroundColor: COLORS.card, borderWidth: 1, borderColor: COLORS.border,
+    backgroundColor: c.card, borderWidth: 1, borderColor: c.border,
   },
   streamThumb: { width: '100%', aspectRatio: 16 / 9, backgroundColor: '#000' },
   streamScrim: { backgroundColor: 'rgba(0,0,0,0.25)' },
   streamBadgeRow: { position: 'absolute', top: 10, left: 10 },
   liveBadge: {
     flexDirection: 'row', alignItems: 'center', gap: 5,
-    backgroundColor: COLORS.live, borderRadius: 6,
+    backgroundColor: c.live, borderRadius: 6,
     paddingHorizontal: 9, paddingVertical: 4,
   },
   liveDot:  { width: 6, height: 6, borderRadius: 3, backgroundColor: '#fff' },
@@ -824,7 +836,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.6)', borderRadius: 6,
     paddingHorizontal: 9, paddingVertical: 4,
   },
-  offlineBadgeText: { fontSize: 11, fontWeight: '700', color: COLORS.textSecondary, letterSpacing: 0.5 },
+  offlineBadgeText: { fontSize: 11, fontWeight: '700', color: c.textSecondary, letterSpacing: 0.5 },
   streamPlay: {
     position: 'absolute', top: '50%', left: '50%',
     width: 52, height: 52, borderRadius: 26, marginLeft: -26, marginTop: -26,
@@ -833,21 +845,21 @@ const styles = StyleSheet.create({
   },
   streamMeta: { padding: 12 },
   streamLabel: {
-    fontSize: 11, fontWeight: '700', color: COLORS.accent,
+    fontSize: 11, fontWeight: '700', color: c.accent,
     textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 4,
   },
-  streamLabelOffline: { color: COLORS.textMuted },
-  streamTitle: { fontSize: 15, fontWeight: '700', color: COLORS.textPrimary, lineHeight: 20 },
+  streamLabelOffline: { color: c.textMuted },
+  streamTitle: { fontSize: 15, fontWeight: '700', color: c.textPrimary, lineHeight: 20 },
   streamCategory: {
     marginTop: 6, alignSelf: 'flex-start',
-    fontSize: 11, fontWeight: '600', color: COLORS.accent,
+    fontSize: 11, fontWeight: '600', color: c.accent,
     backgroundColor: 'rgba(24,185,174,0.12)',
     paddingHorizontal: 7, paddingVertical: 2, borderRadius: 4,
   },
 
   tabBar: {
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    borderBottomColor: c.border,
     marginTop: 6,
     flexGrow: 0,
   },
@@ -856,15 +868,15 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     position: 'relative',
   },
-  tabLabel:       { fontSize: 14, color: COLORS.textSecondary, fontWeight: '600' },
-  tabLabelActive: { color: COLORS.textPrimary },
+  tabLabel:       { fontSize: 14, color: c.textSecondary, fontWeight: '600' },
+  tabLabelActive: { color: c.textPrimary },
   tabIndicator: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
     height: 2.5,
-    backgroundColor: COLORS.accent,
+    backgroundColor: c.accent,
     borderRadius: 2,
   },
 
@@ -876,7 +888,7 @@ const styles = StyleSheet.create({
   clipCard: { width: CLIP_W },
   clipThumb: {
     width: CLIP_W, aspectRatio: 16 / 9, borderRadius: 8, overflow: 'hidden',
-    backgroundColor: COLORS.card,
+    backgroundColor: c.card,
   },
   clipThumbFallback: { alignItems: 'center', justifyContent: 'center' },
   clipPlay: {
@@ -898,9 +910,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5, paddingVertical: 2,
   },
   clipDurationText: { color: '#fff', fontSize: 10, fontWeight: '600' },
-  clipTitle: { marginTop: 6, fontSize: 12, color: COLORS.textPrimary, lineHeight: 16 },
+  clipTitle: { marginTop: 6, fontSize: 12, color: c.textPrimary, lineHeight: 16 },
   clipsEmpty: { alignItems: 'center', justifyContent: 'center', paddingVertical: 28, gap: 8 },
-  clipsEmptyText: { color: COLORS.textMuted, fontSize: 13 },
+  clipsEmptyText: { color: c.textMuted, fontSize: 13 },
 
   // ── VOD player modal
   vodModal: { flex: 1, backgroundColor: '#000' },
@@ -920,20 +932,20 @@ const styles = StyleSheet.create({
   aboutWrap:         { paddingBottom: 32 },
   aboutSection:      { paddingHorizontal: 16, paddingTop: 16 },
   aboutSectionTitle: {
-    fontSize: 11, fontWeight: '600', color: COLORS.textSecondary,
+    fontSize: 11, fontWeight: '600', color: c.textSecondary,
     textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 8,
   },
-  aboutBio: { fontSize: 14, color: COLORS.textPrimary, lineHeight: 20 },
+  aboutBio: { fontSize: 14, color: c.textPrimary, lineHeight: 20 },
   streamRow: {
     flexDirection: 'row', alignItems: 'center', gap: 8,
-    backgroundColor: COLORS.card, borderRadius: 10,
-    padding: 12, borderWidth: 1, borderColor: COLORS.border,
+    backgroundColor: c.card, borderRadius: 10,
+    padding: 12, borderWidth: 1, borderColor: c.border,
   },
-  streamRowText:     { flex: 1, fontSize: 13, color: COLORS.textPrimary },
-  streamRowCategory: { fontSize: 11, color: COLORS.accent },
+  streamRowText:     { flex: 1, fontSize: 13, color: c.textPrimary },
+  streamRowCategory: { fontSize: 11, color: c.accent },
   socialRow: {
     flexDirection: 'row', alignItems: 'center', gap: 10,
-    paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: COLORS.border,
+    paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: c.border,
   },
-  socialTitle: { fontSize: 14, color: COLORS.textPrimary },
+  socialTitle: { fontSize: 14, color: c.textPrimary },
 });

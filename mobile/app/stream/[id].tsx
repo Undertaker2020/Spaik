@@ -40,7 +40,8 @@ import {
   IconVolume,
   IconVolumeOff,
 } from '@tabler/icons-react-native';
-import { COLORS } from '@/src/libs/constants/colors';
+import { useColors, useThemedStyles } from '@/src/libs/theme/use-theme';
+import type { Palette } from '@/src/libs/theme/palettes';
 import { LIVEKIT_WS_URL } from '@/src/libs/constants/url.constants';
 import { getMediaSource } from '@/src/libs/utils/get-media-source';
 import { useAuthStore } from '@/src/store/auth/auth.store';
@@ -87,6 +88,8 @@ function VideoArea({
   /** Live video layer. When present, it replaces the thumbnail/offline visuals. */
   children?: ReactNode;
 }) {
+  const c = useColors();
+  const styles = useThemedStyles(makeStyles);
   const hasVideo = !!children;
 
   return (
@@ -158,6 +161,8 @@ const QUALITY_MAP: Record<QualityKey, VideoQuality> = {
 const SLIDER_W = 84;
 
 function VolumeSlider({ value, onChange }: { value: number; onChange: (v: number) => void }) {
+  const c = useColors();
+  const styles = useThemedStyles(makeStyles);
   const setFromX = (x: number) => {
     const clamped = Math.max(0, Math.min(SLIDER_W, x));
     onChange(Math.round((clamped / SLIDER_W) * 100));
@@ -185,6 +190,8 @@ function VolumeSlider({ value, onChange }: { value: number; onChange: (v: number
 // ── Live video stage (inside LiveKitRoom context) ──────────────
 
 function LiveStage() {
+  const c = useColors();
+  const styles = useThemedStyles(makeStyles);
   // Subscribed camera + mic tracks in the room; the host is the only remote publisher.
   const tracks = useTracks([Track.Source.Camera, Track.Source.Microphone], { onlySubscribed: true });
   const hostTrack = tracks.find(
@@ -284,7 +291,7 @@ function LiveStage() {
                 <Text style={[styles.qualityItemText, q === quality && styles.qualityItemTextActive]}>
                   {q}
                 </Text>
-                {q === quality && <IconCheck size={14} color={COLORS.accent} />}
+                {q === quality && <IconCheck size={14} color={c.accent} />}
               </TouchableOpacity>
             ))}
           </View>
@@ -315,6 +322,8 @@ function StreamInfo({
   onFollow: () => void;
   followLoading: boolean;
 }) {
+  const c = useColors();
+  const styles = useThemedStyles(makeStyles);
   const avatar = getMediaSource(channel.avatar);
   const stream = channel.stream;
   const isLive = stream?.isLive ?? false;
@@ -339,7 +348,7 @@ function StreamInfo({
         <View style={styles.infoMeta}>
           <View style={styles.nameRow}>
             <Text style={styles.displayName} numberOfLines={1}>{channel.displayName}</Text>
-            {channel.isVerified && <IconBadge size={14} color={COLORS.accent} />}
+            {channel.isVerified && <IconBadge size={14} color={c.accent} />}
           </View>
           {stream?.category && (
             <Text style={styles.categoryTag}>{stream.category.title}</Text>
@@ -353,7 +362,7 @@ function StreamInfo({
           activeOpacity={0.8}
         >
           {followLoading ? (
-            <ActivityIndicator size="small" color={isFollowing ? COLORS.textPrimary : '#000'} />
+            <ActivityIndicator size="small" color={isFollowing ? c.textPrimary : '#000'} />
           ) : (
             <Text style={[styles.followBtnText, isFollowing && styles.followBtnTextActive]}>
               {isFollowing ? 'Following' : 'Follow'}
@@ -373,14 +382,16 @@ function StreamInfo({
 // ── Chat header ────────────────────────────────────────────────
 
 function ChatHeader({ count }: { count: number }) {
+  const c = useColors();
+  const styles = useThemedStyles(makeStyles);
   return (
     <View style={styles.chatHeader}>
       <View style={styles.chatHeaderLeft}>
-        <IconUsers size={14} color={COLORS.accent} />
+        <IconUsers size={14} color={c.accent} />
         <Text style={styles.chatHeaderText}>Live Chat</Text>
       </View>
       <View style={styles.chatHeaderRight}>
-        <IconEye size={12} color={COLORS.textMuted} />
+        <IconEye size={12} color={c.textMuted} />
         <Text style={styles.chatCount}>{count}</Text>
       </View>
     </View>
@@ -390,6 +401,8 @@ function ChatHeader({ count }: { count: number }) {
 // ── Chat message ───────────────────────────────────────────────
 
 function ChatMsg({ msg }: { msg: ChatMessage }) {
+  const c = useColors();
+  const styles = useThemedStyles(makeStyles);
   const color  = userColor(msg.user.username);
   const avatar = getMediaSource(msg.user.avatar);
 
@@ -412,6 +425,8 @@ function ChatMsg({ msg }: { msg: ChatMessage }) {
 // ── Screen ────────────────────────────────────────────────────
 
 export default function StreamViewerScreen() {
+  const c = useColors();
+  const styles = useThemedStyles(makeStyles);
   const { id: username } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const isAuthenticated = useAuthStore(s => s.isAuthenticated);
@@ -530,7 +545,7 @@ export default function StreamViewerScreen() {
 
       {loadingChannel ? (
         <View style={styles.center}>
-          <ActivityIndicator color={COLORS.accent} />
+          <ActivityIndicator color={c.accent} />
         </View>
       ) : channel ? (
         <KeyboardAvoidingView
@@ -570,7 +585,7 @@ export default function StreamViewerScreen() {
                     value={text}
                     onChangeText={setText}
                     placeholder="Send a message…"
-                    placeholderTextColor={COLORS.textMuted}
+                    placeholderTextColor={c.textMuted}
                     onSubmitEditing={onSend}
                     returnKeyType="send"
                     maxLength={200}
@@ -600,8 +615,9 @@ export default function StreamViewerScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  root:  { flex: 1, backgroundColor: COLORS.bg },
+const makeStyles = (c: Palette) =>
+  StyleSheet.create({
+  root:  { flex: 1, backgroundColor: c.bg },
   flex:  { flex: 1 },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
 
@@ -639,14 +655,14 @@ const styles = StyleSheet.create({
   qualityMenu: {
     backgroundColor: 'rgba(0,0,0,0.88)', borderRadius: 8,
     paddingVertical: 4, minWidth: 96,
-    borderWidth: 1, borderColor: COLORS.border,
+    borderWidth: 1, borderColor: c.border,
   },
   qualityItem: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     paddingHorizontal: 12, paddingVertical: 8, gap: 10,
   },
   qualityItemText: { color: '#fff', fontSize: 13 },
-  qualityItemTextActive: { color: COLORS.accent, fontWeight: '700' },
+  qualityItemTextActive: { color: c.accent, fontWeight: '700' },
 
   // ── Playback controls (play/pause, mute, volume)
   playback: {
@@ -675,7 +691,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 5,
-    backgroundColor: COLORS.live,
+    backgroundColor: c.live,
     borderRadius: 6,
     paddingHorizontal: 9,
     paddingVertical: 4,
@@ -688,58 +704,58 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    borderBottomColor: c.border,
     gap: 8,
-    backgroundColor: COLORS.bg,
+    backgroundColor: c.bg,
   },
   infoRow:     { flexDirection: 'row', alignItems: 'center', gap: 10 },
   avatarWrap:  { position: 'relative' },
   avatar:      { width: AVATAR_SIZE, height: AVATAR_SIZE, borderRadius: AVATAR_SIZE / 2 },
-  avatarFallback: { backgroundColor: COLORS.card, alignItems: 'center', justifyContent: 'center' },
-  avatarInitial:  { fontSize: 18, fontWeight: '700', color: COLORS.accent },
+  avatarFallback: { backgroundColor: c.card, alignItems: 'center', justifyContent: 'center' },
+  avatarInitial:  { fontSize: 18, fontWeight: '700', color: c.accent },
   liveRing: {
     position: 'absolute', top: -2, left: -2,
     width: AVATAR_SIZE + 4, height: AVATAR_SIZE + 4,
     borderRadius: (AVATAR_SIZE + 4) / 2,
-    borderWidth: 2, borderColor: COLORS.live,
+    borderWidth: 2, borderColor: c.live,
   },
   infoMeta:  { flex: 1 },
   nameRow:   { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  displayName: { fontSize: 15, fontWeight: '700', color: COLORS.textPrimary },
+  displayName: { fontSize: 15, fontWeight: '700', color: c.textPrimary },
   categoryTag: {
     marginTop: 3,
     alignSelf: 'flex-start',
-    fontSize: 11, fontWeight: '600', color: COLORS.accent,
+    fontSize: 11, fontWeight: '600', color: c.accent,
     backgroundColor: 'rgba(24,185,174,0.12)',
     paddingHorizontal: 7, paddingVertical: 2, borderRadius: 4,
   },
-  streamTitle: { fontSize: 13, color: COLORS.textSecondary, lineHeight: 19 },
+  streamTitle: { fontSize: 13, color: c.textSecondary, lineHeight: 19 },
 
   followBtn: {
     paddingHorizontal: 16, paddingVertical: 8,
     borderRadius: 99,
-    backgroundColor: COLORS.accent,
+    backgroundColor: c.accent,
     minWidth: 82, alignItems: 'center',
   },
-  followBtnActive: { backgroundColor: 'transparent', borderWidth: 1.5, borderColor: COLORS.border },
+  followBtnActive: { backgroundColor: 'transparent', borderWidth: 1.5, borderColor: c.border },
   followBtnText:       { color: '#000', fontSize: 13, fontWeight: '700' },
-  followBtnTextActive: { color: COLORS.textPrimary, fontSize: 13, fontWeight: '600' },
+  followBtnTextActive: { color: c.textPrimary, fontSize: 13, fontWeight: '600' },
 
   // ── Chat header
   chatHeader: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     paddingHorizontal: 14, paddingVertical: 9,
-    borderBottomWidth: 1, borderBottomColor: COLORS.border,
-    backgroundColor: COLORS.bg,
+    borderBottomWidth: 1, borderBottomColor: c.border,
+    backgroundColor: c.bg,
   },
   chatHeaderLeft:  { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  chatHeaderText:  { fontSize: 13, fontWeight: '700', color: COLORS.textPrimary },
+  chatHeaderText:  { fontSize: 13, fontWeight: '700', color: c.textPrimary },
   chatHeaderRight: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  chatCount:       { fontSize: 12, color: COLORS.textMuted },
+  chatCount:       { fontSize: 12, color: c.textMuted },
 
   // ── Chat messages
   chatList:  { paddingHorizontal: 12, paddingVertical: 10, gap: 10 },
-  chatEmpty: { textAlign: 'center', color: COLORS.textMuted, fontSize: 13, paddingTop: 24 },
+  chatEmpty: { textAlign: 'center', color: c.textMuted, fontSize: 13, paddingTop: 24 },
 
   msgRow: { flexDirection: 'row', gap: 9, alignItems: 'flex-start' },
   msgAvatar: {
@@ -751,31 +767,31 @@ const styles = StyleSheet.create({
   msgAvatarInitial: { fontSize: 12, fontWeight: '700', color: '#fff' },
   msgBubble:  { flex: 1 },
   msgUser:    { fontSize: 12, fontWeight: '700', marginBottom: 2 },
-  msgText:    { fontSize: 13, color: COLORS.textPrimary, lineHeight: 18 },
+  msgText:    { fontSize: 13, color: c.textPrimary, lineHeight: 18 },
 
   // ── Input
   inputRow: {
     flexDirection: 'row', alignItems: 'center', gap: 8,
     paddingHorizontal: 12, paddingVertical: 10,
-    borderTopWidth: 1, borderTopColor: COLORS.border,
-    backgroundColor: COLORS.bg,
+    borderTopWidth: 1, borderTopColor: c.border,
+    backgroundColor: c.bg,
   },
   input: {
     flex: 1,
-    backgroundColor: COLORS.card,
+    backgroundColor: c.card,
     borderRadius: 22,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: c.border,
     paddingHorizontal: 14,
     paddingVertical: 10,
     fontSize: 14,
-    color: COLORS.textPrimary,
+    color: c.textPrimary,
   },
   sendBtn: {
     width: 42, height: 42, borderRadius: 21,
-    backgroundColor: COLORS.accent,
+    backgroundColor: c.accent,
     alignItems: 'center', justifyContent: 'center',
   },
   sendBtnDisabled: { opacity: 0.35 },
-  chatDisabledText: { color: COLORS.textMuted, fontSize: 13 },
+  chatDisabledText: { color: c.textMuted, fontSize: 13 },
 });
