@@ -2,9 +2,9 @@ import { Injectable, Logger } from '@nestjs/common';
 import { DeleteObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { ConfigService } from '@nestjs/config';
 
-// Deletes recording objects from the MinIO recordings bucket. This service runs
-// on the host, so the S3 endpoint is localhost (not the docker-internal name the
-// egress container uses). Defaults match docker-compose; override via env.
+// Deletes recording objects from the MinIO recordings bucket (configured via
+// S3_* env). This service runs on the host, so S3_ENDPOINT is localhost (not the
+// docker-internal name the egress container uses).
 @Injectable()
 export class RecordingStorageService {
     private readonly logger = new Logger(RecordingStorageService.name);
@@ -14,15 +14,15 @@ export class RecordingStorageService {
     public constructor(private readonly configService: ConfigService) {
         const cfg = this.configService;
         this.client = new S3Client({
-            endpoint: cfg.get<string>('S3_ENDPOINT') ?? 'http://localhost:9000',
-            region: cfg.get<string>('S3_REGION') ?? 'us-east-1',
+            endpoint: cfg.getOrThrow<string>('S3_ENDPOINT'),
+            region: cfg.getOrThrow<string>('S3_REGION'),
             credentials: {
-                accessKeyId: cfg.get<string>('S3_ACCESS_KEY_ID') ?? 'spaik_admin',
-                secretAccessKey: cfg.get<string>('S3_SECRET') ?? 'spaik_password_123',
+                accessKeyId: cfg.getOrThrow<string>('S3_ACCESS_KEY_ID'),
+                secretAccessKey: cfg.getOrThrow<string>('S3_SECRET'),
             },
             forcePathStyle: true,
         });
-        this.bucket = cfg.get<string>('S3_RECORDINGS_BUCKET') ?? 'spaik-recordings';
+        this.bucket = cfg.getOrThrow<string>('S3_RECORDINGS_BUCKET');
     }
 
     public async remove(key: string) {

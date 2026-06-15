@@ -177,16 +177,17 @@ export class WebhookService {
         }
     }
 
-    // MinIO/S3 upload target for egress. The egress container reaches MinIO over
-    // the docker network, so the endpoint is the internal service name, not localhost.
+    // MinIO/S3 upload target for egress (configured via LIVEKIT_EGRESS_S3_* env).
+    // The egress container reaches MinIO over the docker network, so the endpoint
+    // is the internal service name (minio:9000), not localhost.
     private egressS3() {
         const cfg = this.configService;
         return {
-            endpoint: cfg.get<string>('LIVEKIT_EGRESS_S3_ENDPOINT') ?? 'http://minio:9000',
-            bucket: cfg.get<string>('LIVEKIT_EGRESS_S3_BUCKET') ?? 'spaik-recordings',
-            accessKey: cfg.get<string>('LIVEKIT_EGRESS_S3_ACCESS_KEY') ?? 'spaik_admin',
-            secret: cfg.get<string>('LIVEKIT_EGRESS_S3_SECRET') ?? 'spaik_password_123',
-            region: cfg.get<string>('LIVEKIT_EGRESS_S3_REGION') ?? 'us-east-1',
+            endpoint: cfg.getOrThrow<string>('LIVEKIT_EGRESS_S3_ENDPOINT'),
+            bucket: cfg.getOrThrow<string>('LIVEKIT_EGRESS_S3_BUCKET'),
+            accessKey: cfg.getOrThrow<string>('LIVEKIT_EGRESS_S3_ACCESS_KEY'),
+            secret: cfg.getOrThrow<string>('LIVEKIT_EGRESS_S3_SECRET'),
+            region: cfg.getOrThrow<string>('LIVEKIT_EGRESS_S3_REGION'),
             forcePathStyle: true
         };
     }
