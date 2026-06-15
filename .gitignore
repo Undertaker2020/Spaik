@@ -5,3 +5,6 @@
 
 # ad-hoc screenshots dropped in the repo root
 /*.png
+
+# local Stripe CLI binary (dev-only, not committed)
+/stripe-cli/
