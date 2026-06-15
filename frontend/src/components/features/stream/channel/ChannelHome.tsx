@@ -6,6 +6,7 @@ import { useState } from 'react'
 
 import { AboutChannel } from '@/components/features/stream/overview/info/AboutChannel'
 import { FollowButton } from '@/components/features/stream/overview/info/FollowButton'
+import { SupportButton } from '@/components/features/stream/overview/info/SupportButton'
 import { ChannelVideos } from '@/components/features/stream/recordings/ChannelVideos'
 import { ChannelAvatar } from '@/components/ui/elements/ChannelAvatar'
 import { ChannelVerified } from '@/components/ui/elements/ChannelVerified'
@@ -64,8 +65,11 @@ export function ChannelHome({ channel }: ChannelHomeProps) {
 						</p>
 					</div>
 				</div>
-				<div className='pb-1'>
+				<div className='flex items-center gap-x-3 pb-1'>
 					<FollowButton channel={channel} />
+					{channel.isVerified && !!channel.sponsorshipPlans?.length && (
+						<SupportButton channel={channel} />
+					)}
 				</div>
 			</div>
 
