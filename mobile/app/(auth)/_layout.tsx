@@ -1,9 +1,10 @@
 import { Redirect, Stack } from 'expo-router';
 import { useAuthStore } from '@/src/store/auth/auth.store';
-import { COLORS } from '@/src/libs/constants/colors';
+import { useColors } from '@/src/libs/theme/use-theme';
 
 export default function AuthLayout() {
   const isAuthenticated = useAuthStore(s => s.isAuthenticated);
+  const c = useColors();
 
   // Guard: already authenticated users sent to main app
   if (isAuthenticated) {
@@ -14,7 +15,7 @@ export default function AuthLayout() {
     <Stack
       screenOptions={{
         headerShown: false,
-        contentStyle: { backgroundColor: COLORS.bg },
+        contentStyle: { backgroundColor: c.bg },
         animation: 'fade',
       }}
     />

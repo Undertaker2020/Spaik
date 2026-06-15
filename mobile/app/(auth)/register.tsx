@@ -14,10 +14,13 @@ import { Controller } from 'react-hook-form';
 import { IconCircleCheck } from '@tabler/icons-react-native';
 import { AuthInput } from '@/src/components/ui/AuthInput';
 import { useRegister } from '@/src/hooks/useRegister';
-import { COLORS } from '@/src/libs/constants/colors';
+import { useColors, useThemedStyles } from '@/src/libs/theme/use-theme';
+import type { Palette } from '@/src/libs/theme/palettes';
 
 export default function RegisterScreen() {
   const router = useRouter();
+  const c = useColors();
+  const styles = useThemedStyles(makeStyles);
   const { form, onSubmit, loading, serverError, success } = useRegister();
   const { control, formState: { errors } } = form;
 
@@ -41,7 +44,7 @@ export default function RegisterScreen() {
           {/* Success state */}
           {success ? (
             <View style={styles.successCard}>
-              <IconCircleCheck size={48} color={COLORS.accent} />
+              <IconCircleCheck size={48} color={c.accent} />
               <Text style={styles.successTitle}>Account created!</Text>
               <Text style={styles.successSub}>Redirecting to sign in…</Text>
             </View>
@@ -137,70 +140,71 @@ export default function RegisterScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: COLORS.bg },
-  scroll: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 32,
-  },
-  header: { alignItems: 'center', marginBottom: 36 },
-  logo: {
-    fontSize: 42,
-    fontWeight: '700',
-    color: COLORS.accent,
-    letterSpacing: -1.5,
-  },
-  tagline: { fontSize: 14, color: COLORS.textSecondary, marginTop: 6 },
+const makeStyles = (c: Palette) =>
+  StyleSheet.create({
+    root: { flex: 1, backgroundColor: c.bg },
+    scroll: {
+      flexGrow: 1,
+      justifyContent: 'center',
+      paddingHorizontal: 20,
+      paddingVertical: 32,
+    },
+    header: { alignItems: 'center', marginBottom: 36 },
+    logo: {
+      fontSize: 42,
+      fontWeight: '700',
+      color: c.accent,
+      letterSpacing: -1.5,
+    },
+    tagline: { fontSize: 14, color: c.textSecondary, marginTop: 6 },
 
-  card: {
-    backgroundColor: COLORS.card,
-    borderRadius: 20,
-    padding: 24,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-  },
-  cardTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: COLORS.textPrimary,
-    marginBottom: 20,
-  },
+    card: {
+      backgroundColor: c.card,
+      borderRadius: 20,
+      padding: 24,
+      borderWidth: 1,
+      borderColor: c.border,
+    },
+    cardTitle: {
+      fontSize: 20,
+      fontWeight: '700',
+      color: c.textPrimary,
+      marginBottom: 20,
+    },
 
-  errorBanner: {
-    backgroundColor: 'rgba(229, 62, 62, 0.12)',
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: COLORS.danger,
-    padding: 12,
-    marginBottom: 14,
-  },
-  errorBannerText: { color: COLORS.danger, fontSize: 13 },
+    errorBanner: {
+      backgroundColor: 'rgba(229, 62, 62, 0.12)',
+      borderRadius: 10,
+      borderWidth: 1,
+      borderColor: c.danger,
+      padding: 12,
+      marginBottom: 14,
+    },
+    errorBannerText: { color: c.danger, fontSize: 13 },
 
-  primaryBtn: {
-    backgroundColor: COLORS.accent,
-    borderRadius: 12,
-    paddingVertical: 14,
-    alignItems: 'center',
-    marginTop: 4,
-  },
-  primaryBtnDisabled: { opacity: 0.6 },
-  primaryBtnText: { color: '#000', fontWeight: '700', fontSize: 16 },
+    primaryBtn: {
+      backgroundColor: c.accent,
+      borderRadius: 12,
+      paddingVertical: 14,
+      alignItems: 'center',
+      marginTop: 4,
+    },
+    primaryBtnDisabled: { opacity: 0.6 },
+    primaryBtnText: { color: '#000', fontWeight: '700', fontSize: 16 },
 
-  successCard: {
-    backgroundColor: COLORS.card,
-    borderRadius: 20,
-    padding: 32,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    gap: 12,
-  },
-  successTitle: { fontSize: 20, fontWeight: '700', color: COLORS.textPrimary },
-  successSub: { fontSize: 14, color: COLORS.textSecondary },
+    successCard: {
+      backgroundColor: c.card,
+      borderRadius: 20,
+      padding: 32,
+      alignItems: 'center',
+      borderWidth: 1,
+      borderColor: c.border,
+      gap: 12,
+    },
+    successTitle: { fontSize: 20, fontWeight: '700', color: c.textPrimary },
+    successSub: { fontSize: 14, color: c.textSecondary },
 
-  footerLink: { alignItems: 'center', marginTop: 24 },
-  footerText: { fontSize: 14, color: COLORS.textSecondary },
-  footerAccent: { color: COLORS.accent, fontWeight: '600' },
-});
+    footerLink: { alignItems: 'center', marginTop: 24 },
+    footerText: { fontSize: 14, color: c.textSecondary },
+    footerAccent: { color: c.accent, fontWeight: '600' },
+  });

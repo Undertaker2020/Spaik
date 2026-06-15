@@ -7,7 +7,8 @@ import {
   Animated,
   StyleSheet,
 } from 'react-native';
-import { COLORS } from '@/src/libs/constants/colors';
+import { useThemedStyles } from '@/src/libs/theme/use-theme';
+import type { Palette } from '@/src/libs/theme/palettes';
 
 interface Props {
   value: string;
@@ -34,6 +35,7 @@ export function OtpInput({
   autoFocus,
 }: Props) {
   const inputRef = useRef<TextInput>(null);
+  const styles = useThemedStyles(makeStyles);
   const [focused, setFocused] = useState(false);
   const caretOpacity = useRef(new Animated.Value(1)).current;
 
@@ -106,52 +108,53 @@ export function OtpInput({
   );
 }
 
-const styles = StyleSheet.create({
-  wrapper: { marginBottom: 14 },
-  label: {
-    fontSize: 12,
-    color: COLORS.textSecondary,
-    fontWeight: '500',
-    marginBottom: 6,
-  },
-  row: {
-    flexDirection: 'row',
-    gap: 8,
-    position: 'relative',
-  },
-  cell: {
-    flex: 1,
-    height: 52,
-    borderRadius: 12,
-    backgroundColor: COLORS.card,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  cellFilled: { borderColor: COLORS.accentDark },
-  cellActive: {
-    borderColor: COLORS.accent,
-    backgroundColor: 'rgba(24, 185, 174, 0.08)',
-  },
-  cellError: { borderColor: COLORS.danger },
-  cellText: {
-    fontSize: 22,
-    fontWeight: '700',
-    color: COLORS.textPrimary,
-  },
-  caret: {
-    width: 2,
-    height: 24,
-    borderRadius: 1,
-    backgroundColor: COLORS.accent,
-  },
-  // Transparent overlay capturing taps + keyboard input across the whole row.
-  hiddenInput: {
-    ...StyleSheet.absoluteFillObject,
-    opacity: 0,
-    color: 'transparent',
-  },
-  errorText: { fontSize: 12, color: COLORS.danger, marginTop: 6 },
-  hintText: { fontSize: 12, color: COLORS.textMuted, marginTop: 6 },
-});
+const makeStyles = (c: Palette) =>
+  StyleSheet.create({
+    wrapper: { marginBottom: 14 },
+    label: {
+      fontSize: 12,
+      color: c.textSecondary,
+      fontWeight: '500',
+      marginBottom: 6,
+    },
+    row: {
+      flexDirection: 'row',
+      gap: 8,
+      position: 'relative',
+    },
+    cell: {
+      flex: 1,
+      height: 52,
+      borderRadius: 12,
+      backgroundColor: c.card,
+      borderWidth: 1,
+      borderColor: c.border,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    cellFilled: { borderColor: c.accentDark },
+    cellActive: {
+      borderColor: c.accent,
+      backgroundColor: 'rgba(24, 185, 174, 0.08)',
+    },
+    cellError: { borderColor: c.danger },
+    cellText: {
+      fontSize: 22,
+      fontWeight: '700',
+      color: c.textPrimary,
+    },
+    caret: {
+      width: 2,
+      height: 24,
+      borderRadius: 1,
+      backgroundColor: c.accent,
+    },
+    // Transparent overlay capturing taps + keyboard input across the whole row.
+    hiddenInput: {
+      ...StyleSheet.absoluteFillObject,
+      opacity: 0,
+      color: 'transparent',
+    },
+    errorText: { fontSize: 12, color: c.danger, marginTop: 6 },
+    hintText: { fontSize: 12, color: c.textMuted, marginTop: 6 },
+  });

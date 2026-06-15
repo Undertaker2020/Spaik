@@ -8,7 +8,8 @@ import {
   type TextInputProps,
 } from 'react-native';
 import { IconEye, IconEyeOff } from '@tabler/icons-react-native';
-import { COLORS } from '@/src/libs/constants/colors';
+import { useColors, useThemedStyles } from '@/src/libs/theme/use-theme';
+import type { Palette } from '@/src/libs/theme/palettes';
 
 interface Props extends TextInputProps {
   label: string;
@@ -18,6 +19,8 @@ interface Props extends TextInputProps {
 
 export function AuthInput({ label, error, isPassword, style, ...props }: Props) {
   const [visible, setVisible] = useState(false);
+  const c = useColors();
+  const styles = useThemedStyles(makeStyles);
 
   return (
     <View style={styles.wrapper}>
@@ -25,7 +28,7 @@ export function AuthInput({ label, error, isPassword, style, ...props }: Props) 
       <View style={[styles.inputWrap, error ? styles.inputWrapError : null]}>
         <TextInput
           style={[styles.input, style]}
-          placeholderTextColor={COLORS.textMuted}
+          placeholderTextColor={c.textMuted}
           autoCapitalize="none"
           autoCorrect={false}
           secureTextEntry={isPassword && !visible}
@@ -38,8 +41,8 @@ export function AuthInput({ label, error, isPassword, style, ...props }: Props) 
             hitSlop={8}
           >
             {visible
-              ? <IconEye size={18} color={COLORS.textMuted} />
-              : <IconEyeOff size={18} color={COLORS.textMuted} />}
+              ? <IconEye size={18} color={c.textMuted} />
+              : <IconEyeOff size={18} color={c.textMuted} />}
           </TouchableOpacity>
         )}
       </View>
@@ -48,30 +51,31 @@ export function AuthInput({ label, error, isPassword, style, ...props }: Props) 
   );
 }
 
-const styles = StyleSheet.create({
-  wrapper: { marginBottom: 14 },
-  label: {
-    fontSize: 12,
-    color: COLORS.textSecondary,
-    fontWeight: '500',
-    marginBottom: 6,
-  },
-  inputWrap: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: COLORS.card,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-  },
-  inputWrapError: { borderColor: COLORS.danger },
-  input: {
-    flex: 1,
-    paddingHorizontal: 14,
-    paddingVertical: 13,
-    fontSize: 15,
-    color: COLORS.textPrimary,
-  },
-  eyeBtn: { paddingRight: 14 },
-  errorText: { fontSize: 12, color: COLORS.danger, marginTop: 4 },
-});
+const makeStyles = (c: Palette) =>
+  StyleSheet.create({
+    wrapper: { marginBottom: 14 },
+    label: {
+      fontSize: 12,
+      color: c.textSecondary,
+      fontWeight: '500',
+      marginBottom: 6,
+    },
+    inputWrap: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: c.card,
+      borderRadius: 12,
+      borderWidth: 1,
+      borderColor: c.border,
+    },
+    inputWrapError: { borderColor: c.danger },
+    input: {
+      flex: 1,
+      paddingHorizontal: 14,
+      paddingVertical: 13,
+      fontSize: 15,
+      color: c.textPrimary,
+    },
+    eyeBtn: { paddingRight: 14 },
+    errorText: { fontSize: 12, color: c.danger, marginTop: 4 },
+  });

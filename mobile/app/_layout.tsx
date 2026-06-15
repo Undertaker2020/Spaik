@@ -10,9 +10,8 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { registerGlobals } from '@livekit/react-native';
 import { client } from '@/src/graphql/apollo-client';
 import { useAuthStore } from '@/src/store/auth/auth.store';
-import { COLORS } from '@/src/libs/constants/colors';
-
-const BG = COLORS.bg;
+import { useConfigStore } from '@/src/store/config/config.store';
+import { useColors } from '@/src/libs/theme/use-theme';
 
 // Install LiveKit/WebRTC globals once at startup (no-op in Expo Go where the
 // native WebRTC module is absent — real video requires a dev build).
@@ -31,6 +30,8 @@ SplashScreen.preventAutoHideAsync();
 // Auth redirects live in each group layout using <Redirect>.
 export default function RootLayout() {
   const hasHydrated = useAuthStore(s => s.hasHydrated);
+  const c = useColors();
+  const mode = useConfigStore(s => s.mode);
 
   useEffect(() => {
     if (hasHydrated) {
@@ -39,11 +40,11 @@ export default function RootLayout() {
   }, [hasHydrated]);
 
   return (
-    <GestureHandlerRootView style={{ flex: 1, backgroundColor: BG }}>
+    <GestureHandlerRootView style={{ flex: 1, backgroundColor: c.bg }}>
       <SafeAreaProvider>
         <ApolloProvider client={client}>
-          <StatusBar style="light" />
-          <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: BG } }}>
+          <StatusBar style={mode === 'dark' ? 'light' : 'dark'} />
+          <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: c.bg } }}>
             <Stack.Screen name="notifications" options={{ presentation: 'modal' }} />
             <Stack.Screen name="edit-profile" />
             <Stack.Screen name="channel/[username]" />
