@@ -19,7 +19,8 @@ import {
   IconCamera,
   IconTrash,
 } from '@tabler/icons-react-native';
-import { COLORS } from '@/src/libs/constants/colors';
+import { useColors, useThemedStyles } from '@/src/libs/theme/use-theme';
+import type { Palette } from '@/src/libs/theme/palettes';
 import { SERVER_URL } from '@/src/libs/constants/url.constants';
 import { getMediaSource } from '@/src/libs/utils/get-media-source';
 import {
@@ -33,6 +34,8 @@ const AVATAR_SIZE = 88;
 
 export default function EditProfileScreen() {
   const router = useRouter();
+  const c = useColors();
+  const styles = useThemedStyles(makeStyles);
 
   const { data, loading: profileLoading, refetch } = useQuery<{
     findProfile: MyProfile;
@@ -148,7 +151,7 @@ export default function EditProfileScreen() {
     return (
       <SafeAreaView style={styles.root} edges={['top']}>
         <View style={styles.center}>
-          <ActivityIndicator size="large" color={COLORS.accent} />
+          <ActivityIndicator size="large" color={c.accent} />
         </View>
       </SafeAreaView>
     );
@@ -159,7 +162,7 @@ export default function EditProfileScreen() {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.headerBtn} activeOpacity={0.7}>
-          <IconArrowLeft size={22} color={COLORS.textPrimary} />
+          <IconArrowLeft size={22} color={c.textPrimary} />
         </TouchableOpacity>
         <Text style={styles.title}>Edit Profile</Text>
         <TouchableOpacity
@@ -218,7 +221,7 @@ export default function EditProfileScreen() {
               style={styles.removeAvatarBtn}
               activeOpacity={0.7}
             >
-              <IconTrash size={14} color={COLORS.danger} />
+              <IconTrash size={14} color={c.danger} />
               <Text style={styles.removeAvatarText}>Remove avatar</Text>
             </TouchableOpacity>
           )}
@@ -273,13 +276,15 @@ function Field({
   hint?: string;
   inputStyle?: object;
 } & React.ComponentProps<typeof TextInput>) {
+  const c = useColors();
+  const styles = useThemedStyles(makeStyles);
   return (
     <View style={styles.field}>
       <Text style={styles.fieldLabel}>{label}</Text>
       <TextInput
         style={[styles.fieldInput, inputStyle]}
-        placeholderTextColor={COLORS.textMuted}
-        selectionColor={COLORS.accent}
+        placeholderTextColor={c.textMuted}
+        selectionColor={c.accent}
         {...inputProps}
       />
       {hint && <Text style={styles.fieldHint}>{hint}</Text>}
@@ -287,8 +292,9 @@ function Field({
   );
 }
 
-const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: COLORS.bg },
+const makeStyles = (c: Palette) =>
+  StyleSheet.create({
+  root: { flex: 1, backgroundColor: c.bg },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
 
   // Header
@@ -299,19 +305,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 10,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    borderBottomColor: c.border,
   },
   headerBtn: {
     width: 38, height: 38,
     alignItems: 'center', justifyContent: 'center',
     borderRadius: 10,
-    backgroundColor: COLORS.card,
+    backgroundColor: c.card,
   },
-  title: { fontSize: 17, fontWeight: '700', color: COLORS.textPrimary },
+  title: { fontSize: 17, fontWeight: '700', color: c.textPrimary },
   saveBtn: {
     paddingHorizontal: 16, paddingVertical: 8,
     borderRadius: 10,
-    backgroundColor: COLORS.accent,
+    backgroundColor: c.accent,
     minWidth: 60,
     alignItems: 'center',
   },
@@ -323,37 +329,37 @@ const styles = StyleSheet.create({
   avatarWrap: { position: 'relative' },
   avatar: { width: AVATAR_SIZE, height: AVATAR_SIZE, borderRadius: AVATAR_SIZE / 2 },
   avatarFallback: {
-    backgroundColor: COLORS.card,
+    backgroundColor: c.card,
     alignItems: 'center', justifyContent: 'center',
   },
-  avatarInitial: { fontSize: 32, fontWeight: '700', color: COLORS.accent },
+  avatarInitial: { fontSize: 32, fontWeight: '700', color: c.accent },
   cameraBtn: {
     position: 'absolute',
     bottom: 0, right: 0,
     width: 28, height: 28,
     borderRadius: 14,
-    backgroundColor: COLORS.accent,
+    backgroundColor: c.accent,
     alignItems: 'center', justifyContent: 'center',
-    borderWidth: 2, borderColor: COLORS.bg,
+    borderWidth: 2, borderColor: c.bg,
   },
   removeAvatarBtn: {
     flexDirection: 'row', alignItems: 'center', gap: 5,
   },
-  removeAvatarText: { color: COLORS.danger, fontSize: 13 },
+  removeAvatarText: { color: c.danger, fontSize: 13 },
 
   // Form
   form: {
     marginHorizontal: 16,
-    backgroundColor: COLORS.card,
+    backgroundColor: c.card,
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: c.border,
     marginBottom: 32,
   },
-  divider: { height: 1, backgroundColor: COLORS.border },
+  divider: { height: 1, backgroundColor: c.border },
   field: { padding: 14, gap: 6 },
-  fieldLabel: { fontSize: 12, fontWeight: '600', color: COLORS.textSecondary, textTransform: 'uppercase', letterSpacing: 0.5 },
-  fieldInput: { fontSize: 15, color: COLORS.textPrimary, paddingVertical: 4 },
-  fieldHint: { fontSize: 12, color: COLORS.textMuted },
+  fieldLabel: { fontSize: 12, fontWeight: '600', color: c.textSecondary, textTransform: 'uppercase', letterSpacing: 0.5 },
+  fieldInput: { fontSize: 15, color: c.textPrimary, paddingVertical: 4 },
+  fieldHint: { fontSize: 12, color: c.textMuted },
   bioInput: { minHeight: 72, textAlignVertical: 'top' },
 });

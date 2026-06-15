@@ -3,7 +3,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
 import { IconDeviceMobile, IconDeviceLaptop, IconTrash, IconMapPin, IconWifi } from '@tabler/icons-react-native';
-import { COLORS } from '@/src/libs/constants/colors';
+import { useColors, useThemedStyles } from '@/src/libs/theme/use-theme';
+import type { Palette } from '@/src/libs/theme/palettes';
 import { SettingsHeader } from '@/src/components/settings/SettingsHeader';
 import {
   FIND_SESSIONS,
@@ -33,12 +34,14 @@ function SessionCard({
   onRemove: () => void;
   removing: boolean;
 }) {
+  const c = useColors();
+  const styles = useThemedStyles(makeStyles);
   const DeviceIcon = deviceIcon(session.metadata.device.type);
   return (
     <View style={[styles.card, isCurrent && styles.cardCurrent]}>
       <View style={styles.cardLeft}>
         <View style={[styles.deviceIcon, isCurrent && styles.deviceIconCurrent]}>
-          <DeviceIcon size={18} color={isCurrent ? COLORS.accent : COLORS.textSecondary} />
+          <DeviceIcon size={18} color={isCurrent ? c.accent : c.textSecondary} />
         </View>
         <View style={styles.cardInfo}>
           <View style={styles.cardTitleRow}>
@@ -47,11 +50,11 @@ function SessionCard({
           </View>
           <Text style={styles.cardOs}>{session.metadata.device.os} · {session.metadata.device.type}</Text>
           <View style={styles.cardMeta}>
-            <IconMapPin size={11} color={COLORS.textMuted} />
+            <IconMapPin size={11} color={c.textMuted} />
             <Text style={styles.cardMetaText}>
               {session.metadata.location.city}, {session.metadata.location.country}
             </Text>
-            <IconWifi size={11} color={COLORS.textMuted} />
+            <IconWifi size={11} color={c.textMuted} />
             <Text style={styles.cardMetaText}>{session.metadata.ip}</Text>
           </View>
           <Text style={styles.cardDate}>{formatDate(session.createdAt)}</Text>
@@ -67,8 +70,8 @@ function SessionCard({
           hitSlop={8}
         >
           {removing
-            ? <ActivityIndicator size="small" color={COLORS.danger} />
-            : <IconTrash size={16} color={COLORS.danger} />
+            ? <ActivityIndicator size="small" color={c.danger} />
+            : <IconTrash size={16} color={c.danger} />
           }
         </TouchableOpacity>
       )}
@@ -77,6 +80,8 @@ function SessionCard({
 }
 
 export default function SessionsScreen() {
+  const c = useColors();
+  const styles = useThemedStyles(makeStyles);
   const { data: sessionsData, loading, refetch } = useQuery<{ findSessionByUser: SessionItem[] }>(FIND_SESSIONS);
   const { data: currentData } = useQuery<{ findCurrentSession: SessionItem }>(FIND_CURRENT_SESSION);
 
@@ -106,7 +111,7 @@ export default function SessionsScreen() {
     <SafeAreaView style={styles.root} edges={['top']}>
       <SettingsHeader title="Sessions" />
       {loading ? (
-        <View style={styles.center}><ActivityIndicator size="large" color={COLORS.accent} /></View>
+        <View style={styles.center}><ActivityIndicator size="large" color={c.accent} /></View>
       ) : (
         <FlatList
           data={sorted}
@@ -132,39 +137,40 @@ export default function SessionsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  root:   { flex: 1, backgroundColor: COLORS.bg },
+const makeStyles = (c: Palette) =>
+  StyleSheet.create({
+  root:   { flex: 1, backgroundColor: c.bg },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   list:   { padding: 16, gap: 10 },
-  emptyText: { color: COLORS.textMuted, fontSize: 14 },
+  emptyText: { color: c.textMuted, fontSize: 14 },
 
   card: {
     flexDirection: 'row', alignItems: 'center',
-    backgroundColor: COLORS.card, borderRadius: 14,
-    borderWidth: 1, borderColor: COLORS.border,
+    backgroundColor: c.card, borderRadius: 14,
+    borderWidth: 1, borderColor: c.border,
     padding: 14, gap: 12,
   },
-  cardCurrent: { borderColor: COLORS.accent + '44' },
+  cardCurrent: { borderColor: c.accent + '44' },
   cardLeft: { flex: 1, flexDirection: 'row', gap: 12, alignItems: 'flex-start' },
   deviceIcon: {
     width: 38, height: 38, borderRadius: 10,
-    backgroundColor: COLORS.bg,
+    backgroundColor: c.bg,
     alignItems: 'center', justifyContent: 'center',
     flexShrink: 0,
   },
   deviceIconCurrent: { backgroundColor: 'rgba(24,185,174,0.1)' },
   cardInfo:    { flex: 1, gap: 3 },
   cardTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  cardBrowser:  { fontSize: 14, fontWeight: '600', color: COLORS.textPrimary },
+  cardBrowser:  { fontSize: 14, fontWeight: '600', color: c.textPrimary },
   currentPill: {
     backgroundColor: 'rgba(24,185,174,0.15)',
     borderRadius: 4, paddingHorizontal: 6, paddingVertical: 2,
   },
-  currentPillText: { fontSize: 10, fontWeight: '700', color: COLORS.accent },
-  cardOs:   { fontSize: 12, color: COLORS.textSecondary },
+  currentPillText: { fontSize: 10, fontWeight: '700', color: c.accent },
+  cardOs:   { fontSize: 12, color: c.textSecondary },
   cardMeta: { flexDirection: 'row', alignItems: 'center', gap: 4, flexWrap: 'wrap' },
-  cardMetaText: { fontSize: 11, color: COLORS.textMuted },
-  cardDate: { fontSize: 11, color: COLORS.textDisabled, marginTop: 2 },
+  cardMetaText: { fontSize: 11, color: c.textMuted },
+  cardDate: { fontSize: 11, color: c.textDisabled, marginTop: 2 },
 
   removeBtn: {
     width: 32, height: 32, borderRadius: 8,

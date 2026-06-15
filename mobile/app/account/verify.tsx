@@ -3,11 +3,14 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { IconCircleCheck, IconAlertCircle } from '@tabler/icons-react-native';
 import { useVerify } from '@/src/hooks/useVerify';
-import { COLORS } from '@/src/libs/constants/colors';
+import { useColors, useThemedStyles } from '@/src/libs/theme/use-theme';
+import type { Palette } from '@/src/libs/theme/palettes';
 
 export default function VerifyScreen() {
   const { token } = useLocalSearchParams<{ token: string }>();
   const router = useRouter();
+  const c = useColors();
+  const styles = useThemedStyles(makeStyles);
   const { loading, error } = useVerify(token);
 
   return (
@@ -17,14 +20,14 @@ export default function VerifyScreen() {
 
         {loading && (
           <>
-            <ActivityIndicator size="large" color={COLORS.accent} style={styles.icon} />
+            <ActivityIndicator size="large" color={c.accent} style={styles.icon} />
             <Text style={styles.title}>Verifying your account…</Text>
           </>
         )}
 
         {!loading && !error && (
           <>
-            <IconCircleCheck size={56} color={COLORS.accent} style={styles.icon} />
+            <IconCircleCheck size={56} color={c.accent} style={styles.icon} />
             <Text style={styles.title}>Email confirmed!</Text>
             <Text style={styles.sub}>Redirecting you to the app…</Text>
           </>
@@ -32,7 +35,7 @@ export default function VerifyScreen() {
 
         {error && (
           <>
-            <IconAlertCircle size={56} color={COLORS.danger} style={styles.icon} />
+            <IconAlertCircle size={56} color={c.danger} style={styles.icon} />
             <Text style={styles.title}>Verification failed</Text>
             <Text style={styles.sub}>{error}</Text>
             <TouchableOpacity style={styles.btn} onPress={() => router.replace('/(auth)/login')}>
@@ -45,8 +48,9 @@ export default function VerifyScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: COLORS.bg },
+const makeStyles = (c: Palette) =>
+  StyleSheet.create({
+  root: { flex: 1, backgroundColor: c.bg },
   container: {
     flex: 1,
     alignItems: 'center',
@@ -57,16 +61,16 @@ const styles = StyleSheet.create({
   logo: {
     fontSize: 38,
     fontWeight: '700',
-    color: COLORS.accent,
+    color: c.accent,
     letterSpacing: -1.5,
     marginBottom: 24,
   },
   icon: { marginBottom: 4 },
-  title: { fontSize: 22, fontWeight: '700', color: COLORS.textPrimary, textAlign: 'center' },
-  sub: { fontSize: 14, color: COLORS.textSecondary, textAlign: 'center' },
+  title: { fontSize: 22, fontWeight: '700', color: c.textPrimary, textAlign: 'center' },
+  sub: { fontSize: 14, color: c.textSecondary, textAlign: 'center' },
   btn: {
     marginTop: 16,
-    backgroundColor: COLORS.accent,
+    backgroundColor: c.accent,
     borderRadius: 12,
     paddingVertical: 14,
     paddingHorizontal: 32,

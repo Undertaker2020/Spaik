@@ -18,7 +18,8 @@ import {
   IconFingerprint,
   IconCircleCheck,
 } from '@tabler/icons-react-native';
-import { COLORS } from '@/src/libs/constants/colors';
+import { useColors, useThemedStyles } from '@/src/libs/theme/use-theme';
+import type { Palette } from '@/src/libs/theme/palettes';
 import {
   FIND_NOTIFICATIONS,
   NotificationType,
@@ -49,11 +50,13 @@ function timeAgo(isoDate: string): string {
 }
 
 function NotificationRow({ item }: { item: NotificationItem }) {
+  const c = useColors();
+  const styles = useThemedStyles(makeStyles);
   const Icon = getNotificationIcon(item.type);
   return (
     <View style={[styles.row, !item.isRead && styles.rowUnread]}>
       <View style={styles.iconWrap}>
-        <Icon size={20} color={COLORS.accent} strokeWidth={1.8} />
+        <Icon size={20} color={c.accent} strokeWidth={1.8} />
       </View>
       <View style={styles.rowContent}>
         <Text style={styles.message}>{stripHtml(item.message)}</Text>
@@ -66,6 +69,8 @@ function NotificationRow({ item }: { item: NotificationItem }) {
 
 export default function NotificationsScreen() {
   const router = useRouter();
+  const c = useColors();
+  const styles = useThemedStyles(makeStyles);
 
   const { data, loading, error, refetch } = useQuery<{
     findNotificationByUser: NotificationItem[];
@@ -75,12 +80,12 @@ export default function NotificationsScreen() {
 
   return (
     <>
-    <View style={[StyleSheet.absoluteFill, { backgroundColor: COLORS.bg }]} />
+    <View style={[StyleSheet.absoluteFill, { backgroundColor: c.bg }]} />
     <SafeAreaView style={styles.root} edges={['top']}>
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} activeOpacity={0.7}>
-          <IconArrowLeft size={22} color={COLORS.textPrimary} />
+          <IconArrowLeft size={22} color={c.textPrimary} />
         </TouchableOpacity>
         <Text style={styles.title}>Notifications</Text>
         <View style={{ width: 38 }} />
@@ -88,7 +93,7 @@ export default function NotificationsScreen() {
 
       {loading ? (
         <View style={styles.center}>
-          <ActivityIndicator size="large" color={COLORS.accent} />
+          <ActivityIndicator size="large" color={c.accent} />
         </View>
       ) : error ? (
         <View style={styles.center}>
@@ -99,7 +104,7 @@ export default function NotificationsScreen() {
         </View>
       ) : notifications.length === 0 ? (
         <View style={styles.center}>
-          <IconBell size={48} color={COLORS.textMuted} strokeWidth={1.2} />
+          <IconBell size={48} color={c.textMuted} strokeWidth={1.2} />
           <Text style={styles.emptyText}>No notifications yet</Text>
         </View>
       ) : (
@@ -117,7 +122,8 @@ export default function NotificationsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: Palette) =>
+  StyleSheet.create({
   root: { flex: 1 },
 
   header: {
@@ -127,7 +133,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 10,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    borderBottomColor: c.border,
   },
   backBtn: {
     width: 38,
@@ -135,25 +141,25 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 10,
-    backgroundColor: COLORS.card,
+    backgroundColor: c.card,
   },
-  title: { fontSize: 17, fontWeight: '700', color: COLORS.textPrimary },
+  title: { fontSize: 17, fontWeight: '700', color: c.textPrimary },
 
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12 },
-  errorText: { color: COLORS.danger, fontSize: 14, textAlign: 'center', paddingHorizontal: 24 },
+  errorText: { color: c.danger, fontSize: 14, textAlign: 'center', paddingHorizontal: 24 },
   retryBtn: {
     paddingHorizontal: 20,
     paddingVertical: 8,
-    backgroundColor: COLORS.card,
+    backgroundColor: c.card,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: c.border,
   },
-  retryText: { color: COLORS.textPrimary, fontSize: 14 },
-  emptyText: { color: COLORS.textMuted, fontSize: 15, marginTop: 8 },
+  retryText: { color: c.textPrimary, fontSize: 14 },
+  emptyText: { color: c.textMuted, fontSize: 15, marginTop: 8 },
 
   list: { paddingVertical: 8 },
-  separator: { height: 1, backgroundColor: COLORS.border, marginHorizontal: 16 },
+  separator: { height: 1, backgroundColor: c.border, marginHorizontal: 16 },
 
   row: {
     flexDirection: 'row',
@@ -173,13 +179,13 @@ const styles = StyleSheet.create({
     flexShrink: 0,
   },
   rowContent: { flex: 1 },
-  message: { fontSize: 14, color: COLORS.textPrimary, lineHeight: 20 },
-  time: { fontSize: 12, color: COLORS.textMuted, marginTop: 3 },
+  message: { fontSize: 14, color: c.textPrimary, lineHeight: 20 },
+  time: { fontSize: 12, color: c.textMuted, marginTop: 3 },
   unreadDot: {
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: COLORS.accent,
+    backgroundColor: c.accent,
     flexShrink: 0,
   },
 });
