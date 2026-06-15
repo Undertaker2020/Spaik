@@ -8,7 +8,7 @@
     "introspect": "node scripts/introspect-gateway.mjs",
     "codegen": "npm run introspect && graphql-codegen --config graphql.config.ts",
     "dev:full": "npm run codegen && next dev --turbopack",
-    "build": "npm run codegen && next build",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint"
   },
