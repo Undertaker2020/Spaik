@@ -26,8 +26,9 @@ import {
   IconLogout,
   IconBroadcast,
 } from '@tabler/icons-react-native';
-import { COLORS } from '@/src/libs/constants/colors';
 import { getMediaSource } from '@/src/libs/utils/get-media-source';
+import { useColors, useThemedStyles } from '@/src/libs/theme/use-theme';
+import type { Palette } from '@/src/libs/theme/palettes';
 import { useAuthStore } from '@/src/store/auth/auth.store';
 import { clearTokens } from '@/src/libs/auth/token-storage';
 import {
@@ -53,6 +54,8 @@ function SettingsItem({
   onPress?: () => void;
   last?: boolean;
 }) {
+  const c = useColors();
+  const styles = useThemedStyles(makeStyles);
   return (
     <TouchableOpacity
       style={[styles.item, last && styles.itemLast]}
@@ -61,7 +64,7 @@ function SettingsItem({
     >
       <View style={[styles.itemIcon, { backgroundColor: iconBg }]}>{icon}</View>
       <Text style={styles.itemLabel}>{label}</Text>
-      <IconChevronRight size={20} color={COLORS.textDisabled} />
+      <IconChevronRight size={20} color={c.textDisabled} />
     </TouchableOpacity>
   );
 }
@@ -69,6 +72,7 @@ function SettingsItem({
 // ── Section ───────────────────────────────────────────────────
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  const styles = useThemedStyles(makeStyles);
   return (
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>{title}</Text>
@@ -81,6 +85,8 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 
 export default function ProfileScreen() {
   const router = useRouter();
+  const c = useColors();
+  const styles = useThemedStyles(makeStyles);
   const setIsAuthenticated = useAuthStore(s => s.setIsAuthenticated);
 
   const { data, loading, error, refetch } = useQuery<{ findProfile: MyProfile }>(FIND_MY_PROFILE);
@@ -98,7 +104,6 @@ export default function ProfileScreen() {
   }, [setIsAuthenticated]);
 
   const [logout, { loading: loggingOut }] = useMutation(LOGOUT_MUTATION, {
-    // Clear local tokens whether or not the server call succeeds
     onCompleted: signOut,
     onError: signOut,
   });
@@ -111,7 +116,7 @@ export default function ProfileScreen() {
         <View style={styles.center}>
           {error
             ? <Text style={styles.errorText}>{error.message}</Text>
-            : <ActivityIndicator size="large" color={COLORS.accent} />
+            : <ActivityIndicator size="large" color={c.accent} />
           }
         </View>
       </SafeAreaView>
@@ -134,8 +139,8 @@ export default function ProfileScreen() {
               await refetch();
               setRefreshing(false);
             }}
-            tintColor={COLORS.accent}
-            colors={[COLORS.accent]}
+            tintColor={c.accent}
+            colors={[c.accent]}
           />
         }
       >
@@ -161,7 +166,7 @@ export default function ProfileScreen() {
             <Text style={styles.profileName}>{user.displayName}</Text>
             <Text style={styles.profileEmail}>{user.email}</Text>
           </View>
-          <IconChevronRight size={20} color={COLORS.textDisabled} />
+          <IconChevronRight size={20} color={c.textDisabled} />
         </TouchableOpacity>
 
         {/* Account */}
@@ -181,7 +186,7 @@ export default function ProfileScreen() {
 
         {/* App */}
         <Section title="App">
-          <SettingsItem icon={<IconMoon     size={22} color="#fff" />} iconBg="#374151" label="Appearance" />
+          <SettingsItem icon={<IconMoon     size={22} color="#fff" />} iconBg="#374151" label="Appearance" onPress={() => router.push('/settings/appearance' as any)} />
           <SettingsItem icon={<IconLanguage size={22} color="#fff" />} iconBg="#374151" label="Language" />
           <SettingsItem
             icon={<IconBell size={22} color="#fff" />}
@@ -201,10 +206,10 @@ export default function ProfileScreen() {
             disabled={loggingOut}
           >
             {loggingOut ? (
-              <ActivityIndicator size="small" color={COLORS.danger} />
+              <ActivityIndicator size="small" color={c.danger} />
             ) : (
               <>
-                <IconLogout size={16} color={COLORS.danger} />
+                <IconLogout size={16} color={c.danger} />
                 <Text style={styles.signOutText}>Sign Out</Text>
               </>
             )}
@@ -216,93 +221,90 @@ export default function ProfileScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  root:   { flex: 1, backgroundColor: COLORS.bg },
-  center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  errorText: { color: COLORS.danger, textAlign: 'center', padding: 20 },
+const makeStyles = (c: Palette) =>
+  StyleSheet.create({
+    root:   { flex: 1, backgroundColor: c.bg },
+    center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+    errorText: { color: c.danger, textAlign: 'center', padding: 20 },
 
-  screenTitle: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: COLORS.textPrimary,
-    paddingHorizontal: 16,
-    paddingTop: 8,
-    paddingBottom: 14,
-  },
+    screenTitle: {
+      fontSize: 24,
+      fontWeight: '700',
+      color: c.textPrimary,
+      paddingHorizontal: 16,
+      paddingTop: 8,
+      paddingBottom: 14,
+    },
 
-  // Profile row
-  profileRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    marginHorizontal: 16,
-    marginBottom: 8,
-    padding: 14,
-    backgroundColor: COLORS.card,
-    borderRadius: 14,
-  },
-  profileAvatar: {
-    width: AVATAR_SIZE,
-    height: AVATAR_SIZE,
-    borderRadius: AVATAR_SIZE / 2,
-  },
-  profileAvatarFallback: {
-    backgroundColor: '#2A2D3A',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  profileAvatarInitial: { fontSize: 18, fontWeight: '700', color: COLORS.accent },
-  profileInfo: { flex: 1 },
-  profileName:  { fontSize: 17, fontWeight: '600', color: COLORS.textPrimary },
-  profileEmail: { fontSize: 14, color: COLORS.textSecondary, marginTop: 2 },
+    profileRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 12,
+      marginHorizontal: 16,
+      marginBottom: 8,
+      padding: 14,
+      backgroundColor: c.card,
+      borderRadius: 14,
+    },
+    profileAvatar: {
+      width: AVATAR_SIZE,
+      height: AVATAR_SIZE,
+      borderRadius: AVATAR_SIZE / 2,
+    },
+    profileAvatarFallback: {
+      backgroundColor: c.outer,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    profileAvatarInitial: { fontSize: 18, fontWeight: '700', color: c.accent },
+    profileInfo: { flex: 1 },
+    profileName:  { fontSize: 17, fontWeight: '600', color: c.textPrimary },
+    profileEmail: { fontSize: 14, color: c.textSecondary, marginTop: 2 },
 
-  // Section
-  section: { paddingHorizontal: 16, paddingTop: 0, paddingBottom: 4, marginBottom: 8 },
-  sectionTitle: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: COLORS.textSecondary,
-    textTransform: 'uppercase',
-    letterSpacing: 0.6,
-    marginBottom: 6,
-  },
-  sectionList: {
-    backgroundColor: COLORS.card,
-    borderRadius: 14,
-    overflow: 'hidden',
-  },
+    section: { paddingHorizontal: 16, paddingTop: 0, paddingBottom: 4, marginBottom: 8 },
+    sectionTitle: {
+      fontSize: 12,
+      fontWeight: '600',
+      color: c.textSecondary,
+      textTransform: 'uppercase',
+      letterSpacing: 0.6,
+      marginBottom: 6,
+    },
+    sectionList: {
+      backgroundColor: c.card,
+      borderRadius: 14,
+      overflow: 'hidden',
+    },
 
-  // Item
-  item: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    paddingVertical: 14,
-    paddingHorizontal: 14,
-    borderBottomWidth: 1,
-    borderBottomColor: '#1F2230',
-  },
-  itemLast: { borderBottomWidth: 0 },
-  itemIcon: {
-    width: 38,
-    height: 38,
-    borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexShrink: 0,
-  },
-  itemLabel: { flex: 1, fontSize: 16, color: COLORS.textPrimary },
+    item: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 12,
+      paddingVertical: 14,
+      paddingHorizontal: 14,
+      borderBottomWidth: 1,
+      borderBottomColor: c.border,
+    },
+    itemLast: { borderBottomWidth: 0 },
+    itemIcon: {
+      width: 38,
+      height: 38,
+      borderRadius: 10,
+      alignItems: 'center',
+      justifyContent: 'center',
+      flexShrink: 0,
+    },
+    itemLabel: { flex: 1, fontSize: 16, color: c.textPrimary },
 
-  // Sign out
-  signOutWrap: { paddingHorizontal: 16, paddingTop: 12, paddingBottom: 32 },
-  signOutBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-    backgroundColor: 'rgba(229,62,62,0.1)',
-    borderRadius: 14,
-    paddingVertical: 14,
-  },
-  signOutText: { color: COLORS.danger, fontWeight: '600', fontSize: 14 },
-});
+    signOutWrap: { paddingHorizontal: 16, paddingTop: 12, paddingBottom: 32 },
+    signOutBtn: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: 8,
+      backgroundColor: 'rgba(229,62,62,0.1)',
+      borderRadius: 14,
+      paddingVertical: 14,
+    },
+    signOutText: { color: c.danger, fontWeight: '600', fontSize: 14 },
+  });

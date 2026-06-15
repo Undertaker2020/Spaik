@@ -7,7 +7,9 @@ export const useConfigStore = create(
   persist<ConfigStore>(
     set => ({
       theme: 'turquoise',
+      mode: 'dark',
       setTheme: theme => set({ theme }),
+      setMode: mode => set({ mode }),
     }),
     {
       name: 'config',

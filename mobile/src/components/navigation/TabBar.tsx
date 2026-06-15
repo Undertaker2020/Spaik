@@ -9,7 +9,8 @@ import {
   IconUsers,
   IconUser,
 } from '@tabler/icons-react-native';
-import { COLORS } from '@/src/libs/constants/colors';
+import { useColors, useThemedStyles } from '@/src/libs/theme/use-theme';
+import type { Palette } from '@/src/libs/theme/palettes';
 
 const TABS = [
   { routeName: 'index',     label: 'Home',      Icon: IconHome2,     isCenter: false },
@@ -21,6 +22,8 @@ const TABS = [
 
 export function TabBar({ state, navigation }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
+  const c = useColors();
+  const styles = useThemedStyles(makeStyles);
 
   return (
     <View style={[styles.outer, { paddingBottom: Math.max(insets.bottom, 12) }]}>
@@ -48,7 +51,7 @@ export function TabBar({ state, navigation }: BottomTabBarProps) {
               <View key={route.key} style={styles.itemOuter}>
                 <TouchableOpacity onPress={onPress} style={styles.centerWrap} activeOpacity={0.8}>
                   <LinearGradient
-                    colors={['#18B9AE', '#0E8F86']}
+                    colors={[c.accent, c.accentDark]}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 1 }}
                     style={styles.centerBtn}
@@ -61,7 +64,7 @@ export function TabBar({ state, navigation }: BottomTabBarProps) {
             );
           }
 
-          const color = isFocused ? COLORS.accent : COLORS.textMuted;
+          const color = isFocused ? c.accent : c.textMuted;
 
           return (
             <View key={route.key} style={styles.itemOuter}>
@@ -78,82 +81,80 @@ export function TabBar({ state, navigation }: BottomTabBarProps) {
   );
 }
 
-const styles = StyleSheet.create({
-  outer: {
-    paddingHorizontal: 20,
-    paddingTop: 6,
-    backgroundColor: COLORS.bg,
-  },
-  pill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    // A *raised* surface: lighter than the screen bg so it reads as a floating
-    // pill (on dark themes depth comes from a lighter surface, not a shadow).
-    backgroundColor: COLORS.card,
-    borderRadius: 32,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.12)',
-    paddingHorizontal: 4,
-    paddingVertical: 8,
-    ...Platform.select({
-      ios: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 8 },
-        shadowOpacity: 0.45,
-        shadowRadius: 16,
-      },
-      android: {
-        shadowColor: '#000',
-        elevation: 8,
-      },
-    }),
-  },
-  itemOuter: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  tabItem: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 6,
-    gap: 3,
-  },
-  label: {
-    fontSize: 10,
-    fontWeight: '500',
-  },
-  divider: {
-    width: 1,
-    height: 22,
-    backgroundColor: 'rgba(255,255,255,0.07)',
-  },
-  centerWrap: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 4,
-  },
-  centerBtn: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
-    alignItems: 'center',
-    justifyContent: 'center',
-    ...Platform.select({
-      ios: {
-        shadowColor: COLORS.accent,
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.7,
-        shadowRadius: 12,
-      },
-      android: {
-        // Tint the elevation shadow teal (Android 9+) for a glow that reads
-        // against the lighter pill, instead of a black blob.
-        shadowColor: COLORS.accent,
-        elevation: 9,
-      },
-    }),
-  },
-});
+const makeStyles = (c: Palette) =>
+  StyleSheet.create({
+    outer: {
+      paddingHorizontal: 20,
+      paddingTop: 6,
+      backgroundColor: c.bg,
+    },
+    pill: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      // A *raised* surface: lighter than the screen bg so it reads as a floating pill.
+      backgroundColor: c.card,
+      borderRadius: 32,
+      borderWidth: 1,
+      borderColor: c.border,
+      paddingHorizontal: 4,
+      paddingVertical: 8,
+      ...Platform.select({
+        ios: {
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 8 },
+          shadowOpacity: 0.45,
+          shadowRadius: 16,
+        },
+        android: {
+          shadowColor: '#000',
+          elevation: 8,
+        },
+      }),
+    },
+    itemOuter: {
+      flex: 1,
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    tabItem: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingVertical: 6,
+      gap: 3,
+    },
+    label: {
+      fontSize: 10,
+      fontWeight: '500',
+    },
+    divider: {
+      width: 1,
+      height: 22,
+      backgroundColor: c.border,
+    },
+    centerWrap: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingVertical: 4,
+    },
+    centerBtn: {
+      width: 52,
+      height: 52,
+      borderRadius: 26,
+      alignItems: 'center',
+      justifyContent: 'center',
+      ...Platform.select({
+        ios: {
+          shadowColor: c.accent,
+          shadowOffset: { width: 0, height: 4 },
+          shadowOpacity: 0.7,
+          shadowRadius: 12,
+        },
+        android: {
+          shadowColor: c.accent,
+          elevation: 9,
+        },
+      }),
+    },
+  });
