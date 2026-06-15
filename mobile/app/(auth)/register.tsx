@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { Controller } from 'react-hook-form';
 import { IconCircleCheck } from '@tabler/icons-react-native';
 import { AuthInput } from '@/src/components/ui/AuthInput';
@@ -21,6 +22,7 @@ export default function RegisterScreen() {
   const router = useRouter();
   const c = useColors();
   const styles = useThemedStyles(makeStyles);
+  const { t } = useTranslation();
   const { form, onSubmit, loading, serverError, success } = useRegister();
   const { control, formState: { errors } } = form;
 
@@ -38,27 +40,27 @@ export default function RegisterScreen() {
           {/* Header */}
           <View style={styles.header}>
             <Text style={styles.logo}>SPAIK</Text>
-            <Text style={styles.tagline}>Join the community</Text>
+            <Text style={styles.tagline}>{t('auth.tagline.register')}</Text>
           </View>
 
           {/* Success state */}
           {success ? (
             <View style={styles.successCard}>
               <IconCircleCheck size={48} color={c.accent} />
-              <Text style={styles.successTitle}>Account created!</Text>
-              <Text style={styles.successSub}>Redirecting to sign in…</Text>
+              <Text style={styles.successTitle}>{t('auth.register.successTitle')}</Text>
+              <Text style={styles.successSub}>{t('auth.register.successSub')}</Text>
             </View>
           ) : (
             <View style={styles.card}>
-              <Text style={styles.cardTitle}>Create Account</Text>
+              <Text style={styles.cardTitle}>{t('auth.register.title')}</Text>
 
               <Controller
                 control={control}
                 name="username"
                 render={({ field: { onChange, onBlur, value } }) => (
                   <AuthInput
-                    label="Username"
-                    placeholder="letters, numbers and hyphens"
+                    label={t('auth.register.usernameLabel')}
+                    placeholder={t('auth.register.usernamePlaceholder')}
                     value={value}
                     onChangeText={onChange}
                     onBlur={onBlur}
@@ -73,8 +75,8 @@ export default function RegisterScreen() {
                 name="email"
                 render={({ field: { onChange, onBlur, value } }) => (
                   <AuthInput
-                    label="Email"
-                    placeholder="you@example.com"
+                    label={t('auth.register.emailLabel')}
+                    placeholder={t('auth.register.emailPlaceholder')}
                     value={value}
                     onChangeText={onChange}
                     onBlur={onBlur}
@@ -90,8 +92,8 @@ export default function RegisterScreen() {
                 name="password"
                 render={({ field: { onChange, onBlur, value } }) => (
                   <AuthInput
-                    label="Password"
-                    placeholder="at least 8 characters"
+                    label={t('auth.register.passwordLabel')}
+                    placeholder={t('auth.register.passwordPlaceholder')}
                     value={value}
                     onChangeText={onChange}
                     onBlur={onBlur}
@@ -116,7 +118,7 @@ export default function RegisterScreen() {
               >
                 {loading
                   ? <ActivityIndicator color="#000" />
-                  : <Text style={styles.primaryBtnText}>Create Account</Text>
+                  : <Text style={styles.primaryBtnText}>{t('auth.register.submit')}</Text>
                 }
               </TouchableOpacity>
             </View>
@@ -129,8 +131,8 @@ export default function RegisterScreen() {
               onPress={() => router.back()}
             >
               <Text style={styles.footerText}>
-                Already have an account?{' '}
-                <Text style={styles.footerAccent}>Sign In</Text>
+                {t('auth.register.footer')}{' '}
+                <Text style={styles.footerAccent}>{t('auth.register.footerAction')}</Text>
               </Text>
             </TouchableOpacity>
           )}

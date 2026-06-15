@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { Controller } from 'react-hook-form';
 import { AuthInput } from '@/src/components/ui/AuthInput';
 import { OtpInput } from '@/src/components/ui/OtpInput';
@@ -20,6 +21,7 @@ import type { Palette } from '@/src/libs/theme/palettes';
 export default function LoginScreen() {
   const router = useRouter();
   const styles = useThemedStyles(makeStyles);
+  const { t } = useTranslation();
   const { form, onSubmit, loading, serverError, requiresPin } = useLogin();
   const { control, formState: { errors } } = form;
 
@@ -37,20 +39,20 @@ export default function LoginScreen() {
           {/* Logo */}
           <View style={styles.header}>
             <Text style={styles.logo}>SPAIK</Text>
-            <Text style={styles.tagline}>Stream. Watch. Connect.</Text>
+            <Text style={styles.tagline}>{t('auth.tagline.login')}</Text>
           </View>
 
           {/* Form card */}
           <View style={styles.card}>
-            <Text style={styles.cardTitle}>Sign In</Text>
+            <Text style={styles.cardTitle}>{t('auth.login.title')}</Text>
 
             <Controller
               control={control}
               name="login"
               render={({ field: { onChange, onBlur, value } }) => (
                 <AuthInput
-                  label="Username or Email"
-                  placeholder="Enter your username or email"
+                  label={t('auth.login.loginLabel')}
+                  placeholder={t('auth.login.loginPlaceholder')}
                   value={value}
                   onChangeText={onChange}
                   onBlur={onBlur}
@@ -65,8 +67,8 @@ export default function LoginScreen() {
               name="password"
               render={({ field: { onChange, onBlur, value } }) => (
                 <AuthInput
-                  label="Password"
-                  placeholder="Enter your password"
+                  label={t('auth.login.passwordLabel')}
+                  placeholder={t('auth.login.passwordPlaceholder')}
                   value={value}
                   onChangeText={onChange}
                   onBlur={onBlur}
@@ -82,8 +84,8 @@ export default function LoginScreen() {
                 name="pin"
                 render={({ field: { onChange, value } }) => (
                   <OtpInput
-                    label="Two-Factor Code"
-                    hint="Enter the 6-digit code from your authenticator app"
+                    label={t('auth.login.twoFactorLabel')}
+                    hint={t('auth.login.twoFactorHint')}
                     value={value ?? ''}
                     onChangeText={onChange}
                     error={errors.pin?.message}
@@ -107,7 +109,7 @@ export default function LoginScreen() {
             >
               {loading
                 ? <ActivityIndicator color="#000" />
-                : <Text style={styles.primaryBtnText}>Sign In</Text>
+                : <Text style={styles.primaryBtnText}>{t('auth.login.submit')}</Text>
               }
             </TouchableOpacity>
           </View>
@@ -118,8 +120,8 @@ export default function LoginScreen() {
             onPress={() => router.push('/(auth)/register')}
           >
             <Text style={styles.footerText}>
-              No account?{' '}
-              <Text style={styles.footerAccent}>Create one</Text>
+              {t('auth.login.footer')}{' '}
+              <Text style={styles.footerAccent}>{t('auth.login.footerAction')}</Text>
             </Text>
           </TouchableOpacity>
         </ScrollView>

@@ -61,5 +61,44 @@
       "en": "English",
       "ua": "Ukrainian"
     }
+  },
+  "auth": {
+    "tagline": {
+      "login": "Stream. Watch. Connect.",
+      "register": "Join the community"
+    },
+    "login": {
+      "title": "Sign In",
+      "loginLabel": "Username or Email",
+      "loginPlaceholder": "Enter your username or email",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "Enter your password",
+      "twoFactorLabel": "Two-Factor Code",
+      "twoFactorHint": "Enter the 6-digit code from your authenticator app",
+      "submit": "Sign In",
+      "footer": "No account?",
+      "footerAction": "Create one"
+    },
+    "register": {
+      "title": "Create Account",
+      "usernameLabel": "Username",
+      "usernamePlaceholder": "letters, numbers and hyphens",
+      "emailLabel": "Email",
+      "emailPlaceholder": "you@example.com",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "at least 8 characters",
+      "submit": "Create Account",
+      "successTitle": "Account created!",
+      "successSub": "Redirecting to sign in…",
+      "footer": "Already have an account?",
+      "footerAction": "Sign In"
+    },
+    "verify": {
+      "verifying": "Verifying your account…",
+      "successTitle": "Email confirmed!",
+      "successSub": "Redirecting you to the app…",
+      "failedTitle": "Verification failed",
+      "goToLogin": "Go to Sign In"
+    }
   }
 }

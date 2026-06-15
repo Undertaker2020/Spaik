@@ -61,5 +61,44 @@
       "en": "Англійська",
       "ua": "Українська"
     }
+  },
+  "auth": {
+    "tagline": {
+      "login": "Дивись. Стрім. Спілкуйся.",
+      "register": "Приєднуйся до спільноти"
+    },
+    "login": {
+      "title": "Вхід",
+      "loginLabel": "Імʼя користувача або email",
+      "loginPlaceholder": "Введіть імʼя користувача або email",
+      "passwordLabel": "Пароль",
+      "passwordPlaceholder": "Введіть пароль",
+      "twoFactorLabel": "Код двофакторної автентифікації",
+      "twoFactorHint": "Введіть 6-значний код із застосунку-автентифікатора",
+      "submit": "Увійти",
+      "footer": "Немає акаунта?",
+      "footerAction": "Створити"
+    },
+    "register": {
+      "title": "Створення акаунта",
+      "usernameLabel": "Імʼя користувача",
+      "usernamePlaceholder": "літери, цифри та дефіси",
+      "emailLabel": "Email",
+      "emailPlaceholder": "you@example.com",
+      "passwordLabel": "Пароль",
+      "passwordPlaceholder": "щонайменше 8 символів",
+      "submit": "Створити акаунт",
+      "successTitle": "Акаунт створено!",
+      "successSub": "Перенаправляємо до входу…",
+      "footer": "Вже маєте акаунт?",
+      "footerAction": "Увійти"
+    },
+    "verify": {
+      "verifying": "Підтверджуємо ваш акаунт…",
+      "successTitle": "Email підтверджено!",
+      "successSub": "Перенаправляємо до застосунку…",
+      "failedTitle": "Не вдалося підтвердити",
+      "goToLogin": "Перейти до входу"
+    }
   }
 }
