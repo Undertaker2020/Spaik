@@ -6,7 +6,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
 import { IconCopy, IconRefresh, IconEye, IconEyeOff, IconServer, IconKey } from '@tabler/icons-react-native';
-import { COLORS } from '@/src/libs/constants/colors';
+import { useColors, useThemedStyles } from '@/src/libs/theme/use-theme';
+import type { Palette } from '@/src/libs/theme/palettes';
 import { SettingsHeader } from '@/src/components/settings/SettingsHeader';
 import { CREATE_INGRESS } from '@/src/graphql/queries/settings.queries';
 import { FIND_MY_PROFILE, CHANGE_STREAM_RECORDING, type MyProfile } from '@/src/graphql/queries/profile.queries';
@@ -27,6 +28,8 @@ function KeyField({
   icon: React.ReactNode;
   secret?: boolean;
 }) {
+  const c = useColors();
+  const styles = useThemedStyles(makeStyles);
   const [visible, setVisible] = useState(!secret);
   const display = value ?? '— not generated —';
   const masked  = value ? '••••••••••••••••••••' : display;
@@ -47,12 +50,12 @@ function KeyField({
         <View style={styles.keyActions}>
           {secret && value && (
             <TouchableOpacity onPress={() => setVisible(v => !v)} hitSlop={8} style={styles.keyActionBtn}>
-              {visible ? <IconEyeOff size={15} color={COLORS.textMuted} /> : <IconEye size={15} color={COLORS.textMuted} />}
+              {visible ? <IconEyeOff size={15} color={c.textMuted} /> : <IconEye size={15} color={c.textMuted} />}
             </TouchableOpacity>
           )}
           {value && (
             <TouchableOpacity onPress={onCopy} hitSlop={8} style={styles.keyActionBtn}>
-              <IconCopy size={15} color={COLORS.accent} />
+              <IconCopy size={15} color={c.accent} />
             </TouchableOpacity>
           )}
         </View>
@@ -65,6 +68,8 @@ function KeyField({
 }
 
 export default function StreamKeysScreen() {
+  const c = useColors();
+  const styles = useThemedStyles(makeStyles);
   const { data, refetch } = useQuery<{ findProfile: MyProfile }>(FIND_MY_PROFILE);
   const stream = data?.findProfile.stream;
   const [selectedType, setSelectedType] = useState(0);
@@ -106,13 +111,13 @@ export default function StreamKeysScreen() {
           <KeyField
             label="Server URL"
             value={stream?.serverUrl ?? null}
-            icon={<IconServer size={14} color={COLORS.textMuted} />}
+            icon={<IconServer size={14} color={c.textMuted} />}
           />
           <View style={styles.divider} />
           <KeyField
             label="Stream Key"
             value={stream?.streamKey ?? null}
-            icon={<IconKey size={14} color={COLORS.textMuted} />}
+            icon={<IconKey size={14} color={c.textMuted} />}
             secret
           />
         </View>
@@ -125,9 +130,9 @@ export default function StreamKeysScreen() {
           <Switch
             value={isRecording}
             onValueChange={onToggleRecording}
-            trackColor={{ false: COLORS.border, true: COLORS.accent }}
+            trackColor={{ false: c.border, true: c.accent }}
             thumbColor="#fff"
-            ios_backgroundColor={COLORS.border}
+            ios_backgroundColor={c.border}
           />
         </View>
 
@@ -165,47 +170,48 @@ export default function StreamKeysScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  root:    { flex: 1, backgroundColor: COLORS.bg },
-  content: { padding: 16, gap: 14 },
+const makeStyles = (c: Palette) =>
+  StyleSheet.create({
+    root:    { flex: 1, backgroundColor: c.bg },
+    content: { padding: 16, gap: 14 },
 
-  card: { backgroundColor: COLORS.card, borderRadius: 14, borderWidth: 1, borderColor: COLORS.border, overflow: 'hidden' },
-  divider: { height: 1, backgroundColor: COLORS.border },
+    card: { backgroundColor: c.card, borderRadius: 14, borderWidth: 1, borderColor: c.border, overflow: 'hidden' },
+    divider: { height: 1, backgroundColor: c.border },
 
-  recCard: {
-    flexDirection: 'row', alignItems: 'center', gap: 12,
-    backgroundColor: COLORS.card, borderRadius: 14, borderWidth: 1, borderColor: COLORS.border,
-    padding: 14,
-  },
-  recInfo: { flex: 1, gap: 3 },
-  recLabel: { fontSize: 14, fontWeight: '600', color: COLORS.textPrimary },
-  recDesc: { fontSize: 12, color: COLORS.textSecondary, lineHeight: 16 },
+    recCard: {
+      flexDirection: 'row', alignItems: 'center', gap: 12,
+      backgroundColor: c.card, borderRadius: 14, borderWidth: 1, borderColor: c.border,
+      padding: 14,
+    },
+    recInfo: { flex: 1, gap: 3 },
+    recLabel: { fontSize: 14, fontWeight: '600', color: c.textPrimary },
+    recDesc: { fontSize: 12, color: c.textSecondary, lineHeight: 16 },
 
-  keyField: { padding: 14, gap: 8 },
-  keyFieldHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  keyLabelRow:  { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  keyLabel:     { fontSize: 12, fontWeight: '600', color: COLORS.textSecondary, textTransform: 'uppercase', letterSpacing: 0.5 },
-  keyActions:   { flexDirection: 'row', gap: 8 },
-  keyActionBtn: { padding: 2 },
-  keyValue:     { fontSize: 13, color: COLORS.textPrimary, fontFamily: 'monospace' },
+    keyField: { padding: 14, gap: 8 },
+    keyFieldHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+    keyLabelRow:  { flexDirection: 'row', alignItems: 'center', gap: 6 },
+    keyLabel:     { fontSize: 12, fontWeight: '600', color: c.textSecondary, textTransform: 'uppercase', letterSpacing: 0.5 },
+    keyActions:   { flexDirection: 'row', gap: 8 },
+    keyActionBtn: { padding: 2 },
+    keyValue:     { fontSize: 13, color: c.textPrimary, fontFamily: 'monospace' },
 
-  sectionLabel: { fontSize: 12, fontWeight: '600', color: COLORS.textSecondary, textTransform: 'uppercase', letterSpacing: 0.5, paddingHorizontal: 2 },
+    sectionLabel: { fontSize: 12, fontWeight: '600', color: c.textSecondary, textTransform: 'uppercase', letterSpacing: 0.5, paddingHorizontal: 2 },
 
-  typeRow: { flexDirection: 'row', gap: 10 },
-  typeBtn: {
-    flex: 1, paddingVertical: 12, borderRadius: 12,
-    backgroundColor: COLORS.card, borderWidth: 1, borderColor: COLORS.border,
-    alignItems: 'center',
-  },
-  typeBtnActive:     { backgroundColor: COLORS.accent, borderColor: COLORS.accent },
-  typeBtnText:       { fontSize: 14, fontWeight: '600', color: COLORS.textSecondary },
-  typeBtnTextActive: { color: '#000' },
+    typeRow: { flexDirection: 'row', gap: 10 },
+    typeBtn: {
+      flex: 1, paddingVertical: 12, borderRadius: 12,
+      backgroundColor: c.card, borderWidth: 1, borderColor: c.border,
+      alignItems: 'center',
+    },
+    typeBtnActive:     { backgroundColor: c.accent, borderColor: c.accent },
+    typeBtnText:       { fontSize: 14, fontWeight: '600', color: c.textSecondary },
+    typeBtnTextActive: { color: '#000' },
 
-  btn: {
-    flexDirection: 'row', gap: 8,
-    backgroundColor: COLORS.accent, borderRadius: 14,
-    paddingVertical: 15, alignItems: 'center', justifyContent: 'center',
-  },
-  btnText: { color: '#000', fontWeight: '700', fontSize: 15 },
-  hint:    { fontSize: 13, color: COLORS.textMuted, lineHeight: 19, paddingHorizontal: 2 },
-});
+    btn: {
+      flexDirection: 'row', gap: 8,
+      backgroundColor: c.accent, borderRadius: 14,
+      paddingVertical: 15, alignItems: 'center', justifyContent: 'center',
+    },
+    btnText: { color: '#000', fontWeight: '700', fontSize: 15 },
+    hint:    { fontSize: 13, color: c.textMuted, lineHeight: 19, paddingHorizontal: 2 },
+  });
