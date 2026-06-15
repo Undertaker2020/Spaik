@@ -37,6 +37,7 @@ import {
   IconVideo,
   IconCamera,
   IconHeart,
+  IconStar,
 } from '@tabler/icons-react-native';
 import { COLORS } from '@/src/libs/constants/colors';
 import { MEDIA_SERVICE_URL } from '@/src/libs/constants/url.constants';
@@ -49,6 +50,8 @@ import {
   FIND_RECORDINGS_BY_CHANNEL,
   DELETE_RECORDING,
   REMOVE_CHANNEL_BANNER,
+  FIND_SPONSORS_BY_CHANNEL,
+  MAKE_PAYMENT,
   FOLLOW_CHANNEL,
   UNFOLLOW_CHANNEL,
   type ChannelInfo,
@@ -348,6 +351,24 @@ export default function ChannelScreen() {
     onCompleted: () => refetchFollowings(),
   });
 
+  // ── Sponsorship (Subscribe) ──────────────────────────────────
+  const { data: sponsorsData } = useQuery<{ findSponsorsByChannel: { user: { id: string } }[] }>(
+    FIND_SPONSORS_BY_CHANNEL,
+    { variables: { channelId: channel?.id }, skip: !channel?.id },
+  );
+  const myId = profileData?.findProfile?.id;
+  const isSponsor = !!(myId && sponsorsData?.findSponsorsByChannel?.some(s => s.user.id === myId));
+  const plans = channel?.sponsorshipPlans ?? [];
+  const [subscribeOpen, setSubscribeOpen] = useState(false);
+
+  const [makePayment, { loading: paying }] = useMutation(MAKE_PAYMENT, {
+    onCompleted: (d: { makePayment: { url: string } }) => {
+      setSubscribeOpen(false);
+      Linking.openURL(d.makePayment.url);
+    },
+    onError: (e) => Alert.alert('Error', e.message),
+  });
+
   const isBusy = following || unfollowing;
   const avatarUrl = getMediaSource(channel?.avatar ?? null);
   const bannerUrl = getMediaSource(channel?.banner ?? null);
@@ -536,25 +557,45 @@ export default function ChannelScreen() {
             </View>
           )}
 
-          {/* Follow */}
+          {/* Actions: Follow + Subscribe */}
           {!isOwner && (
-            <TouchableOpacity
-              style={[styles.followBtn, isFollowing && styles.followBtnActive]}
-              activeOpacity={0.85}
-              disabled={isBusy}
-              onPress={() => isFollowing ? unfollow() : follow()}
-            >
-              {isBusy ? (
-                <ActivityIndicator size="small" color={isFollowing ? COLORS.textPrimary : '#000'} />
-              ) : (
-                <>
-                  <IconHeart size={16} color={isFollowing ? COLORS.textPrimary : '#000'} fill={isFollowing ? 'transparent' : '#000'} />
-                  <Text style={[styles.followBtnText, isFollowing && styles.followBtnTextActive]}>
-                    {isFollowing ? 'Following' : 'Follow'}
-                  </Text>
-                </>
+            <View style={styles.actionRow}>
+              <TouchableOpacity
+                style={[styles.followBtn, styles.actionFlex, isFollowing && styles.followBtnActive]}
+                activeOpacity={0.85}
+                disabled={isBusy}
+                onPress={() => isFollowing ? unfollow() : follow()}
+              >
+                {isBusy ? (
+                  <ActivityIndicator size="small" color={isFollowing ? COLORS.textPrimary : '#000'} />
+                ) : (
+                  <>
+                    <IconHeart size={16} color={isFollowing ? COLORS.textPrimary : '#000'} />
+                    <Text style={[styles.followBtnText, isFollowing && styles.followBtnTextActive]}>
+                      {isFollowing ? 'Following' : 'Follow'}
+                    </Text>
+                  </>
+                )}
+              </TouchableOpacity>
+
+              {channel.isVerified && plans.length > 0 && (
+                isSponsor ? (
+                  <View style={[styles.subscribeBtn, styles.actionFlex, styles.subscribedBtn]}>
+                    <IconStar size={16} color={COLORS.textSecondary} />
+                    <Text style={styles.subscribedText}>Subscribed</Text>
+                  </View>
+                ) : (
+                  <TouchableOpacity
+                    style={[styles.subscribeBtn, styles.actionFlex]}
+                    activeOpacity={0.85}
+                    onPress={() => setSubscribeOpen(true)}
+                  >
+                    <IconStar size={16} color="#fff" />
+                    <Text style={styles.subscribeText}>Subscribe</Text>
+                  </TouchableOpacity>
+                )
               )}
-            </TouchableOpacity>
+            </View>
           )}
 
           {/* Tabs */}
@@ -593,6 +634,47 @@ export default function ChannelScreen() {
           {activeTab === 'About' && <AboutTab channel={channel} />}
 
         </ScrollView>
+      )}
+
+      {channel && (
+        <Modal
+          visible={subscribeOpen}
+          animationType="slide"
+          transparent
+          onRequestClose={() => setSubscribeOpen(false)}
+        >
+          <View style={styles.subBackdrop}>
+            <View style={styles.subSheet}>
+              <View style={styles.subHeader}>
+                <Text style={styles.subTitle} numberOfLines={1}>Support {channel.displayName}</Text>
+                <TouchableOpacity onPress={() => setSubscribeOpen(false)} hitSlop={8}>
+                  <IconX size={22} color={COLORS.textPrimary} />
+                </TouchableOpacity>
+              </View>
+
+              {plans.map(plan => (
+                <TouchableOpacity
+                  key={plan.id}
+                  style={styles.planCard}
+                  activeOpacity={0.8}
+                  disabled={paying}
+                  onPress={() => makePayment({ variables: { planId: plan.id } })}
+                >
+                  <View style={styles.planInfo}>
+                    <Text style={styles.planTitle}>{plan.title}</Text>
+                    {plan.description ? (
+                      <Text style={styles.planDesc} numberOfLines={2}>{plan.description}</Text>
+                    ) : null}
+                  </View>
+                  <Text style={styles.planPrice}>${plan.price.toFixed(2)}/mo</Text>
+                </TouchableOpacity>
+              ))}
+
+              {paying && <ActivityIndicator color={COLORS.accent} style={{ marginTop: 8 }} />}
+              <Text style={styles.subHint}>Payment opens securely in your browser.</Text>
+            </View>
+          </View>
+        </Modal>
       )}
     </SafeAreaView>
   );
@@ -679,9 +761,10 @@ const styles = StyleSheet.create({
   },
   socialChipText: { fontSize: 12, color: COLORS.textPrimary, fontWeight: '600' },
 
+  actionRow: { flexDirection: 'row', gap: 10, marginHorizontal: 16, marginBottom: 12 },
+  actionFlex: { flex: 1 },
   followBtn: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
-    marginHorizontal: 16, marginBottom: 10,
     height: 42, borderRadius: 8,
     backgroundColor: COLORS.accent,
   },
@@ -692,6 +775,34 @@ const styles = StyleSheet.create({
   },
   followBtnText:       { fontSize: 14, fontWeight: '700', color: '#000' },
   followBtnTextActive: { color: COLORS.textPrimary },
+  subscribeBtn: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
+    height: 42, borderRadius: 8,
+    backgroundColor: COLORS.card, borderWidth: 1, borderColor: COLORS.border,
+  },
+  subscribeText:   { fontSize: 14, fontWeight: '700', color: COLORS.textPrimary },
+  subscribedBtn:   { opacity: 0.7 },
+  subscribedText:  { fontSize: 14, fontWeight: '700', color: COLORS.textSecondary },
+
+  // ── Subscribe sheet
+  subBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'flex-end' },
+  subSheet: {
+    backgroundColor: COLORS.bg, borderTopLeftRadius: 18, borderTopRightRadius: 18,
+    padding: 18, paddingBottom: 32, gap: 12,
+    borderTopWidth: 1, borderColor: COLORS.border,
+  },
+  subHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  subTitle:  { flex: 1, fontSize: 16, fontWeight: '700', color: COLORS.textPrimary },
+  planCard: {
+    flexDirection: 'row', alignItems: 'center', gap: 12,
+    backgroundColor: COLORS.card, borderRadius: 12, borderWidth: 1, borderColor: COLORS.border,
+    padding: 14,
+  },
+  planInfo:  { flex: 1, gap: 3 },
+  planTitle: { fontSize: 14, fontWeight: '700', color: COLORS.textPrimary },
+  planDesc:  { fontSize: 12, color: COLORS.textSecondary, lineHeight: 16 },
+  planPrice: { fontSize: 15, fontWeight: '800', color: COLORS.accent },
+  subHint:   { fontSize: 12, color: COLORS.textMuted, textAlign: 'center', marginTop: 4 },
 
   // ── Stream preview card
   streamCardWrap: { paddingHorizontal: 16, paddingTop: 12, paddingBottom: 2 },

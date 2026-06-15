@@ -13,6 +13,7 @@ export const FIND_CHANNEL_BY_USERNAME = gql`
       followers  { id }
       followings { id }
       socialLinks { id title url }
+      sponsorshipPlans { id title description price }
       stream {
         id
         title
@@ -22,6 +23,22 @@ export const FIND_CHANNEL_BY_USERNAME = gql`
         isChatFollowersOnly
         category { id title }
       }
+    }
+  }
+`;
+
+export const FIND_SPONSORS_BY_CHANNEL = gql`
+  query FindSponsorsByChannel($channelId: String!) {
+    findSponsorsByChannel(channelId: $channelId) {
+      user { id }
+    }
+  }
+`;
+
+export const MAKE_PAYMENT = gql`
+  mutation MakePayment($planId: String!) {
+    makePayment(planId: $planId) {
+      url
     }
   }
 `;
@@ -118,6 +135,7 @@ export interface ChannelInfo {
   followers:   { id: string }[] | null;
   followings:  { id: string }[] | null;
   socialLinks: { id: string; title: string; url: string }[] | null;
+  sponsorshipPlans: { id: string; title: string; description: string | null; price: number }[] | null;
   stream: {
     id: string;
     title: string;
