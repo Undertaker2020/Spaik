@@ -6,6 +6,8 @@ const extra = (Constants.expoConfig?.extra ?? {}) as Record<string, string>;
 export const SERVER_URL    = extra.apiUrl       ?? 'http://localhost:4000/graphql';
 // Federation gateway — queries & mutations go here.
 export const GATEWAY_URL   = extra.gatewayUrl   ?? 'http://localhost:4002/graphql';
+// media-service — multipart uploads (avatar/banner) go here directly.
+export const MEDIA_SERVICE_URL = extra.mediaServiceUrl ?? 'http://localhost:4003/graphql';
 // Subscriptions WS — now go through the Hive gateway (federated over WS to chat).
 export const CHAT_WS_URL   = extra.chatWsUrl    ?? 'ws://localhost:4002/graphql';
 export const WEBSOCKET_URL = extra.wsUrl        ?? 'ws://localhost:4000/graphql';

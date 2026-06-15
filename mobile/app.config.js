@@ -19,6 +19,8 @@ module.exports = ({ config }) => ({
     ...config.extra,
     apiUrl: `http://${HOST}:4000/graphql`,
     gatewayUrl: `http://${HOST}:4002/graphql`,
+    // media-service handles multipart uploads directly (the gateway can't do multipart)
+    mediaServiceUrl: `http://${HOST}:4003/graphql`,
     chatWsUrl: `ws://${HOST}:4002/graphql`,
     wsUrl: `ws://${HOST}:4000/graphql`,
     mediaUrl: `http://${HOST}:9000/spaik-media`,

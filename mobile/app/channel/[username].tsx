@@ -17,6 +17,7 @@ import { useState } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useVideoPlayer, VideoView } from 'expo-video';
+import * as ImagePicker from 'expo-image-picker';
 import {
   IconArrowLeft,
   IconBadge,
@@ -34,15 +35,19 @@ import {
   IconTrash,
   IconX,
   IconVideo,
+  IconCamera,
 } from '@tabler/icons-react-native';
 import { COLORS } from '@/src/libs/constants/colors';
+import { MEDIA_SERVICE_URL } from '@/src/libs/constants/url.constants';
 import { getMediaSource } from '@/src/libs/utils/get-media-source';
 import { getRecordingSource } from '@/src/libs/utils/get-recording-source';
+import { getAccessToken } from '@/src/libs/auth/token-storage';
 import { useAuthStore } from '@/src/store/auth/auth.store';
 import {
   FIND_CHANNEL_BY_USERNAME,
   FIND_RECORDINGS_BY_CHANNEL,
   DELETE_RECORDING,
+  REMOVE_CHANNEL_BANNER,
   FOLLOW_CHANNEL,
   UNFOLLOW_CHANNEL,
   type ChannelInfo,
@@ -301,10 +306,9 @@ export default function ChannelScreen() {
   const isAuthenticated = useAuthStore(s => s.isAuthenticated);
   const [activeTab, setActiveTab] = useState<ChannelTab>('Clips');
 
-  const { data, loading, error } = useQuery<{ findChannelByUsername: ChannelInfo }>(
-    FIND_CHANNEL_BY_USERNAME,
-    { variables: { username } },
-  );
+  const { data, loading, error, refetch: refetchChannel } = useQuery<{
+    findChannelByUsername: ChannelInfo;
+  }>(FIND_CHANNEL_BY_USERNAME, { variables: { username } });
 
   const { data: profileData } = useQuery<{ findProfile: MyProfile }>(
     FIND_MY_PROFILE,
@@ -335,7 +339,63 @@ export default function ChannelScreen() {
 
   const isBusy = following || unfollowing;
   const avatarUrl = getMediaSource(channel?.avatar ?? null);
+  const bannerUrl = getMediaSource(channel?.banner ?? null);
   const isLive    = channel?.stream?.isLive ?? false;
+
+  // ── Banner upload (owner only) ───────────────────────────────
+  const [uploadingBanner, setUploadingBanner] = useState(false);
+
+  const [removeBanner, { loading: removingBanner }] = useMutation(REMOVE_CHANNEL_BANNER, {
+    onCompleted: () => refetchChannel(),
+    onError: (e) => Alert.alert('Error', e.message),
+  });
+
+  async function pickBanner() {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Permission required', 'Allow photo library access to set a banner.');
+      return;
+    }
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      aspect: [4, 1],
+      quality: 0.9,
+    });
+    if (result.canceled) return;
+    await uploadBanner(result.assets[0].uri);
+  }
+
+  async function uploadBanner(uri: string) {
+    setUploadingBanner(true);
+    try {
+      const token = await getAccessToken();
+      const body = new FormData();
+      body.append('operations', JSON.stringify({
+        query: 'mutation ChangeChannelBanner($banner: Upload!) { changeChannelBanner(banner: $banner) }',
+        variables: { banner: null },
+      }));
+      body.append('map', JSON.stringify({ '0': ['variables.banner'] }));
+      body.append('0', { uri, type: 'image/jpeg', name: 'banner.jpg' } as any);
+
+      const res = await fetch(MEDIA_SERVICE_URL, {
+        method: 'POST',
+        body,
+        headers: {
+          'Apollo-Require-Preflight': 'true',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+      });
+      const json = await res.json();
+      if (json.errors?.length) throw new Error(json.errors[0].message);
+
+      await refetchChannel();
+    } catch (e: any) {
+      Alert.alert('Upload failed', e.message);
+    } finally {
+      setUploadingBanner(false);
+    }
+  }
 
   return (
     <SafeAreaView style={styles.root} edges={['top']}>
@@ -356,16 +416,43 @@ export default function ChannelScreen() {
         <ScrollView showsVerticalScrollIndicator={false}>
 
           {/* Cover (banner image, else gradient) */}
-          {getMediaSource(channel.banner) ? (
-            <Image source={{ uri: getMediaSource(channel.banner)! }} style={styles.cover} resizeMode="cover" />
-          ) : (
-            <LinearGradient
-              colors={['#0d2b3e', '#1a0d2b', '#2b1a0d']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.cover}
-            />
-          )}
+          <View style={styles.coverWrap}>
+            {bannerUrl ? (
+              <Image source={{ uri: bannerUrl }} style={styles.cover} resizeMode="cover" />
+            ) : (
+              <LinearGradient
+                colors={['#0d2b3e', '#1a0d2b', '#2b1a0d']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.cover}
+              />
+            )}
+
+            {isOwner && (
+              <View style={styles.coverActions}>
+                {channel.banner && !uploadingBanner && (
+                  <TouchableOpacity
+                    style={styles.coverBtn}
+                    onPress={() => removeBanner()}
+                    disabled={removingBanner}
+                    activeOpacity={0.8}
+                  >
+                    <IconTrash size={16} color="#fff" />
+                  </TouchableOpacity>
+                )}
+                <TouchableOpacity
+                  style={styles.coverBtn}
+                  onPress={pickBanner}
+                  disabled={uploadingBanner}
+                  activeOpacity={0.8}
+                >
+                  {uploadingBanner
+                    ? <ActivityIndicator size="small" color="#fff" />
+                    : <IconCamera size={16} color="#fff" />}
+                </TouchableOpacity>
+              </View>
+            )}
+          </View>
 
           {/* Avatar row */}
           <View style={styles.avatarRow}>
@@ -485,7 +572,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 
-  cover: { height: COVER_HEIGHT },
+  coverWrap: { height: COVER_HEIGHT, position: 'relative' },
+  cover: { height: COVER_HEIGHT, width: '100%' },
+  coverActions: {
+    position: 'absolute', top: 10, right: 10,
+    flexDirection: 'row', gap: 8,
+  },
+  coverBtn: {
+    width: 32, height: 32, borderRadius: 16,
+    backgroundColor: 'rgba(0,0,0,0.55)',
+    alignItems: 'center', justifyContent: 'center',
+  },
 
   avatarRow: {
     flexDirection: 'row',

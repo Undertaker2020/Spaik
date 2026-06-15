@@ -73,6 +73,12 @@ export const DELETE_RECORDING = gql`
   }
 `;
 
+export const REMOVE_CHANNEL_BANNER = gql`
+  mutation RemoveChannelBanner {
+    removeChannelBanner
+  }
+`;
+
 export const FOLLOW_CHANNEL = gql`
   mutation FollowChannel($channelId: String!) {
     followChannel(channelId: $channelId)
