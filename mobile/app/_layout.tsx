@@ -1,4 +1,5 @@
 import '../global.css';
+import '@/src/libs/i18n/i18n';
 import { useEffect } from 'react';
 import { LogBox } from 'react-native';
 import { Stack } from 'expo-router';

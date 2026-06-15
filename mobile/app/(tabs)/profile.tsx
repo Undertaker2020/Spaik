@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useFocusEffect } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { useCallback, useState } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
 import {
@@ -87,6 +88,7 @@ export default function ProfileScreen() {
   const router = useRouter();
   const c = useColors();
   const styles = useThemedStyles(makeStyles);
+  const { t } = useTranslation();
   const setIsAuthenticated = useAuthStore(s => s.setIsAuthenticated);
 
   const { data, loading, error, refetch } = useQuery<{ findProfile: MyProfile }>(FIND_MY_PROFILE);
@@ -145,7 +147,7 @@ export default function ProfileScreen() {
         }
       >
         {/* Header */}
-        <Text style={styles.screenTitle}>Settings</Text>
+        <Text style={styles.screenTitle}>{t('profile.settings')}</Text>
 
         {/* Profile shortcut */}
         <TouchableOpacity
@@ -170,28 +172,28 @@ export default function ProfileScreen() {
         </TouchableOpacity>
 
         {/* Account */}
-        <Section title="Account">
-          <SettingsItem icon={<IconKey       size={22} color="#fff" />} iconBg="#7C3AED" label="Change Password"  onPress={() => router.push('/settings/change-password' as any)} />
-          <SettingsItem icon={<IconShield    size={22} color="#fff" />} iconBg="#DC2626" label="Two-Factor Auth"  onPress={() => router.push('/settings/two-factor' as any)} />
-          <SettingsItem icon={<IconMail      size={22} color="#fff" />} iconBg="#D97706" label="Change Email"     onPress={() => router.push('/settings/change-email' as any)} />
-          <SettingsItem icon={<IconDeviceMobile size={22} color="#fff" />} iconBg="#059669" label="Sessions"      onPress={() => router.push('/settings/sessions' as any)} last />
+        <Section title={t('profile.sections.account')}>
+          <SettingsItem icon={<IconKey       size={22} color="#fff" />} iconBg="#7C3AED" label={t('profile.items.changePassword')}  onPress={() => router.push('/settings/change-password' as any)} />
+          <SettingsItem icon={<IconShield    size={22} color="#fff" />} iconBg="#DC2626" label={t('profile.items.twoFactor')}  onPress={() => router.push('/settings/two-factor' as any)} />
+          <SettingsItem icon={<IconMail      size={22} color="#fff" />} iconBg="#D97706" label={t('profile.items.changeEmail')}     onPress={() => router.push('/settings/change-email' as any)} />
+          <SettingsItem icon={<IconDeviceMobile size={22} color="#fff" />} iconBg="#059669" label={t('profile.items.sessions')}      onPress={() => router.push('/settings/sessions' as any)} last />
         </Section>
 
         {/* Stream */}
-        <Section title="Stream">
-          <SettingsItem icon={<IconBroadcast size={22} color="#fff" />} iconBg="#18B9AE" label="My Channel"    onPress={() => router.push(`/channel/${user.username}` as any)} />
-          <SettingsItem icon={<IconLock    size={22} color="#fff" />} iconBg="#2563EB" label="Stream Keys"   onPress={() => router.push('/settings/stream-keys' as any)} />
-          <SettingsItem icon={<IconMessage size={22} color="#fff" />} iconBg="#DB2777" label="Chat Settings" onPress={() => router.push('/settings/chat-settings' as any)} last />
+        <Section title={t('profile.sections.stream')}>
+          <SettingsItem icon={<IconBroadcast size={22} color="#fff" />} iconBg="#18B9AE" label={t('profile.items.myChannel')}    onPress={() => router.push(`/channel/${user.username}` as any)} />
+          <SettingsItem icon={<IconLock    size={22} color="#fff" />} iconBg="#2563EB" label={t('profile.items.streamKeys')}   onPress={() => router.push('/settings/stream-keys' as any)} />
+          <SettingsItem icon={<IconMessage size={22} color="#fff" />} iconBg="#DB2777" label={t('profile.items.chatSettings')} onPress={() => router.push('/settings/chat-settings' as any)} last />
         </Section>
 
         {/* App */}
-        <Section title="App">
-          <SettingsItem icon={<IconMoon     size={22} color="#fff" />} iconBg="#374151" label="Appearance" onPress={() => router.push('/settings/appearance' as any)} />
-          <SettingsItem icon={<IconLanguage size={22} color="#fff" />} iconBg="#374151" label="Language" />
+        <Section title={t('profile.sections.app')}>
+          <SettingsItem icon={<IconMoon     size={22} color="#fff" />} iconBg="#374151" label={t('profile.items.appearance')} onPress={() => router.push('/settings/appearance' as any)} />
+          <SettingsItem icon={<IconLanguage size={22} color="#fff" />} iconBg="#374151" label={t('profile.items.language')} onPress={() => router.push('/settings/language' as any)} />
           <SettingsItem
             icon={<IconBell size={22} color="#fff" />}
             iconBg="#374151"
-            label="Notifications"
+            label={t('profile.items.notifications')}
             onPress={() => router.push('/notifications' as any)}
             last
           />
@@ -210,7 +212,7 @@ export default function ProfileScreen() {
             ) : (
               <>
                 <IconLogout size={16} color={c.danger} />
-                <Text style={styles.signOutText}>Sign Out</Text>
+                <Text style={styles.signOutText}>{t('profile.logout')}</Text>
               </>
             )}
           </TouchableOpacity>

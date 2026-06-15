@@ -2,6 +2,7 @@ import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useTranslation } from 'react-i18next';
 import {
   IconHome2,
   IconDeviceTv,
@@ -13,17 +14,18 @@ import { useColors, useThemedStyles } from '@/src/libs/theme/use-theme';
 import type { Palette } from '@/src/libs/theme/palettes';
 
 const TABS = [
-  { routeName: 'index',     label: 'Home',      Icon: IconHome2,     isCenter: false },
-  { routeName: 'streams',   label: 'Streams',   Icon: IconDeviceTv,  isCenter: false },
-  { routeName: 'go-live',   label: null,         Icon: IconBroadcast, isCenter: true  },
-  { routeName: 'following', label: 'Following', Icon: IconUsers,     isCenter: false },
-  { routeName: 'profile',   label: 'Profile',   Icon: IconUser,      isCenter: false },
+  { routeName: 'index',     labelKey: 'nav.home',      Icon: IconHome2,     isCenter: false },
+  { routeName: 'streams',   labelKey: 'nav.streams',   Icon: IconDeviceTv,  isCenter: false },
+  { routeName: 'go-live',   labelKey: null,             Icon: IconBroadcast, isCenter: true  },
+  { routeName: 'following', labelKey: 'nav.following', Icon: IconUsers,     isCenter: false },
+  { routeName: 'profile',   labelKey: 'nav.profile',   Icon: IconUser,      isCenter: false },
 ] as const;
 
 export function TabBar({ state, navigation }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
   const c = useColors();
   const styles = useThemedStyles(makeStyles);
+  const { t } = useTranslation();
 
   return (
     <View style={[styles.outer, { paddingBottom: Math.max(insets.bottom, 12) }]}>
@@ -70,7 +72,7 @@ export function TabBar({ state, navigation }: BottomTabBarProps) {
             <View key={route.key} style={styles.itemOuter}>
               <TouchableOpacity onPress={onPress} style={styles.tabItem} activeOpacity={0.7}>
                 <tab.Icon size={22} color={color} strokeWidth={isFocused ? 2 : 1.5} />
-                <Text style={[styles.label, { color }]}>{tab.label}</Text>
+                <Text style={[styles.label, { color }]}>{tab.labelKey ? t(tab.labelKey) : ''}</Text>
               </TouchableOpacity>
               {!isLast && <View style={styles.divider} />}
             </View>

@@ -1,0 +1,65 @@
+{
+  "common": {
+    "save": "Зберегти",
+    "cancel": "Скасувати",
+    "delete": "Видалити",
+    "back": "Назад",
+    "close": "Закрити",
+    "done": "Готово",
+    "confirm": "Підтвердити",
+    "retry": "Спробувати ще",
+    "loading": "Завантаження…",
+    "error": "Щось пішло не так",
+    "copy": "Копіювати",
+    "copied": "Скопійовано"
+  },
+  "nav": {
+    "home": "Головна",
+    "streams": "Стріми",
+    "following": "Підписки",
+    "profile": "Профіль"
+  },
+  "profile": {
+    "settings": "Налаштування",
+    "guest": "Гість",
+    "sections": {
+      "account": "Акаунт",
+      "stream": "Стрім",
+      "app": "Застосунок"
+    },
+    "items": {
+      "editProfile": "Редагувати профіль",
+      "changePassword": "Змінити пароль",
+      "twoFactor": "Двофакторна автентифікація",
+      "changeEmail": "Змінити email",
+      "sessions": "Сеанси",
+      "myChannel": "Мій канал",
+      "streamKeys": "Ключі трансляції",
+      "chatSettings": "Налаштування чату",
+      "appearance": "Вигляд",
+      "language": "Мова",
+      "notifications": "Сповіщення"
+    },
+    "logout": "Вийти"
+  },
+  "appearance": {
+    "title": "Вигляд",
+    "darkMode": "Темна тема",
+    "darkModeDesc": "Використовувати темну колірну схему.",
+    "accentColor": "Акцентний колір",
+    "accents": {
+      "turquoise": "Бірюзовий",
+      "purple": "Фіолетовий",
+      "blue": "Синій",
+      "green": "Зелений"
+    }
+  },
+  "language": {
+    "title": "Мова",
+    "subtitle": "Оберіть мову інтерфейсу застосунку.",
+    "names": {
+      "en": "Англійська",
+      "ua": "Українська"
+    }
+  }
+}

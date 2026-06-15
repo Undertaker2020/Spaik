@@ -1,21 +1,16 @@
 import { View, Text, Switch, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useTranslation } from 'react-i18next';
 import { IconCheck } from '@tabler/icons-react-native';
 import { SettingsHeader } from '@/src/components/settings/SettingsHeader';
 import { useConfigStore } from '@/src/store/config/config.store';
 import { useColors, useThemedStyles } from '@/src/libs/theme/use-theme';
 import { ACCENTS, type AccentKey, type Palette } from '@/src/libs/theme/palettes';
 
-const ACCENT_LABELS: Record<AccentKey, string> = {
-  turquoise: 'Turquoise',
-  purple: 'Purple',
-  blue: 'Blue',
-  green: 'Green',
-};
-
 export default function AppearanceScreen() {
   const c = useColors();
   const styles = useThemedStyles(makeStyles);
+  const { t } = useTranslation();
 
   const mode = useConfigStore(s => s.mode);
   const setMode = useConfigStore(s => s.setMode);
@@ -24,13 +19,13 @@ export default function AppearanceScreen() {
 
   return (
     <SafeAreaView style={styles.root} edges={['top']}>
-      <SettingsHeader title="Appearance" />
+      <SettingsHeader title={t('appearance.title')} />
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         {/* Dark / light */}
         <View style={styles.row}>
           <View style={styles.rowInfo}>
-            <Text style={styles.rowLabel}>Dark mode</Text>
-            <Text style={styles.rowDesc}>Use the dark colour scheme.</Text>
+            <Text style={styles.rowLabel}>{t('appearance.darkMode')}</Text>
+            <Text style={styles.rowDesc}>{t('appearance.darkModeDesc')}</Text>
           </View>
           <Switch
             value={mode === 'dark'}
@@ -42,7 +37,7 @@ export default function AppearanceScreen() {
         </View>
 
         {/* Accent colour */}
-        <Text style={styles.sectionLabel}>Accent color</Text>
+        <Text style={styles.sectionLabel}>{t('appearance.accentColor')}</Text>
         <View style={styles.accentRow}>
           {(Object.keys(ACCENTS) as AccentKey[]).map(key => {
             const selected = key === accent;
@@ -62,7 +57,7 @@ export default function AppearanceScreen() {
                 >
                   {selected && <IconCheck size={18} color="#fff" />}
                 </View>
-                <Text style={styles.accentLabel}>{ACCENT_LABELS[key]}</Text>
+                <Text style={styles.accentLabel}>{t(`appearance.accents.${key}`)}</Text>
               </TouchableOpacity>
             );
           })}

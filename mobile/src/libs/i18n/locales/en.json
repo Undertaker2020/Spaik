@@ -1,0 +1,65 @@
+{
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "back": "Back",
+    "close": "Close",
+    "done": "Done",
+    "confirm": "Confirm",
+    "retry": "Retry",
+    "loading": "Loading…",
+    "error": "Something went wrong",
+    "copy": "Copy",
+    "copied": "Copied"
+  },
+  "nav": {
+    "home": "Home",
+    "streams": "Streams",
+    "following": "Following",
+    "profile": "Profile"
+  },
+  "profile": {
+    "settings": "Settings",
+    "guest": "Guest",
+    "sections": {
+      "account": "Account",
+      "stream": "Stream",
+      "app": "App"
+    },
+    "items": {
+      "editProfile": "Edit Profile",
+      "changePassword": "Change Password",
+      "twoFactor": "Two-Factor Auth",
+      "changeEmail": "Change Email",
+      "sessions": "Sessions",
+      "myChannel": "My Channel",
+      "streamKeys": "Stream Keys",
+      "chatSettings": "Chat Settings",
+      "appearance": "Appearance",
+      "language": "Language",
+      "notifications": "Notifications"
+    },
+    "logout": "Sign out"
+  },
+  "appearance": {
+    "title": "Appearance",
+    "darkMode": "Dark mode",
+    "darkModeDesc": "Use the dark colour scheme.",
+    "accentColor": "Accent color",
+    "accents": {
+      "turquoise": "Turquoise",
+      "purple": "Purple",
+      "blue": "Blue",
+      "green": "Green"
+    }
+  },
+  "language": {
+    "title": "Language",
+    "subtitle": "Choose the language used across the app.",
+    "names": {
+      "en": "English",
+      "ua": "Ukrainian"
+    }
+  }
+}
