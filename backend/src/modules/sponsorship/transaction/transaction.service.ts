@@ -57,6 +57,11 @@ export class TransactionService {
             email: user.email
         })
 
+        const origin = this.configService
+            .getOrThrow<string>('ALLOWED_ORIGIN')
+            .split(',')[0]
+            .trim();
+
         const session = await this.stripeService.checkout.sessions.create({
             payment_method_types: ["card"],
             line_items: [
@@ -75,9 +80,10 @@ export class TransactionService {
                 }
             ],
             mode: 'subscription',
-            success_url: `${this.configService.getOrThrow<string>
-            ('ALLOWED_ORIGIN')}/success?price=${plan.title}&username=${plan.channel!.username}`,
-            cancel_url: `${this.configService.getOrThrow<string>('ALLOWED_ORIGIN')}`,
+            // ALLOWED_ORIGIN may be a comma-separated list (CORS origins); Stripe
+            // needs a single valid URL, so take the first origin.
+            success_url: `${origin}/success?price=${plan.title}&username=${plan.channel!.username}`,
+            cancel_url: origin,
             customer: customer.id,
             metadata: {
                 planId: plan.id,
