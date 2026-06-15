@@ -27,7 +27,8 @@ import {
   IconCrown,
   IconMessageCircle,
 } from '@tabler/icons-react-native';
-import { COLORS } from '@/src/libs/constants/colors';
+import { useColors, useThemedStyles } from '@/src/libs/theme/use-theme';
+import type { Palette } from '@/src/libs/theme/palettes';
 import {
   FIND_MY_STREAM,
   CHANGE_STREAM_INFO,
@@ -45,6 +46,7 @@ import {
 // ── Stat card ─────────────────────────────────────────────────
 
 function StatCard({ label, value, icon }: { label: string; value: string | number; icon: React.ReactNode }) {
+  const styles = useThemedStyles(makeStyles);
   return (
     <View style={styles.statCard}>
       <View style={styles.statIcon}>{icon}</View>
@@ -57,6 +59,7 @@ function StatCard({ label, value, icon }: { label: string; value: string | numbe
 // ── Chat message row ──────────────────────────────────────────
 
 function MsgRow({ msg }: { msg: ChatMessage }) {
+  const styles = useThemedStyles(makeStyles);
   return (
     <View style={styles.msgRow}>
       <Text style={styles.msgUser}>{msg.user.username}</Text>
@@ -69,6 +72,8 @@ function MsgRow({ msg }: { msg: ChatMessage }) {
 
 export default function DashboardScreen() {
   const router = useRouter();
+  const c = useColors();
+  const styles = useThemedStyles(makeStyles);
 
   const { data: profileData, loading, refetch } = useQuery<{
     findProfile: { id: string; stream: StreamSettings };
@@ -163,7 +168,7 @@ export default function DashboardScreen() {
     return (
       <SafeAreaView style={styles.root} edges={['top']}>
         <View style={styles.center}>
-          <ActivityIndicator size="large" color={COLORS.accent} />
+          <ActivityIndicator size="large" color={c.accent} />
         </View>
       </SafeAreaView>
     );
@@ -174,7 +179,7 @@ export default function DashboardScreen() {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} activeOpacity={0.7}>
-          <IconArrowLeft size={20} color={COLORS.textPrimary} />
+          <IconArrowLeft size={20} color={c.textPrimary} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Dashboard</Text>
         {isLive ? (
@@ -195,7 +200,7 @@ export default function DashboardScreen() {
             colors={['rgba(229,62,62,0.15)', 'rgba(229,62,62,0.05)']}
             style={styles.banner}
           >
-            <IconBroadcast size={20} color={COLORS.live} />
+            <IconBroadcast size={20} color={c.live} />
             <View style={styles.bannerInfo}>
               <Text style={styles.bannerTitle}>Stream is Live</Text>
               <Text style={styles.bannerSub} numberOfLines={1}>{stream?.title}</Text>
@@ -203,7 +208,7 @@ export default function DashboardScreen() {
           </LinearGradient>
         ) : (
           <View style={styles.offlineBanner}>
-            <IconBroadcast size={20} color={COLORS.textMuted} />
+            <IconBroadcast size={20} color={c.textMuted} />
             <Text style={styles.offlineText}>Stream is Offline</Text>
           </View>
         )}
@@ -213,17 +218,17 @@ export default function DashboardScreen() {
           <StatCard
             label="Messages"
             value={messages.length}
-            icon={<IconMessage2 size={18} color={COLORS.accent} />}
+            icon={<IconMessage2 size={18} color={c.accent} />}
           />
           <StatCard
             label="Status"
             value={isLive ? 'Live' : 'Offline'}
-            icon={<IconBroadcast size={18} color={isLive ? COLORS.live : COLORS.textMuted} />}
+            icon={<IconBroadcast size={18} color={isLive ? c.live : c.textMuted} />}
           />
           <StatCard
             label="Category"
             value={stream?.category?.title ?? '—'}
-            icon={<IconSettings size={18} color={COLORS.accent} />}
+            icon={<IconSettings size={18} color={c.accent} />}
           />
         </View>
 
@@ -232,7 +237,7 @@ export default function DashboardScreen() {
           <View style={styles.cardHeader}>
             <Text style={styles.cardTitle}>Stream Info</Text>
             <TouchableOpacity onPress={() => setEditing(e => !e)} style={styles.editBtn} activeOpacity={0.7}>
-              <IconEdit size={15} color={COLORS.accent} />
+              <IconEdit size={15} color={c.accent} />
               <Text style={styles.editBtnText}>{editing ? 'Cancel' : 'Edit'}</Text>
             </TouchableOpacity>
           </View>
@@ -241,13 +246,13 @@ export default function DashboardScreen() {
             <>
               <Text style={styles.fieldLabel}>Title</Text>
               <TextInput
-                style={[styles.input, { color: COLORS.textPrimary }]}
+                style={[styles.input, { color: c.textPrimary }]}
                 value={title}
                 onChangeText={setTitle}
                 placeholder="Stream title…"
-                placeholderTextColor={COLORS.textMuted}
+                placeholderTextColor={c.textMuted}
                 maxLength={100}
-                selectionColor={COLORS.accent}
+                selectionColor={c.accent}
               />
 
               <Text style={styles.fieldLabel}>Category</Text>
@@ -255,7 +260,7 @@ export default function DashboardScreen() {
                 <Text style={[styles.pickerText, !selectedCat && styles.pickerPlaceholder]}>
                   {selectedCat?.title ?? 'Select category'}
                 </Text>
-                <IconChevronDown size={15} color={COLORS.textSecondary} />
+                <IconChevronDown size={15} color={c.textSecondary} />
               </TouchableOpacity>
 
               {catOpen && (
@@ -270,7 +275,7 @@ export default function DashboardScreen() {
                       <Text style={[styles.catItemText, cat.id === categoryId && styles.catItemTextActive]}>
                         {cat.title}
                       </Text>
-                      {cat.id === categoryId && <IconCheck size={14} color={COLORS.accent} />}
+                      {cat.id === categoryId && <IconCheck size={14} color={c.accent} />}
                     </TouchableOpacity>
                   ))}
                 </View>
@@ -301,14 +306,14 @@ export default function DashboardScreen() {
           <Text style={styles.cardTitle}>Chat Settings</Text>
 
           <ToggleRow
-            icon={<IconMessageCircle size={16} color={COLORS.textSecondary} />}
+            icon={<IconMessageCircle size={16} color={c.textSecondary} />}
             label="Enable chat"
             value={chatEnabled}
             onChange={v => saveChatSetting('chat', v)}
             loading={savingChat}
           />
           <ToggleRow
-            icon={<IconUsers size={16} color={COLORS.textSecondary} />}
+            icon={<IconUsers size={16} color={c.textSecondary} />}
             label="Followers only"
             value={followersOnly}
             onChange={v => saveChatSetting('followers', v)}
@@ -316,7 +321,7 @@ export default function DashboardScreen() {
             loading={savingChat}
           />
           <ToggleRow
-            icon={<IconCrown size={16} color={COLORS.textSecondary} />}
+            icon={<IconCrown size={16} color={c.textSecondary} />}
             label="Sponsors only"
             value={premiumOnly}
             onChange={v => saveChatSetting('premium', v)}
@@ -357,6 +362,7 @@ export default function DashboardScreen() {
 // ── Small helpers ─────────────────────────────────────────────
 
 function InfoRow({ label, value }: { label: string; value: string }) {
+  const styles = useThemedStyles(makeStyles);
   return (
     <View style={styles.infoRow}>
       <Text style={styles.infoLabel}>{label}</Text>
@@ -373,6 +379,8 @@ function ToggleRow({ icon, label, value, onChange, disabled, loading }: {
   disabled?: boolean;
   loading?: boolean;
 }) {
+  const c = useColors();
+  const styles = useThemedStyles(makeStyles);
   return (
     <View style={[styles.toggleRow, disabled && styles.toggleRowDisabled]}>
       <View style={styles.toggleLeft}>
@@ -380,15 +388,15 @@ function ToggleRow({ icon, label, value, onChange, disabled, loading }: {
         <Text style={styles.toggleLabel}>{label}</Text>
       </View>
       {loading
-        ? <ActivityIndicator size="small" color={COLORS.accent} />
+        ? <ActivityIndicator size="small" color={c.accent} />
         : (
           <Switch
             value={value}
             onValueChange={onChange}
             disabled={disabled || loading}
-            trackColor={{ false: COLORS.border, true: COLORS.accent }}
+            trackColor={{ false: c.border, true: c.accent }}
             thumbColor="#fff"
-            ios_backgroundColor={COLORS.border}
+            ios_backgroundColor={c.border}
           />
         )
       }
@@ -396,8 +404,9 @@ function ToggleRow({ icon, label, value, onChange, disabled, loading }: {
   );
 }
 
-const styles = StyleSheet.create({
-  root:   { flex: 1, backgroundColor: COLORS.bg },
+const makeStyles = (c: Palette) =>
+  StyleSheet.create({
+  root:   { flex: 1, backgroundColor: c.bg },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   scroll: { padding: 16, gap: 14, paddingBottom: 32 },
 
@@ -405,21 +414,21 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     paddingHorizontal: 12, paddingVertical: 10,
-    borderBottomWidth: 1, borderBottomColor: COLORS.border,
+    borderBottomWidth: 1, borderBottomColor: c.border,
   },
   backBtn: {
     width: 36, height: 36, borderRadius: 10,
-    backgroundColor: COLORS.card, alignItems: 'center', justifyContent: 'center',
+    backgroundColor: c.card, alignItems: 'center', justifyContent: 'center',
   },
-  headerTitle: { fontSize: 17, fontWeight: '700', color: COLORS.textPrimary },
+  headerTitle: { fontSize: 17, fontWeight: '700', color: c.textPrimary },
   livePill: {
     flexDirection: 'row', alignItems: 'center', gap: 5,
     backgroundColor: 'rgba(229,62,62,0.15)', borderRadius: 99,
     paddingHorizontal: 10, paddingVertical: 4,
     borderWidth: 1, borderColor: 'rgba(229,62,62,0.3)',
   },
-  liveDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: COLORS.live },
-  liveText: { fontSize: 12, fontWeight: '700', color: COLORS.live },
+  liveDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: c.live },
+  liveText: { fontSize: 12, fontWeight: '700', color: c.live },
 
   // Banner
   banner: {
@@ -428,71 +437,71 @@ const styles = StyleSheet.create({
     borderWidth: 1, borderColor: 'rgba(229,62,62,0.2)',
   },
   bannerInfo: { flex: 1 },
-  bannerTitle: { fontSize: 14, fontWeight: '700', color: COLORS.live },
-  bannerSub:   { fontSize: 12, color: COLORS.textSecondary, marginTop: 2 },
+  bannerTitle: { fontSize: 14, fontWeight: '700', color: c.live },
+  bannerSub:   { fontSize: 12, color: c.textSecondary, marginTop: 2 },
   offlineBanner: {
     flexDirection: 'row', alignItems: 'center', gap: 10,
-    backgroundColor: COLORS.card, borderRadius: 14, padding: 14,
-    borderWidth: 1, borderColor: COLORS.border,
+    backgroundColor: c.card, borderRadius: 14, padding: 14,
+    borderWidth: 1, borderColor: c.border,
   },
-  offlineText: { fontSize: 14, fontWeight: '600', color: COLORS.textMuted },
+  offlineText: { fontSize: 14, fontWeight: '600', color: c.textMuted },
 
   // Stats
   statsRow: { flexDirection: 'row', gap: 10 },
   statCard: {
-    flex: 1, backgroundColor: COLORS.card, borderRadius: 14,
-    borderWidth: 1, borderColor: COLORS.border,
+    flex: 1, backgroundColor: c.card, borderRadius: 14,
+    borderWidth: 1, borderColor: c.border,
     padding: 12, alignItems: 'center', gap: 4,
   },
   statIcon:  { marginBottom: 2 },
-  statValue: { fontSize: 15, fontWeight: '700', color: COLORS.textPrimary },
-  statLabel: { fontSize: 10, color: COLORS.textSecondary, textAlign: 'center' },
+  statValue: { fontSize: 15, fontWeight: '700', color: c.textPrimary },
+  statLabel: { fontSize: 10, color: c.textSecondary, textAlign: 'center' },
 
   // Card
   card: {
-    backgroundColor: COLORS.card, borderRadius: 14,
-    borderWidth: 1, borderColor: COLORS.border,
+    backgroundColor: c.card, borderRadius: 14,
+    borderWidth: 1, borderColor: c.border,
     padding: 14, gap: 12,
   },
   cardHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  cardTitle:  { fontSize: 15, fontWeight: '700', color: COLORS.textPrimary },
+  cardTitle:  { fontSize: 15, fontWeight: '700', color: c.textPrimary },
   editBtn: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  editBtnText: { fontSize: 13, color: COLORS.accent, fontWeight: '600' },
+  editBtnText: { fontSize: 13, color: c.accent, fontWeight: '600' },
 
   // Info rows
   infoRows: { gap: 8 },
   infoRow:  { flexDirection: 'row', alignItems: 'flex-start', gap: 8 },
-  infoLabel: { fontSize: 13, color: COLORS.textSecondary, width: 70 },
-  infoValue: { flex: 1, fontSize: 13, color: COLORS.textPrimary, fontWeight: '500' },
+  infoLabel: { fontSize: 13, color: c.textSecondary, width: 70 },
+  infoValue: { flex: 1, fontSize: 13, color: c.textPrimary, fontWeight: '500' },
 
   // Fields
-  fieldLabel: { fontSize: 12, fontWeight: '600', color: COLORS.textSecondary, textTransform: 'uppercase', letterSpacing: 0.5 },
+  fieldLabel: { fontSize: 12, fontWeight: '600', color: c.textSecondary, textTransform: 'uppercase', letterSpacing: 0.5 },
   input: {
-    backgroundColor: COLORS.bg, borderRadius: 10,
-    borderWidth: 1, borderColor: COLORS.border,
+    backgroundColor: c.bg, borderRadius: 10,
+    borderWidth: 1, borderColor: c.border,
     paddingHorizontal: 12, paddingVertical: 10,
     fontSize: 14,
   },
   picker: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    backgroundColor: COLORS.bg, borderRadius: 10,
-    borderWidth: 1, borderColor: COLORS.border,
+    backgroundColor: c.bg, borderRadius: 10,
+    borderWidth: 1, borderColor: c.border,
     paddingHorizontal: 12, paddingVertical: 10,
   },
-  pickerText:        { fontSize: 14, color: COLORS.textPrimary },
-  pickerPlaceholder: { color: COLORS.textMuted },
+  pickerText:        { fontSize: 14, color: c.textPrimary },
+  pickerPlaceholder: { color: c.textMuted },
 
   catDropdown: {
-    backgroundColor: COLORS.bg, borderRadius: 10,
-    borderWidth: 1, borderColor: COLORS.border, overflow: 'hidden',
+    backgroundColor: c.bg, borderRadius: 10,
+    borderWidth: 1, borderColor: c.border, overflow: 'hidden',
   },
   catItem: { paddingHorizontal: 14, paddingVertical: 11, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   catItemActive: { backgroundColor: 'rgba(24,185,174,0.08)' },
-  catItemText:       { fontSize: 14, color: COLORS.textPrimary },
-  catItemTextActive: { color: COLORS.accent, fontWeight: '600' },
+  catItemText:       { fontSize: 14, color: c.textPrimary },
+  catItemTextActive: { color: c.accent, fontWeight: '600' },
 
   saveBtn: {
-    backgroundColor: COLORS.accent, borderRadius: 12,
+    backgroundColor: c.accent, borderRadius: 12,
     paddingVertical: 13, alignItems: 'center',
   },
   saveBtnDisabled: { opacity: 0.4 },
@@ -502,18 +511,18 @@ const styles = StyleSheet.create({
   toggleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   toggleRowDisabled: { opacity: 0.4 },
   toggleLeft:  { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  toggleLabel: { fontSize: 14, color: COLORS.textPrimary },
+  toggleLabel: { fontSize: 14, color: c.textPrimary },
 
   // Chat
   chatCountBadge: {
-    backgroundColor: COLORS.bg, borderRadius: 99,
+    backgroundColor: c.bg, borderRadius: 99,
     paddingHorizontal: 8, paddingVertical: 2,
-    borderWidth: 1, borderColor: COLORS.border,
+    borderWidth: 1, borderColor: c.border,
   },
-  chatCountText: { fontSize: 11, fontWeight: '600', color: COLORS.textSecondary },
-  emptyChat: { fontSize: 13, color: COLORS.textMuted, textAlign: 'center', paddingVertical: 8 },
+  chatCountText: { fontSize: 11, fontWeight: '600', color: c.textSecondary },
+  emptyChat: { fontSize: 13, color: c.textMuted, textAlign: 'center', paddingVertical: 8 },
   msgRow: { flexDirection: 'row', flexWrap: 'wrap' },
-  msgUser: { fontSize: 13, fontWeight: '700', color: COLORS.accent },
-  msgText: { fontSize: 13, color: COLORS.textPrimary },
+  msgUser: { fontSize: 13, fontWeight: '700', color: c.accent },
+  msgText: { fontSize: 13, color: c.textPrimary },
   msgSep:  { height: 6 },
 });
