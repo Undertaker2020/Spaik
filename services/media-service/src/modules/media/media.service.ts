@@ -43,6 +43,37 @@ export class MediaService {
         return true;
     }
 
+    public async changeBanner(user: User, file: Upload) {
+        if (user.banner) {
+            await this.storageService.remove(user.banner);
+        }
+
+        const buffer = await this.toWebp(file, 1920, 480);
+        const fileName = `channels/${user.username}-banner.webp`;
+
+        await this.storageService.upload(buffer, fileName, 'image/webp');
+
+        await this.prismaService.user.update({
+            where: { id: user.id },
+            data: { banner: `/${fileName}` },
+        });
+
+        return true;
+    }
+
+    public async removeBanner(user: User) {
+        if (!user.banner) return true;
+
+        await this.storageService.remove(user.banner);
+
+        await this.prismaService.user.update({
+            where: { id: user.id },
+            data: { banner: null },
+        });
+
+        return true;
+    }
+
     public async changeThumbnail(user: User, file: Upload) {
         const stream = await this.findStream(user);
 

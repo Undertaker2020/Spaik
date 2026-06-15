@@ -284,6 +284,7 @@ enum TransactionStatus {
 
 type UserModel {
   avatar: String
+  banner: String
   bio: String
   createdAt: DateTime!
   deactivatedAt: DateTime

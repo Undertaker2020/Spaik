@@ -7,6 +7,7 @@ export const FIND_CHANNEL_BY_USERNAME = gql`
       username
       displayName
       avatar
+      banner
       bio
       isVerified
       followers  { id }
@@ -105,6 +106,7 @@ export interface ChannelInfo {
   username: string;
   displayName: string;
   avatar: string | null;
+  banner: string | null;
   bio: string | null;
   isVerified: boolean;
   followers:   { id: string }[] | null;

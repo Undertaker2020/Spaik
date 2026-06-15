@@ -35,6 +35,9 @@ export class UserModel implements User{
     public avatar: string;
 
     @Field(() => String, {nullable: true})
+    public banner: string;
+
+    @Field(() => String, {nullable: true})
     public bio: string;
 
     @Field(() => String, {nullable: true})

@@ -2248,6 +2248,7 @@ export namespace Prisma {
     username: string | null
     displayName: string | null
     avatar: string | null
+    banner: string | null
     bio: string | null
     telegramId: string | null
     isVerified: boolean | null
@@ -2267,6 +2268,7 @@ export namespace Prisma {
     username: string | null
     displayName: string | null
     avatar: string | null
+    banner: string | null
     bio: string | null
     telegramId: string | null
     isVerified: boolean | null
@@ -2286,6 +2288,7 @@ export namespace Prisma {
     username: number
     displayName: number
     avatar: number
+    banner: number
     bio: number
     telegramId: number
     isVerified: number
@@ -2307,6 +2310,7 @@ export namespace Prisma {
     username?: true
     displayName?: true
     avatar?: true
+    banner?: true
     bio?: true
     telegramId?: true
     isVerified?: true
@@ -2326,6 +2330,7 @@ export namespace Prisma {
     username?: true
     displayName?: true
     avatar?: true
+    banner?: true
     bio?: true
     telegramId?: true
     isVerified?: true
@@ -2345,6 +2350,7 @@ export namespace Prisma {
     username?: true
     displayName?: true
     avatar?: true
+    banner?: true
     bio?: true
     telegramId?: true
     isVerified?: true
@@ -2437,6 +2443,7 @@ export namespace Prisma {
     username: string
     displayName: string
     avatar: string | null
+    banner: string | null
     bio: string | null
     telegramId: string | null
     isVerified: boolean
@@ -2473,6 +2480,7 @@ export namespace Prisma {
     username?: boolean
     displayName?: boolean
     avatar?: boolean
+    banner?: boolean
     bio?: boolean
     telegramId?: boolean
     isVerified?: boolean
@@ -2506,6 +2514,7 @@ export namespace Prisma {
     username?: boolean
     displayName?: boolean
     avatar?: boolean
+    banner?: boolean
     bio?: boolean
     telegramId?: boolean
     isVerified?: boolean
@@ -2525,6 +2534,7 @@ export namespace Prisma {
     username?: boolean
     displayName?: boolean
     avatar?: boolean
+    banner?: boolean
     bio?: boolean
     telegramId?: boolean
     isVerified?: boolean
@@ -2544,6 +2554,7 @@ export namespace Prisma {
     username?: boolean
     displayName?: boolean
     avatar?: boolean
+    banner?: boolean
     bio?: boolean
     telegramId?: boolean
     isVerified?: boolean
@@ -2556,7 +2567,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "password" | "username" | "displayName" | "avatar" | "bio" | "telegramId" | "isVerified" | "isEmailVerified" | "isTotpEnabled" | "totpSecret" | "isDeactivated" | "deactivatedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "password" | "username" | "displayName" | "avatar" | "banner" | "bio" | "telegramId" | "isVerified" | "isEmailVerified" | "isTotpEnabled" | "totpSecret" | "isDeactivated" | "deactivatedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     tokens?: boolean | User$tokensArgs<ExtArgs>
     socialLinks?: boolean | User$socialLinksArgs<ExtArgs>
@@ -2600,6 +2611,7 @@ export namespace Prisma {
       username: string
       displayName: string
       avatar: string | null
+      banner: string | null
       bio: string | null
       telegramId: string | null
       isVerified: boolean
@@ -3052,6 +3064,7 @@ export namespace Prisma {
     readonly username: FieldRef<"User", 'String'>
     readonly displayName: FieldRef<"User", 'String'>
     readonly avatar: FieldRef<"User", 'String'>
+    readonly banner: FieldRef<"User", 'String'>
     readonly bio: FieldRef<"User", 'String'>
     readonly telegramId: FieldRef<"User", 'String'>
     readonly isVerified: FieldRef<"User", 'Boolean'>
@@ -17415,6 +17428,7 @@ export namespace Prisma {
     username: 'username',
     displayName: 'displayName',
     avatar: 'avatar',
+    banner: 'banner',
     bio: 'bio',
     telegramId: 'telegramId',
     isVerified: 'isVerified',
@@ -17741,6 +17755,7 @@ export namespace Prisma {
     username?: StringFilter<"User"> | string
     displayName?: StringFilter<"User"> | string
     avatar?: StringNullableFilter<"User"> | string | null
+    banner?: StringNullableFilter<"User"> | string | null
     bio?: StringNullableFilter<"User"> | string | null
     telegramId?: StringNullableFilter<"User"> | string | null
     isVerified?: BoolFilter<"User"> | boolean
@@ -17773,6 +17788,7 @@ export namespace Prisma {
     username?: SortOrder
     displayName?: SortOrder
     avatar?: SortOrderInput | SortOrder
+    banner?: SortOrderInput | SortOrder
     bio?: SortOrderInput | SortOrder
     telegramId?: SortOrderInput | SortOrder
     isVerified?: SortOrder
@@ -17809,6 +17825,7 @@ export namespace Prisma {
     password?: StringFilter<"User"> | string
     displayName?: StringFilter<"User"> | string
     avatar?: StringNullableFilter<"User"> | string | null
+    banner?: StringNullableFilter<"User"> | string | null
     bio?: StringNullableFilter<"User"> | string | null
     isVerified?: BoolFilter<"User"> | boolean
     isEmailVerified?: BoolFilter<"User"> | boolean
@@ -17840,6 +17857,7 @@ export namespace Prisma {
     username?: SortOrder
     displayName?: SortOrder
     avatar?: SortOrderInput | SortOrder
+    banner?: SortOrderInput | SortOrder
     bio?: SortOrderInput | SortOrder
     telegramId?: SortOrderInput | SortOrder
     isVerified?: SortOrder
@@ -17865,6 +17883,7 @@ export namespace Prisma {
     username?: StringWithAggregatesFilter<"User"> | string
     displayName?: StringWithAggregatesFilter<"User"> | string
     avatar?: StringNullableWithAggregatesFilter<"User"> | string | null
+    banner?: StringNullableWithAggregatesFilter<"User"> | string | null
     bio?: StringNullableWithAggregatesFilter<"User"> | string | null
     telegramId?: StringNullableWithAggregatesFilter<"User"> | string | null
     isVerified?: BoolWithAggregatesFilter<"User"> | boolean
@@ -18740,6 +18759,7 @@ export namespace Prisma {
     username: string
     displayName: string
     avatar?: string | null
+    banner?: string | null
     bio?: string | null
     telegramId?: string | null
     isVerified?: boolean
@@ -18772,6 +18792,7 @@ export namespace Prisma {
     username: string
     displayName: string
     avatar?: string | null
+    banner?: string | null
     bio?: string | null
     telegramId?: string | null
     isVerified?: boolean
@@ -18804,6 +18825,7 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     displayName?: StringFieldUpdateOperationsInput | string
     avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    banner?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     telegramId?: NullableStringFieldUpdateOperationsInput | string | null
     isVerified?: BoolFieldUpdateOperationsInput | boolean
@@ -18836,6 +18858,7 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     displayName?: StringFieldUpdateOperationsInput | string
     avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    banner?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     telegramId?: NullableStringFieldUpdateOperationsInput | string | null
     isVerified?: BoolFieldUpdateOperationsInput | boolean
@@ -18868,6 +18891,7 @@ export namespace Prisma {
     username: string
     displayName: string
     avatar?: string | null
+    banner?: string | null
     bio?: string | null
     telegramId?: string | null
     isVerified?: boolean
@@ -18887,6 +18911,7 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     displayName?: StringFieldUpdateOperationsInput | string
     avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    banner?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     telegramId?: NullableStringFieldUpdateOperationsInput | string | null
     isVerified?: BoolFieldUpdateOperationsInput | boolean
@@ -18906,6 +18931,7 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     displayName?: StringFieldUpdateOperationsInput | string
     avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    banner?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     telegramId?: NullableStringFieldUpdateOperationsInput | string | null
     isVerified?: BoolFieldUpdateOperationsInput | boolean
@@ -19982,6 +20008,7 @@ export namespace Prisma {
     username?: SortOrder
     displayName?: SortOrder
     avatar?: SortOrder
+    banner?: SortOrder
     bio?: SortOrder
     telegramId?: SortOrder
     isVerified?: SortOrder
@@ -20001,6 +20028,7 @@ export namespace Prisma {
     username?: SortOrder
     displayName?: SortOrder
     avatar?: SortOrder
+    banner?: SortOrder
     bio?: SortOrder
     telegramId?: SortOrder
     isVerified?: SortOrder
@@ -20020,6 +20048,7 @@ export namespace Prisma {
     username?: SortOrder
     displayName?: SortOrder
     avatar?: SortOrder
+    banner?: SortOrder
     bio?: SortOrder
     telegramId?: SortOrder
     isVerified?: SortOrder
@@ -22720,6 +22749,7 @@ export namespace Prisma {
     username: string
     displayName: string
     avatar?: string | null
+    banner?: string | null
     bio?: string | null
     telegramId?: string | null
     isVerified?: boolean
@@ -22751,6 +22781,7 @@ export namespace Prisma {
     username: string
     displayName: string
     avatar?: string | null
+    banner?: string | null
     bio?: string | null
     telegramId?: string | null
     isVerified?: boolean
@@ -22798,6 +22829,7 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     displayName?: StringFieldUpdateOperationsInput | string
     avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    banner?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     telegramId?: NullableStringFieldUpdateOperationsInput | string | null
     isVerified?: BoolFieldUpdateOperationsInput | boolean
@@ -22829,6 +22861,7 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     displayName?: StringFieldUpdateOperationsInput | string
     avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    banner?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     telegramId?: NullableStringFieldUpdateOperationsInput | string | null
     isVerified?: BoolFieldUpdateOperationsInput | boolean
@@ -22860,6 +22893,7 @@ export namespace Prisma {
     username: string
     displayName: string
     avatar?: string | null
+    banner?: string | null
     bio?: string | null
     telegramId?: string | null
     isVerified?: boolean
@@ -22891,6 +22925,7 @@ export namespace Prisma {
     username: string
     displayName: string
     avatar?: string | null
+    banner?: string | null
     bio?: string | null
     telegramId?: string | null
     isVerified?: boolean
@@ -22938,6 +22973,7 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     displayName?: StringFieldUpdateOperationsInput | string
     avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    banner?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     telegramId?: NullableStringFieldUpdateOperationsInput | string | null
     isVerified?: BoolFieldUpdateOperationsInput | boolean
@@ -22969,6 +23005,7 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     displayName?: StringFieldUpdateOperationsInput | string
     avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    banner?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     telegramId?: NullableStringFieldUpdateOperationsInput | string | null
     isVerified?: BoolFieldUpdateOperationsInput | boolean
@@ -23000,6 +23037,7 @@ export namespace Prisma {
     username: string
     displayName: string
     avatar?: string | null
+    banner?: string | null
     bio?: string | null
     telegramId?: string | null
     isVerified?: boolean
@@ -23031,6 +23069,7 @@ export namespace Prisma {
     username: string
     displayName: string
     avatar?: string | null
+    banner?: string | null
     bio?: string | null
     telegramId?: string | null
     isVerified?: boolean
@@ -23161,6 +23200,7 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     displayName?: StringFieldUpdateOperationsInput | string
     avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    banner?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     telegramId?: NullableStringFieldUpdateOperationsInput | string | null
     isVerified?: BoolFieldUpdateOperationsInput | boolean
@@ -23192,6 +23232,7 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     displayName?: StringFieldUpdateOperationsInput | string
     avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    banner?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     telegramId?: NullableStringFieldUpdateOperationsInput | string | null
     isVerified?: BoolFieldUpdateOperationsInput | boolean
@@ -23286,6 +23327,7 @@ export namespace Prisma {
     username: string
     displayName: string
     avatar?: string | null
+    banner?: string | null
     bio?: string | null
     telegramId?: string | null
     isVerified?: boolean
@@ -23317,6 +23359,7 @@ export namespace Prisma {
     username: string
     displayName: string
     avatar?: string | null
+    banner?: string | null
     bio?: string | null
     telegramId?: string | null
     isVerified?: boolean
@@ -23405,6 +23448,7 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     displayName?: StringFieldUpdateOperationsInput | string
     avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    banner?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     telegramId?: NullableStringFieldUpdateOperationsInput | string | null
     isVerified?: BoolFieldUpdateOperationsInput | boolean
@@ -23436,6 +23480,7 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     displayName?: StringFieldUpdateOperationsInput | string
     avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    banner?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     telegramId?: NullableStringFieldUpdateOperationsInput | string | null
     isVerified?: BoolFieldUpdateOperationsInput | boolean
@@ -23596,6 +23641,7 @@ export namespace Prisma {
     username: string
     displayName: string
     avatar?: string | null
+    banner?: string | null
     bio?: string | null
     telegramId?: string | null
     isVerified?: boolean
@@ -23627,6 +23673,7 @@ export namespace Prisma {
     username: string
     displayName: string
     avatar?: string | null
+    banner?: string | null
     bio?: string | null
     telegramId?: string | null
     isVerified?: boolean
@@ -23715,6 +23762,7 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     displayName?: StringFieldUpdateOperationsInput | string
     avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    banner?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     telegramId?: NullableStringFieldUpdateOperationsInput | string | null
     isVerified?: BoolFieldUpdateOperationsInput | boolean
@@ -23746,6 +23794,7 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     displayName?: StringFieldUpdateOperationsInput | string
     avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    banner?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     telegramId?: NullableStringFieldUpdateOperationsInput | string | null
     isVerified?: BoolFieldUpdateOperationsInput | boolean
@@ -23824,6 +23873,7 @@ export namespace Prisma {
     username: string
     displayName: string
     avatar?: string | null
+    banner?: string | null
     bio?: string | null
     telegramId?: string | null
     isVerified?: boolean
@@ -23855,6 +23905,7 @@ export namespace Prisma {
     username: string
     displayName: string
     avatar?: string | null
+    banner?: string | null
     bio?: string | null
     telegramId?: string | null
     isVerified?: boolean
@@ -23891,6 +23942,7 @@ export namespace Prisma {
     username: string
     displayName: string
     avatar?: string | null
+    banner?: string | null
     bio?: string | null
     telegramId?: string | null
     isVerified?: boolean
@@ -23922,6 +23974,7 @@ export namespace Prisma {
     username: string
     displayName: string
     avatar?: string | null
+    banner?: string | null
     bio?: string | null
     telegramId?: string | null
     isVerified?: boolean
@@ -23969,6 +24022,7 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     displayName?: StringFieldUpdateOperationsInput | string
     avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    banner?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     telegramId?: NullableStringFieldUpdateOperationsInput | string | null
     isVerified?: BoolFieldUpdateOperationsInput | boolean
@@ -24000,6 +24054,7 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     displayName?: StringFieldUpdateOperationsInput | string
     avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    banner?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     telegramId?: NullableStringFieldUpdateOperationsInput | string | null
     isVerified?: BoolFieldUpdateOperationsInput | boolean
@@ -24042,6 +24097,7 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     displayName?: StringFieldUpdateOperationsInput | string
     avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    banner?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     telegramId?: NullableStringFieldUpdateOperationsInput | string | null
     isVerified?: BoolFieldUpdateOperationsInput | boolean
@@ -24073,6 +24129,7 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     displayName?: StringFieldUpdateOperationsInput | string
     avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    banner?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     telegramId?: NullableStringFieldUpdateOperationsInput | string | null
     isVerified?: BoolFieldUpdateOperationsInput | boolean
@@ -24104,6 +24161,7 @@ export namespace Prisma {
     username: string
     displayName: string
     avatar?: string | null
+    banner?: string | null
     bio?: string | null
     telegramId?: string | null
     isVerified?: boolean
@@ -24135,6 +24193,7 @@ export namespace Prisma {
     username: string
     displayName: string
     avatar?: string | null
+    banner?: string | null
     bio?: string | null
     telegramId?: string | null
     isVerified?: boolean
@@ -24182,6 +24241,7 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     displayName?: StringFieldUpdateOperationsInput | string
     avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    banner?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     telegramId?: NullableStringFieldUpdateOperationsInput | string | null
     isVerified?: BoolFieldUpdateOperationsInput | boolean
@@ -24213,6 +24273,7 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     displayName?: StringFieldUpdateOperationsInput | string
     avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    banner?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     telegramId?: NullableStringFieldUpdateOperationsInput | string | null
     isVerified?: BoolFieldUpdateOperationsInput | boolean
@@ -24244,6 +24305,7 @@ export namespace Prisma {
     username: string
     displayName: string
     avatar?: string | null
+    banner?: string | null
     bio?: string | null
     telegramId?: string | null
     isVerified?: boolean
@@ -24275,6 +24337,7 @@ export namespace Prisma {
     username: string
     displayName: string
     avatar?: string | null
+    banner?: string | null
     bio?: string | null
     telegramId?: string | null
     isVerified?: boolean
@@ -24322,6 +24385,7 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     displayName?: StringFieldUpdateOperationsInput | string
     avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    banner?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     telegramId?: NullableStringFieldUpdateOperationsInput | string | null
     isVerified?: BoolFieldUpdateOperationsInput | boolean
@@ -24353,6 +24417,7 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     displayName?: StringFieldUpdateOperationsInput | string
     avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    banner?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     telegramId?: NullableStringFieldUpdateOperationsInput | string | null
     isVerified?: BoolFieldUpdateOperationsInput | boolean
@@ -24384,6 +24449,7 @@ export namespace Prisma {
     username: string
     displayName: string
     avatar?: string | null
+    banner?: string | null
     bio?: string | null
     telegramId?: string | null
     isVerified?: boolean
@@ -24415,6 +24481,7 @@ export namespace Prisma {
     username: string
     displayName: string
     avatar?: string | null
+    banner?: string | null
     bio?: string | null
     telegramId?: string | null
     isVerified?: boolean
@@ -24462,6 +24529,7 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     displayName?: StringFieldUpdateOperationsInput | string
     avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    banner?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     telegramId?: NullableStringFieldUpdateOperationsInput | string | null
     isVerified?: BoolFieldUpdateOperationsInput | boolean
@@ -24493,6 +24561,7 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     displayName?: StringFieldUpdateOperationsInput | string
     avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    banner?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     telegramId?: NullableStringFieldUpdateOperationsInput | string | null
     isVerified?: BoolFieldUpdateOperationsInput | boolean
@@ -24524,6 +24593,7 @@ export namespace Prisma {
     username: string
     displayName: string
     avatar?: string | null
+    banner?: string | null
     bio?: string | null
     telegramId?: string | null
     isVerified?: boolean
@@ -24555,6 +24625,7 @@ export namespace Prisma {
     username: string
     displayName: string
     avatar?: string | null
+    banner?: string | null
     bio?: string | null
     telegramId?: string | null
     isVerified?: boolean
@@ -24630,6 +24701,7 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     displayName?: StringFieldUpdateOperationsInput | string
     avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    banner?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     telegramId?: NullableStringFieldUpdateOperationsInput | string | null
     isVerified?: BoolFieldUpdateOperationsInput | boolean
@@ -24661,6 +24733,7 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     displayName?: StringFieldUpdateOperationsInput | string
     avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    banner?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     telegramId?: NullableStringFieldUpdateOperationsInput | string | null
     isVerified?: BoolFieldUpdateOperationsInput | boolean
@@ -24737,6 +24810,7 @@ export namespace Prisma {
     username: string
     displayName: string
     avatar?: string | null
+    banner?: string | null
     bio?: string | null
     telegramId?: string | null
     isVerified?: boolean
@@ -24768,6 +24842,7 @@ export namespace Prisma {
     username: string
     displayName: string
     avatar?: string | null
+    banner?: string | null
     bio?: string | null
     telegramId?: string | null
     isVerified?: boolean
@@ -24804,6 +24879,7 @@ export namespace Prisma {
     username: string
     displayName: string
     avatar?: string | null
+    banner?: string | null
     bio?: string | null
     telegramId?: string | null
     isVerified?: boolean
@@ -24835,6 +24911,7 @@ export namespace Prisma {
     username: string
     displayName: string
     avatar?: string | null
+    banner?: string | null
     bio?: string | null
     telegramId?: string | null
     isVerified?: boolean
@@ -24917,6 +24994,7 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     displayName?: StringFieldUpdateOperationsInput | string
     avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    banner?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     telegramId?: NullableStringFieldUpdateOperationsInput | string | null
     isVerified?: BoolFieldUpdateOperationsInput | boolean
@@ -24948,6 +25026,7 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     displayName?: StringFieldUpdateOperationsInput | string
     avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    banner?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     telegramId?: NullableStringFieldUpdateOperationsInput | string | null
     isVerified?: BoolFieldUpdateOperationsInput | boolean
@@ -24990,6 +25069,7 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     displayName?: StringFieldUpdateOperationsInput | string
     avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    banner?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     telegramId?: NullableStringFieldUpdateOperationsInput | string | null
     isVerified?: BoolFieldUpdateOperationsInput | boolean
@@ -25021,6 +25101,7 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     displayName?: StringFieldUpdateOperationsInput | string
     avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    banner?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     telegramId?: NullableStringFieldUpdateOperationsInput | string | null
     isVerified?: BoolFieldUpdateOperationsInput | boolean

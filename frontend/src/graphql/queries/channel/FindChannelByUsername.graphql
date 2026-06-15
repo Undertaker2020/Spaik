@@ -4,6 +4,7 @@ query FindChannelByUsername($username: String!){
         username
         displayName
         avatar
+        banner
         bio
         isVerified
         socialLinks {

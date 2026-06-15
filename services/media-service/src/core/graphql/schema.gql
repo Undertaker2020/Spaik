@@ -3,8 +3,10 @@
 # ------------------------------------------------------
 
 type Mutation {
+  changeChannelBanner(banner: Upload!): Boolean!
   changeProfileAvatar(avatar: Upload!): Boolean!
   changeStreamThumbnail(thumbnail: Upload!): Boolean!
+  removeChannelBanner: Boolean!
   removeProfileAvatar: Boolean!
   removeStreamThumbnail: Boolean!
 }

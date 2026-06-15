@@ -5,6 +5,7 @@ query FindProfile {
         displayName
         email
         avatar
+        banner
         bio
         isTotpEnabled
         isVerified

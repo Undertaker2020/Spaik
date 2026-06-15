@@ -39,7 +39,16 @@ export function ChannelHome({ channel }: ChannelHomeProps) {
 	return (
 		<div className='mx-auto max-w-screen-xl'>
 			{/* Banner */}
-			<div className='h-40 w-full rounded-xl bg-gradient-to-br from-[#0d2b3e] via-[#1a0d2b] to-[#2b1a0d]' />
+			{channel.banner ? (
+				// eslint-disable-next-line @next/next/no-img-element
+				<img
+					src={getMediaSource(channel.banner)}
+					alt={`${channel.displayName} banner`}
+					className='h-40 w-full rounded-xl object-cover'
+				/>
+			) : (
+				<div className='h-40 w-full rounded-xl bg-gradient-to-br from-[#0d2b3e] via-[#1a0d2b] to-[#2b1a0d]' />
+			)}
 
 			{/* Header (avatar overlaps the banner) */}
 			<div className='-mt-8 flex items-end justify-between gap-4 px-4'>

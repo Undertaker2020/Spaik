@@ -170,6 +170,7 @@ export type MakePaymentModel = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  changeChannelBanner: Scalars['Boolean']['output'];
   changeChatSettings: Scalars['Boolean']['output'];
   changeEmail: Scalars['Boolean']['output'];
   changeNotificationsSettings: ChangeNotificationsSettingsResponse;
@@ -194,6 +195,7 @@ export type Mutation = {
   makePayment: MakePaymentModel;
   newPassword: Scalars['Boolean']['output'];
   refreshTokens: AuthModel;
+  removeChannelBanner: Scalars['Boolean']['output'];
   removeProfileAvatar: Scalars['Boolean']['output'];
   removeSession: Scalars['Boolean']['output'];
   removeSocialLink: Scalars['Boolean']['output'];
@@ -205,6 +207,11 @@ export type Mutation = {
   unfollowChannel: Scalars['Boolean']['output'];
   updateSocialLink: Scalars['Boolean']['output'];
   verifyAccount: AuthModel;
+};
+
+
+export type MutationChangeChannelBannerArgs = {
+  banner: Scalars['Upload']['input'];
 };
 
 
@@ -607,6 +614,7 @@ export enum TransactionStatus {
 export type UserModel = {
   __typename?: 'UserModel';
   avatar?: Maybe<Scalars['String']['output']>;
+  banner?: Maybe<Scalars['String']['output']>;
   bio?: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['DateTime']['output'];
   deactivatedAt?: Maybe<Scalars['DateTime']['output']>;
@@ -765,6 +773,13 @@ export type RemoveStreamThumbnailMutationVariables = Exact<{ [key: string]: neve
 
 export type RemoveStreamThumbnailMutation = { __typename?: 'Mutation', removeStreamThumbnail: boolean };
 
+export type ChangeChannelBannerMutationVariables = Exact<{
+  banner: Scalars['Upload']['input'];
+}>;
+
+
+export type ChangeChannelBannerMutation = { __typename?: 'Mutation', changeChannelBanner: boolean };
+
 export type ChangeEmailMutationVariables = Exact<{
   data: ChangeEmailInput;
 }>;
@@ -824,6 +839,11 @@ export type EnableTotpMutationVariables = Exact<{
 
 export type EnableTotpMutation = { __typename?: 'Mutation', enableTotp: boolean };
 
+export type RemoveChannelBannerMutationVariables = Exact<{ [key: string]: never; }>;
+
+
+export type RemoveChannelBannerMutation = { __typename?: 'Mutation', removeChannelBanner: boolean };
+
 export type RemoveProfileAvatarMutationVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -880,7 +900,7 @@ export type FindChannelByUsernameQueryVariables = Exact<{
 }>;
 
 
-export type FindChannelByUsernameQuery = { __typename?: 'Query', findChannelByUsername: { __typename?: 'UserModel', id: string, username: string, displayName: string, avatar?: string | null, bio?: string | null, isVerified: boolean, socialLinks?: Array<{ __typename?: 'SocialLinkModel', title: string, url: string }> | null, stream?: { __typename?: 'StreamModel', id: string, title: string, thumbnailUrl?: string | null, isLive: boolean, isChatEnabled: boolean, isChatFollowersOnly: boolean, isChatPremiumFollowersOnly: boolean, category?: { __typename?: 'CategoryModel', id: string, title: string } | null } | null, sponsorshipPlans?: Array<{ __typename?: 'PlanModel', id: string, title: string, description?: string | null, price: number }> | null, followings?: Array<{ __typename?: 'FollowModel', id: string }> | null } };
+export type FindChannelByUsernameQuery = { __typename?: 'Query', findChannelByUsername: { __typename?: 'UserModel', id: string, username: string, displayName: string, avatar?: string | null, banner?: string | null, bio?: string | null, isVerified: boolean, socialLinks?: Array<{ __typename?: 'SocialLinkModel', title: string, url: string }> | null, stream?: { __typename?: 'StreamModel', id: string, title: string, thumbnailUrl?: string | null, isLive: boolean, isChatEnabled: boolean, isChatFollowersOnly: boolean, isChatPremiumFollowersOnly: boolean, category?: { __typename?: 'CategoryModel', id: string, title: string } | null } | null, sponsorshipPlans?: Array<{ __typename?: 'PlanModel', id: string, title: string, description?: string | null, price: number }> | null, followings?: Array<{ __typename?: 'FollowModel', id: string }> | null } };
 
 export type FindFollowersCountByChannelQueryVariables = Exact<{
   channelId: Scalars['String']['input'];
@@ -970,7 +990,7 @@ export type FindNotificationUnreadCountQuery = { __typename?: 'Query', findNotif
 export type FindProfileQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type FindProfileQuery = { __typename?: 'Query', findProfile: { __typename?: 'UserModel', id: string, username: string, displayName: string, email: string, avatar?: string | null, bio?: string | null, isTotpEnabled: boolean, isVerified: boolean, notificationSettings?: { __typename?: 'NotificationSettingsModel', siteNotifications: boolean, telegramNotifications: boolean } | null, stream?: { __typename?: 'StreamModel', serverUrl?: string | null, streamKey?: string | null, isChatEnabled: boolean, isChatFollowersOnly: boolean, isChatPremiumFollowersOnly: boolean } | null } };
+export type FindProfileQuery = { __typename?: 'Query', findProfile: { __typename?: 'UserModel', id: string, username: string, displayName: string, email: string, avatar?: string | null, banner?: string | null, bio?: string | null, isTotpEnabled: boolean, isVerified: boolean, notificationSettings?: { __typename?: 'NotificationSettingsModel', siteNotifications: boolean, telegramNotifications: boolean } | null, stream?: { __typename?: 'StreamModel', serverUrl?: string | null, streamKey?: string | null, isChatEnabled: boolean, isChatFollowersOnly: boolean, isChatPremiumFollowersOnly: boolean } | null } };
 
 export type FindSessionsByUserQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1598,6 +1618,37 @@ export function useRemoveStreamThumbnailMutation(baseOptions?: Apollo.MutationHo
 export type RemoveStreamThumbnailMutationHookResult = ReturnType<typeof useRemoveStreamThumbnailMutation>;
 export type RemoveStreamThumbnailMutationResult = Apollo.MutationResult<RemoveStreamThumbnailMutation>;
 export type RemoveStreamThumbnailMutationOptions = Apollo.BaseMutationOptions<RemoveStreamThumbnailMutation, RemoveStreamThumbnailMutationVariables>;
+export const ChangeChannelBannerDocument = gql`
+    mutation ChangeChannelBanner($banner: Upload!) {
+  changeChannelBanner(banner: $banner)
+}
+    `;
+export type ChangeChannelBannerMutationFn = Apollo.MutationFunction<ChangeChannelBannerMutation, ChangeChannelBannerMutationVariables>;
+
+/**
+ * __useChangeChannelBannerMutation__
+ *
+ * To run a mutation, you first call `useChangeChannelBannerMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useChangeChannelBannerMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [changeChannelBannerMutation, { data, loading, error }] = useChangeChannelBannerMutation({
+ *   variables: {
+ *      banner: // value for 'banner'
+ *   },
+ * });
+ */
+export function useChangeChannelBannerMutation(baseOptions?: Apollo.MutationHookOptions<ChangeChannelBannerMutation, ChangeChannelBannerMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<ChangeChannelBannerMutation, ChangeChannelBannerMutationVariables>(ChangeChannelBannerDocument, options);
+      }
+export type ChangeChannelBannerMutationHookResult = ReturnType<typeof useChangeChannelBannerMutation>;
+export type ChangeChannelBannerMutationResult = Apollo.MutationResult<ChangeChannelBannerMutation>;
+export type ChangeChannelBannerMutationOptions = Apollo.BaseMutationOptions<ChangeChannelBannerMutation, ChangeChannelBannerMutationVariables>;
 export const ChangeEmailDocument = gql`
     mutation ChangeEmail($data: ChangeEmailInput!) {
   changeEmail(data: $data)
@@ -1881,6 +1932,36 @@ export function useEnableTotpMutation(baseOptions?: Apollo.MutationHookOptions<E
 export type EnableTotpMutationHookResult = ReturnType<typeof useEnableTotpMutation>;
 export type EnableTotpMutationResult = Apollo.MutationResult<EnableTotpMutation>;
 export type EnableTotpMutationOptions = Apollo.BaseMutationOptions<EnableTotpMutation, EnableTotpMutationVariables>;
+export const RemoveChannelBannerDocument = gql`
+    mutation RemoveChannelBanner {
+  removeChannelBanner
+}
+    `;
+export type RemoveChannelBannerMutationFn = Apollo.MutationFunction<RemoveChannelBannerMutation, RemoveChannelBannerMutationVariables>;
+
+/**
+ * __useRemoveChannelBannerMutation__
+ *
+ * To run a mutation, you first call `useRemoveChannelBannerMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useRemoveChannelBannerMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [removeChannelBannerMutation, { data, loading, error }] = useRemoveChannelBannerMutation({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useRemoveChannelBannerMutation(baseOptions?: Apollo.MutationHookOptions<RemoveChannelBannerMutation, RemoveChannelBannerMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<RemoveChannelBannerMutation, RemoveChannelBannerMutationVariables>(RemoveChannelBannerDocument, options);
+      }
+export type RemoveChannelBannerMutationHookResult = ReturnType<typeof useRemoveChannelBannerMutation>;
+export type RemoveChannelBannerMutationResult = Apollo.MutationResult<RemoveChannelBannerMutation>;
+export type RemoveChannelBannerMutationOptions = Apollo.BaseMutationOptions<RemoveChannelBannerMutation, RemoveChannelBannerMutationVariables>;
 export const RemoveProfileAvatarDocument = gql`
     mutation RemoveProfileAvatar {
   removeProfileAvatar
@@ -2184,6 +2265,7 @@ export const FindChannelByUsernameDocument = gql`
     username
     displayName
     avatar
+    banner
     bio
     isVerified
     socialLinks {
@@ -2920,6 +3002,7 @@ export const FindProfileDocument = gql`
     displayName
     email
     avatar
+    banner
     bio
     isTotpEnabled
     isVerified

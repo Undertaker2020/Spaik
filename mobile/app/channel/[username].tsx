@@ -355,13 +355,17 @@ export default function ChannelScreen() {
       ) : (
         <ScrollView showsVerticalScrollIndicator={false}>
 
-          {/* Cover */}
-          <LinearGradient
-            colors={['#0d2b3e', '#1a0d2b', '#2b1a0d']}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={styles.cover}
-          />
+          {/* Cover (banner image, else gradient) */}
+          {getMediaSource(channel.banner) ? (
+            <Image source={{ uri: getMediaSource(channel.banner)! }} style={styles.cover} resizeMode="cover" />
+          ) : (
+            <LinearGradient
+              colors={['#0d2b3e', '#1a0d2b', '#2b1a0d']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.cover}
+            />
+          )}
 
           {/* Avatar row */}
           <View style={styles.avatarRow}>

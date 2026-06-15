@@ -2,6 +2,7 @@ import {Heading} from "@/components/ui/elements/Heading";
 import {useTranslations} from "next-intl";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/common/Tabs";
 import {ChangeAvatarForm} from "@/components/features/user/profile/ChangeAvatarForm";
+import {ChangeBannerForm} from "@/components/features/user/profile/ChangeBannerForm";
 import {ChangeInfoForm} from "@/components/features/user/profile/ChangeInfoForm";
 import {SocialLinksForm} from "@/components/features/user/profile/social-links-form/SocialLinksForm";
 import {ChangeEmailForm} from "@/components/features/user/account/ChangeEmailForm";
@@ -51,6 +52,7 @@ export function UserSettings() {
                             description={t('profile.header.description')}
                         />
                         <ChangeAvatarForm/>
+                        <ChangeBannerForm/>
                         <ChangeInfoForm/>
                         <SocialLinksForm/>
                     </div>

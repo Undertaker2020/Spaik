@@ -1,0 +1,3 @@
+mutation ChangeChannelBanner($banner: Upload!) {
+	changeChannelBanner(banner: $banner)
+}

@@ -33,6 +33,21 @@ export class MediaResolver {
     }
 
     @Authorization()
+    @Mutation(() => Boolean, { name: 'changeChannelBanner' })
+    public async changeBanner(
+        @Authorized() user: User,
+        @Args('banner', { type: () => GraphQLUpload }, FileValidationPipe) banner: Upload,
+    ) {
+        return this.mediaService.changeBanner(user, banner);
+    }
+
+    @Authorization()
+    @Mutation(() => Boolean, { name: 'removeChannelBanner' })
+    public async removeBanner(@Authorized() user: User) {
+        return this.mediaService.removeBanner(user);
+    }
+
+    @Authorization()
     @Mutation(() => Boolean, { name: 'changeStreamThumbnail' })
     public async changeThumbnail(
         @Authorized() user: User,
