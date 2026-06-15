@@ -15,7 +15,8 @@ import { useQuery } from '@apollo/client';
 import { LinearGradient } from 'expo-linear-gradient';
 import { IconSearch, IconX, IconDeviceTv } from '@tabler/icons-react-native';
 import { useRouter } from 'expo-router';
-import { COLORS } from '@/src/libs/constants/colors';
+import { useColors, useThemedStyles } from '@/src/libs/theme/use-theme';
+import type { Palette } from '@/src/libs/theme/palettes';
 import { getMediaSource } from '@/src/libs/utils/get-media-source';
 import {
   FIND_ALL_STREAMS,
@@ -36,6 +37,7 @@ const CARD_H     = CARD_WIDTH * (9 / 16);
 function CategoryPill({ label, active, onPress }: {
   label: string; active: boolean; onPress: () => void;
 }) {
+  const styles = useThemedStyles(makeStyles);
   return (
     <TouchableOpacity onPress={onPress} style={[styles.pill, active && styles.pillActive]} activeOpacity={0.75}>
       <Text style={[styles.pillText, active && styles.pillTextActive]}>{label}</Text>
@@ -46,6 +48,7 @@ function CategoryPill({ label, active, onPress }: {
 // ── Stream card ───────────────────────────────────────────────
 
 function StreamCard({ stream, onPress }: { stream: StreamItem; onPress: () => void }) {
+  const styles = useThemedStyles(makeStyles);
   const thumb  = getMediaSource(stream.thumbnailUrl);
   const avatar = getMediaSource(stream.user.avatar);
 
@@ -109,15 +112,17 @@ function StreamCard({ stream, onPress }: { stream: StreamItem; onPress: () => vo
 // ── Empty state ───────────────────────────────────────────────
 
 function EmptyState({ loading, hasSearch }: { loading: boolean; hasSearch: boolean }) {
+  const c = useColors();
+  const styles = useThemedStyles(makeStyles);
   if (loading) return (
     <View style={styles.center}>
-      <ActivityIndicator size="large" color={COLORS.accent} />
+      <ActivityIndicator size="large" color={c.accent} />
     </View>
   );
   return (
     <View style={styles.center}>
       <View style={styles.emptyIcon}>
-        <IconDeviceTv size={28} color={COLORS.textMuted} strokeWidth={1.4} />
+        <IconDeviceTv size={28} color={c.textMuted} strokeWidth={1.4} />
       </View>
       <Text style={styles.emptyTitle}>
         {hasSearch ? 'No streams found' : 'No streams yet'}
@@ -133,6 +138,8 @@ function EmptyState({ loading, hasSearch }: { loading: boolean; hasSearch: boole
 
 export default function StreamsScreen() {
   const router = useRouter();
+  const c = useColors();
+  const styles = useThemedStyles(makeStyles);
   const [search,         setSearch]         = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
   const [allStreams,     setAllStreams]      = useState<StreamItem[]>([]);
@@ -220,19 +227,19 @@ export default function StreamsScreen() {
 
       {/* Search */}
       <View style={styles.searchWrap}>
-        <IconSearch size={16} color={COLORS.textMuted} />
+        <IconSearch size={16} color={c.textMuted} />
         <TextInput
           style={styles.searchInput}
           placeholder="Search streams…"
-          placeholderTextColor={COLORS.textMuted}
+          placeholderTextColor={c.textMuted}
           value={search}
           onChangeText={onSearch}
           returnKeyType="search"
-          selectionColor={COLORS.accent}
+          selectionColor={c.accent}
         />
         {search.length > 0 && (
           <TouchableOpacity onPress={() => onSearch('')} activeOpacity={0.7} hitSlop={8}>
-            <IconX size={15} color={COLORS.textMuted} />
+            <IconX size={15} color={c.textMuted} />
           </TouchableOpacity>
         )}
       </View>
@@ -276,7 +283,7 @@ export default function StreamsScreen() {
         ListEmptyComponent={<EmptyState loading={loading} hasSearch={search.length > 0} />}
         ListFooterComponent={
           loadingMore
-            ? <ActivityIndicator size="small" color={COLORS.accent} style={styles.footerLoader} />
+            ? <ActivityIndicator size="small" color={c.accent} style={styles.footerLoader} />
             : null
         }
       />
@@ -284,8 +291,9 @@ export default function StreamsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  root:  { flex: 1, backgroundColor: COLORS.bg },
+const makeStyles = (c: Palette) =>
+  StyleSheet.create({
+  root:  { flex: 1, backgroundColor: c.bg },
   flex:  { flex: 1 },
 
   // Header
@@ -293,26 +301,26 @@ const styles = StyleSheet.create({
     flexDirection: 'row', alignItems: 'center', gap: 10,
     paddingHorizontal: H_PAD, paddingTop: 8, paddingBottom: 14,
   },
-  title: { fontSize: 24, fontWeight: '700', color: COLORS.textPrimary },
+  title: { fontSize: 24, fontWeight: '700', color: c.textPrimary },
   liveCount: {
     flexDirection: 'row', alignItems: 'center', gap: 5,
     backgroundColor: 'rgba(229,62,62,0.12)',
     borderRadius: 99, paddingHorizontal: 10, paddingVertical: 4,
     borderWidth: 1, borderColor: 'rgba(229,62,62,0.25)',
   },
-  liveCountDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: COLORS.live },
-  liveCountText: { fontSize: 12, fontWeight: '700', color: COLORS.live },
+  liveCountDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: c.live },
+  liveCountText: { fontSize: 12, fontWeight: '700', color: c.live },
 
   // Search
   searchWrap: {
     flexDirection: 'row', alignItems: 'center', gap: 8,
-    backgroundColor: COLORS.card,
+    backgroundColor: c.card,
     borderRadius: 14,
     marginHorizontal: H_PAD, marginBottom: 12,
     paddingHorizontal: 13, paddingVertical: 11,
-    borderWidth: 1, borderColor: COLORS.border,
+    borderWidth: 1, borderColor: c.border,
   },
-  searchInput: { flex: 1, fontSize: 14, color: COLORS.textPrimary, padding: 0 },
+  searchInput: { flex: 1, fontSize: 14, color: c.textPrimary, padding: 0 },
 
   // Pills
   pillsRow: { flexGrow: 0, marginBottom: 14 },
@@ -320,11 +328,11 @@ const styles = StyleSheet.create({
   pill: {
     paddingHorizontal: 15, paddingVertical: 7,
     borderRadius: 99,
-    borderWidth: 1, borderColor: COLORS.border,
-    backgroundColor: COLORS.card,
+    borderWidth: 1, borderColor: c.border,
+    backgroundColor: c.card,
   },
-  pillActive:     { backgroundColor: COLORS.accent, borderColor: COLORS.accent },
-  pillText:       { fontSize: 13, fontWeight: '500', color: COLORS.textSecondary },
+  pillActive:     { backgroundColor: c.accent, borderColor: c.accent },
+  pillText:       { fontSize: 13, fontWeight: '500', color: c.textSecondary },
   pillTextActive: { color: '#000', fontWeight: '600' },
 
   // Grid
@@ -336,7 +344,7 @@ const styles = StyleSheet.create({
   thumb: {
     width: CARD_WIDTH, height: CARD_H,
     borderRadius: 14, overflow: 'hidden',
-    backgroundColor: COLORS.card, marginBottom: 8,
+    backgroundColor: c.card, marginBottom: 8,
   },
   thumbGradient: {
     position: 'absolute', bottom: 0, left: 0, right: 0, height: '65%',
@@ -348,7 +356,7 @@ const styles = StyleSheet.create({
   },
   liveBadge: {
     flexDirection: 'row', alignItems: 'center', gap: 4,
-    backgroundColor: COLORS.live,
+    backgroundColor: c.live,
     borderRadius: 5, paddingHorizontal: 6, paddingVertical: 3,
   },
   liveDot:       { width: 5, height: 5, borderRadius: 3, backgroundColor: '#fff' },
@@ -369,22 +377,22 @@ const styles = StyleSheet.create({
     borderWidth: 1, borderColor: 'rgba(255,255,255,0.3)',
   },
   thumbAvatarFallback: {
-    backgroundColor: COLORS.accentDark, alignItems: 'center', justifyContent: 'center',
+    backgroundColor: c.accentDark, alignItems: 'center', justifyContent: 'center',
   },
   thumbAvatarInitial: { fontSize: 9, fontWeight: '700', color: '#fff' },
   thumbUsername: { fontSize: 11, fontWeight: '600', color: '#fff', flex: 1 },
 
-  cardTitle: { fontSize: 12, fontWeight: '500', color: COLORS.textPrimary, lineHeight: 17 },
+  cardTitle: { fontSize: 12, fontWeight: '500', color: c.textPrimary, lineHeight: 17 },
 
   // Empty
   center: { flex: 1, paddingTop: 60, alignItems: 'center', gap: 10 },
   emptyIcon: {
     width: 60, height: 60, borderRadius: 30,
-    backgroundColor: COLORS.card, alignItems: 'center', justifyContent: 'center',
-    marginBottom: 4, borderWidth: 1, borderColor: COLORS.border,
+    backgroundColor: c.card, alignItems: 'center', justifyContent: 'center',
+    marginBottom: 4, borderWidth: 1, borderColor: c.border,
   },
-  emptyTitle: { fontSize: 16, fontWeight: '600', color: COLORS.textPrimary },
-  emptySub:   { fontSize: 13, color: COLORS.textMuted },
+  emptyTitle: { fontSize: 16, fontWeight: '600', color: c.textPrimary },
+  emptySub:   { fontSize: 13, color: c.textMuted },
 
   footerLoader: { paddingVertical: 16 },
 });

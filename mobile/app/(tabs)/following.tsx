@@ -15,7 +15,8 @@ import { useQuery } from '@apollo/client';
 import { useRouter } from 'expo-router';
 import { IconBadge, IconUsers } from '@tabler/icons-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { COLORS } from '@/src/libs/constants/colors';
+import { useColors, useThemedStyles } from '@/src/libs/theme/use-theme';
+import type { Palette } from '@/src/libs/theme/palettes';
 import { getMediaSource } from '@/src/libs/utils/get-media-source';
 import {
   FIND_MY_FOLLOWINGS,
@@ -31,6 +32,7 @@ const OFF_W   = (W - H_PAD * 2 - 12) / 2;
 // ── Section header ────────────────────────────────────────────
 
 function SectionHeader({ label, count }: { label: string; count: number }) {
+  const styles = useThemedStyles(makeStyles);
   return (
     <View style={styles.sectionHeader}>
       <View style={styles.sectionTitleWrap}>
@@ -48,6 +50,8 @@ function SectionHeader({ label, count }: { label: string; count: number }) {
 
 function LiveCard({ channel }: { channel: FollowingChannel }) {
   const router    = useRouter();
+  const c = useColors();
+  const styles = useThemedStyles(makeStyles);
   const thumb     = getMediaSource(channel.stream?.thumbnailUrl ?? null);
   const avatar    = getMediaSource(channel.avatar);
 
@@ -102,7 +106,7 @@ function LiveCard({ channel }: { channel: FollowingChannel }) {
           <View style={styles.liveCardMeta}>
             <View style={styles.liveNameRow}>
               <Text style={styles.liveDisplayName} numberOfLines={1}>{channel.displayName}</Text>
-              {channel.isVerified && <IconBadge size={12} color={COLORS.accent} />}
+              {channel.isVerified && <IconBadge size={12} color={c.accent} />}
             </View>
             <Text style={styles.liveStreamTitle} numberOfLines={1}>
               {channel.stream?.title ?? 'Live stream'}
@@ -118,6 +122,7 @@ function LiveCard({ channel }: { channel: FollowingChannel }) {
 
 function OfflineCard({ channel }: { channel: FollowingChannel }) {
   const router = useRouter();
+  const styles = useThemedStyles(makeStyles);
   const avatar = getMediaSource(channel.avatar);
 
   return (
@@ -149,10 +154,12 @@ function OfflineCard({ channel }: { channel: FollowingChannel }) {
 // ── Empty state ───────────────────────────────────────────────
 
 function EmptyState() {
+  const c = useColors();
+  const styles = useThemedStyles(makeStyles);
   return (
     <View style={styles.empty}>
       <View style={styles.emptyIconWrap}>
-        <IconUsers size={34} color={COLORS.textMuted} strokeWidth={1.2} />
+        <IconUsers size={34} color={c.textMuted} strokeWidth={1.2} />
       </View>
       <Text style={styles.emptyTitle}>Nobody here yet</Text>
       <Text style={styles.emptySub}>Follow channels you like{'\n'}and they'll appear here</Text>
@@ -164,6 +171,8 @@ function EmptyState() {
 
 export default function FollowingScreen() {
   const router = useRouter();
+  const c = useColors();
+  const styles = useThemedStyles(makeStyles);
   const { data, loading, error, refetch } = useQuery<{ findMyFollowings: FollowItem[] }>(
     FIND_MY_FOLLOWINGS,
     { fetchPolicy: 'cache-and-network' }
@@ -193,7 +202,7 @@ export default function FollowingScreen() {
 
       {loading && followings.length === 0 ? (
         <View style={styles.center}>
-          <ActivityIndicator size="large" color={COLORS.accent} />
+          <ActivityIndicator size="large" color={c.accent} />
         </View>
       ) : error ? (
         <View style={styles.center}>
@@ -209,8 +218,8 @@ export default function FollowingScreen() {
             <RefreshControl
               refreshing={loading}
               onRefresh={refetch}
-              tintColor={COLORS.accent}
-              colors={[COLORS.accent]}
+              tintColor={c.accent}
+              colors={[c.accent]}
             />
           }
         >
@@ -247,8 +256,9 @@ export default function FollowingScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  root:   { flex: 1, backgroundColor: COLORS.bg },
+const makeStyles = (c: Palette) =>
+  StyleSheet.create({
+  root:   { flex: 1, backgroundColor: c.bg },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   scroll: { paddingBottom: 24 },
 
@@ -257,13 +267,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row', alignItems: 'center', gap: 10,
     paddingHorizontal: H_PAD, paddingTop: 8, paddingBottom: 14,
   },
-  title: { fontSize: 24, fontWeight: '700', color: COLORS.textPrimary },
+  title: { fontSize: 24, fontWeight: '700', color: c.textPrimary },
   totalBadge: {
-    backgroundColor: COLORS.card, borderRadius: 99,
+    backgroundColor: c.card, borderRadius: 99,
     paddingHorizontal: 10, paddingVertical: 3,
-    borderWidth: 1, borderColor: COLORS.border,
+    borderWidth: 1, borderColor: c.border,
   },
-  totalBadgeText: { fontSize: 12, fontWeight: '600', color: COLORS.textSecondary },
+  totalBadgeText: { fontSize: 12, fontWeight: '600', color: c.textSecondary },
 
   // Section header
   sectionHeader: {
@@ -271,14 +281,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: H_PAD, marginBottom: 12,
   },
   sectionTitleWrap: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  sectionAccent:    { width: 3, height: 15, borderRadius: 2, backgroundColor: COLORS.accent },
-  sectionLabel: { fontSize: 15, fontWeight: '700', color: COLORS.textPrimary },
+  sectionAccent:    { width: 3, height: 15, borderRadius: 2, backgroundColor: c.accent },
+  sectionLabel: { fontSize: 15, fontWeight: '700', color: c.textPrimary },
   sectionBadge: {
-    backgroundColor: COLORS.card, borderRadius: 99,
+    backgroundColor: c.card, borderRadius: 99,
     paddingHorizontal: 8, paddingVertical: 2,
-    borderWidth: 1, borderColor: COLORS.border,
+    borderWidth: 1, borderColor: c.border,
   },
-  sectionBadgeText: { fontSize: 11, color: COLORS.textSecondary, fontWeight: '600' },
+  sectionBadgeText: { fontSize: 11, color: c.textSecondary, fontWeight: '600' },
 
   // Section wrapper
   section: { marginBottom: 28 },
@@ -287,7 +297,7 @@ const styles = StyleSheet.create({
   liveList: { paddingHorizontal: H_PAD, gap: 12 },
   liveCard: {
     height: LIVE_H, borderRadius: 16, overflow: 'hidden',
-    backgroundColor: COLORS.card,
+    backgroundColor: c.card,
   },
   liveCardTopGrad:    { position: 'absolute', top: 0, left: 0, right: 0, height: 70 },
   liveCardBottomGrad: { position: 'absolute', bottom: 0, left: 0, right: 0, height: '55%' },
@@ -295,7 +305,7 @@ const styles = StyleSheet.create({
   liveBadge: {
     position: 'absolute', top: 11, left: 11,
     flexDirection: 'row', alignItems: 'center', gap: 5,
-    backgroundColor: COLORS.live, borderRadius: 6,
+    backgroundColor: c.live, borderRadius: 6,
     paddingHorizontal: 9, paddingVertical: 4,
   },
   liveDot:       { width: 6, height: 6, borderRadius: 3, backgroundColor: '#fff' },
@@ -325,9 +335,9 @@ const styles = StyleSheet.create({
 
   offCard: {
     width: OFF_W,
-    backgroundColor: COLORS.card,
+    backgroundColor: c.card,
     borderRadius: 14,
-    borderWidth: 1, borderColor: COLORS.border,
+    borderWidth: 1, borderColor: c.border,
     padding: 14,
     alignItems: 'center',
     gap: 6,
@@ -337,26 +347,26 @@ const styles = StyleSheet.create({
   offIndicator: {
     position: 'absolute', bottom: 1, right: 1,
     width: 12, height: 12, borderRadius: 6,
-    backgroundColor: COLORS.textDisabled,
-    borderWidth: 2, borderColor: COLORS.card,
+    backgroundColor: c.textDisabled,
+    borderWidth: 2, borderColor: c.card,
   },
-  offName:     { fontSize: 13, fontWeight: '600', color: COLORS.textPrimary, textAlign: 'center' },
-  offUsername: { fontSize: 11, color: COLORS.textSecondary, textAlign: 'center' },
+  offName:     { fontSize: 13, fontWeight: '600', color: c.textPrimary, textAlign: 'center' },
+  offUsername: { fontSize: 11, color: c.textSecondary, textAlign: 'center' },
 
   avatarFallback: { backgroundColor: '#2A2D3A', alignItems: 'center', justifyContent: 'center' },
-  avatarInitial:      { fontSize: 14, fontWeight: '700', color: COLORS.accent },
-  offAvatarInitial:   { fontSize: 18, fontWeight: '700', color: COLORS.accent },
+  avatarInitial:      { fontSize: 14, fontWeight: '700', color: c.accent },
+  offAvatarInitial:   { fontSize: 18, fontWeight: '700', color: c.accent },
 
   // Empty
   empty: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12, paddingHorizontal: 40 },
   emptyIconWrap: {
     width: 80, height: 80, borderRadius: 40,
-    backgroundColor: COLORS.card,
+    backgroundColor: c.card,
     alignItems: 'center', justifyContent: 'center',
-    marginBottom: 4, borderWidth: 1, borderColor: COLORS.border,
+    marginBottom: 4, borderWidth: 1, borderColor: c.border,
   },
-  emptyTitle: { fontSize: 18, fontWeight: '700', color: COLORS.textPrimary },
-  emptySub:   { fontSize: 14, color: COLORS.textMuted, textAlign: 'center', lineHeight: 21 },
+  emptyTitle: { fontSize: 18, fontWeight: '700', color: c.textPrimary },
+  emptySub:   { fontSize: 14, color: c.textMuted, textAlign: 'center', lineHeight: 21 },
 
-  errorText: { color: COLORS.danger, textAlign: 'center', padding: 20 },
+  errorText: { color: c.danger, textAlign: 'center', padding: 20 },
 });

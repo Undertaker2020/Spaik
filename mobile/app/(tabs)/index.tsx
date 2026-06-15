@@ -19,7 +19,8 @@ import { IconBell, IconSearch } from '@tabler/icons-react-native';
 import {
   FIND_NOTIFICATION_UNREAD_COUNT,
 } from '@/src/graphql/queries/notifications.queries';
-import { COLORS } from '@/src/libs/constants/colors';
+import { useColors, useThemedStyles } from '@/src/libs/theme/use-theme';
+import type { Palette } from '@/src/libs/theme/palettes';
 import { getMediaSource } from '@/src/libs/utils/get-media-source';
 import {
   FIND_RANDOM_STREAMS,
@@ -41,6 +42,7 @@ const CAT_H          = 70;
 function CategoryPill({ label, active, onPress }: {
   label: string; active: boolean; onPress: () => void;
 }) {
+  const styles = useThemedStyles(makeStyles);
   return (
     <TouchableOpacity onPress={onPress} style={[styles.pill, active && styles.pillActive]} activeOpacity={0.75}>
       <Text style={[styles.pillText, active && styles.pillTextActive]}>{label}</Text>
@@ -51,6 +53,7 @@ function CategoryPill({ label, active, onPress }: {
 // ── Featured card ─────────────────────────────────────────────
 
 function FeaturedCard({ stream, onPress }: { stream: StreamItem; onPress: () => void }) {
+  const styles = useThemedStyles(makeStyles);
   const thumb  = getMediaSource(stream.thumbnailUrl);
   const avatar = getMediaSource(stream.user.avatar);
 
@@ -112,6 +115,7 @@ function FeaturedCard({ stream, onPress }: { stream: StreamItem; onPress: () => 
 // ── Recommended card ──────────────────────────────────────────
 
 function RecCard({ stream, onPress }: { stream: StreamItem; onPress: () => void }) {
+  const styles = useThemedStyles(makeStyles);
   const thumb  = getMediaSource(stream.thumbnailUrl);
   const avatar = getMediaSource(stream.user.avatar);
 
@@ -152,6 +156,7 @@ function RecCard({ stream, onPress }: { stream: StreamItem; onPress: () => void 
 // ── Category card ─────────────────────────────────────────────
 
 function CatCard({ category, onPress }: { category: CategoryItem; onPress: () => void }) {
+  const styles = useThemedStyles(makeStyles);
   const thumb = getMediaSource(category.thumbnailUrl);
   return (
     <TouchableOpacity style={styles.catCard} activeOpacity={0.8} onPress={onPress}>
@@ -171,6 +176,7 @@ function CatCard({ category, onPress }: { category: CategoryItem; onPress: () =>
 // ── Section header ────────────────────────────────────────────
 
 function SectionHeader({ title, onSeeAll }: { title: string; onSeeAll?: () => void }) {
+  const styles = useThemedStyles(makeStyles);
   return (
     <View style={styles.sectionHeader}>
       <View style={styles.sectionTitleWrap}>
@@ -190,6 +196,8 @@ function SectionHeader({ title, onSeeAll }: { title: string; onSeeAll?: () => vo
 
 export default function HomeScreen() {
   const router = useRouter();
+  const c = useColors();
+  const styles = useThemedStyles(makeStyles);
   const [activeCategory, setActiveCategory] = useState('All');
 
   const categoryFilter = activeCategory === 'All' ? undefined : activeCategory;
@@ -231,14 +239,14 @@ export default function HomeScreen() {
         <Text style={styles.logo}>SPAIK</Text>
         <View style={styles.headerActions}>
           <TouchableOpacity style={styles.iconBtn} activeOpacity={0.7}>
-            <IconSearch size={19} color={COLORS.textSecondary} />
+            <IconSearch size={19} color={c.textSecondary} />
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.iconBtn}
             activeOpacity={0.7}
             onPress={() => router.push('/notifications' as any)}
           >
-            <IconBell size={19} color={COLORS.textSecondary} />
+            <IconBell size={19} color={c.textSecondary} />
             {unreadCount > 0 && (
               <View style={styles.badge}>
                 <Text style={styles.badgeText}>{unreadCount > 99 ? '99+' : unreadCount}</Text>
@@ -255,8 +263,8 @@ export default function HomeScreen() {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={handleRefresh}
-            tintColor={COLORS.accent}
-            colors={[COLORS.accent]}
+            tintColor={c.accent}
+            colors={[c.accent]}
           />
         }
       >
@@ -274,7 +282,7 @@ export default function HomeScreen() {
 
         {streamsLoading ? (
           <View style={styles.loader}>
-            <ActivityIndicator size="large" color={COLORS.accent} />
+            <ActivityIndicator size="large" color={c.accent} />
           </View>
         ) : (
           <>
@@ -335,8 +343,9 @@ export default function HomeScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  root:  { flex: 1, backgroundColor: COLORS.bg },
+const makeStyles = (c: Palette) =>
+  StyleSheet.create({
+  root:  { flex: 1, backgroundColor: c.bg },
   scroll: { paddingBottom: 24 },
 
   // Header
@@ -344,20 +353,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     paddingHorizontal: H_PAD, paddingTop: 8, paddingBottom: 14,
   },
-  logo: { fontSize: 24, fontWeight: '800', color: COLORS.accent, letterSpacing: -0.5 },
+  logo: { fontSize: 24, fontWeight: '800', color: c.accent, letterSpacing: -0.5 },
   headerActions: { flexDirection: 'row', gap: 6 },
   iconBtn: {
     width: 36, height: 36, borderRadius: 18,
-    backgroundColor: COLORS.card, borderWidth: 1, borderColor: COLORS.border,
+    backgroundColor: c.card, borderWidth: 1, borderColor: c.border,
     alignItems: 'center', justifyContent: 'center',
   },
   badge: {
     position: 'absolute', top: -2, right: -2,
     minWidth: 16, height: 16, borderRadius: 8,
-    backgroundColor: COLORS.danger,
+    backgroundColor: c.danger,
     alignItems: 'center', justifyContent: 'center',
     paddingHorizontal: 3,
-    borderWidth: 1.5, borderColor: COLORS.bg,
+    borderWidth: 1.5, borderColor: c.bg,
   },
   badgeText: { color: '#fff', fontSize: 8, fontWeight: '800' },
 
@@ -365,10 +374,10 @@ const styles = StyleSheet.create({
   pills: { paddingHorizontal: H_PAD, paddingBottom: 14, gap: 8 },
   pill: {
     paddingHorizontal: 15, paddingVertical: 7, borderRadius: 99,
-    borderWidth: 1, borderColor: COLORS.border, backgroundColor: COLORS.card,
+    borderWidth: 1, borderColor: c.border, backgroundColor: c.card,
   },
-  pillActive:     { backgroundColor: COLORS.accent, borderColor: COLORS.accent },
-  pillText:       { fontSize: 13, fontWeight: '500', color: COLORS.textSecondary },
+  pillActive:     { backgroundColor: c.accent, borderColor: c.accent },
+  pillText:       { fontSize: 13, fontWeight: '500', color: c.textSecondary },
   pillTextActive: { color: '#000', fontWeight: '600' },
 
   loader: { paddingTop: 60, alignItems: 'center' },
@@ -380,21 +389,21 @@ const styles = StyleSheet.create({
     paddingHorizontal: H_PAD, marginBottom: 12,
   },
   sectionTitleWrap: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  sectionAccent:    { width: 3, height: 16, borderRadius: 2, backgroundColor: COLORS.accent },
-  sectionTitle:     { fontSize: 16, fontWeight: '700', color: COLORS.textPrimary },
-  seeAll:           { fontSize: 13, color: COLORS.accent },
+  sectionAccent:    { width: 3, height: 16, borderRadius: 2, backgroundColor: c.accent },
+  sectionTitle:     { fontSize: 16, fontWeight: '700', color: c.textPrimary },
+  seeAll:           { fontSize: 13, color: c.accent },
 
   // Featured
   featured: {
     marginHorizontal: H_PAD, height: FEATURED_H,
-    borderRadius: 16, overflow: 'hidden', backgroundColor: COLORS.card,
+    borderRadius: 16, overflow: 'hidden', backgroundColor: c.card,
   },
   featuredTopGrad:    { position: 'absolute', top: 0, left: 0, right: 0, height: 80 },
   featuredBottomGrad: { position: 'absolute', bottom: 0, left: 0, right: 0, height: '60%' },
   featuredLive: {
     position: 'absolute', top: 12, left: 12,
     flexDirection: 'row', alignItems: 'center', gap: 5,
-    backgroundColor: COLORS.live, borderRadius: 6,
+    backgroundColor: c.live, borderRadius: 6,
     paddingHorizontal: 9, paddingVertical: 4,
   },
   liveDot:       { width: 6, height: 6, borderRadius: 3, backgroundColor: '#fff' },
@@ -412,7 +421,7 @@ const styles = StyleSheet.create({
     borderWidth: 2, borderColor: 'rgba(255,255,255,0.3)',
     flexShrink: 0,
   },
-  featuredAvatarFallback: { backgroundColor: COLORS.accentDark, alignItems: 'center', justifyContent: 'center' },
+  featuredAvatarFallback: { backgroundColor: c.accentDark, alignItems: 'center', justifyContent: 'center' },
   featuredAvatarInitial:  { fontSize: 14, fontWeight: '700', color: '#fff' },
   featuredMeta:    { flex: 1 },
   featuredTitle:   { fontSize: 15, fontWeight: '700', color: '#fff', marginBottom: 2 },
@@ -424,13 +433,13 @@ const styles = StyleSheet.create({
   recThumb: {
     width: REC_W, height: REC_H,
     borderRadius: 14, overflow: 'hidden',
-    backgroundColor: COLORS.card, marginBottom: 7,
+    backgroundColor: c.card, marginBottom: 7,
   },
   recGrad: { position: 'absolute', bottom: 0, left: 0, right: 0, height: '70%' },
   recLive: {
     position: 'absolute', top: 6, left: 6,
     flexDirection: 'row', alignItems: 'center', gap: 4,
-    backgroundColor: COLORS.live, borderRadius: 4,
+    backgroundColor: c.live, borderRadius: 4,
     paddingHorizontal: 6, paddingVertical: 3,
   },
   recBottom: {
@@ -438,17 +447,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row', alignItems: 'center', gap: 5,
   },
   recAvatar: { width: 18, height: 18, borderRadius: 9, borderWidth: 1, borderColor: 'rgba(255,255,255,0.3)' },
-  recAvatarFallback: { backgroundColor: COLORS.accentDark, alignItems: 'center', justifyContent: 'center' },
+  recAvatarFallback: { backgroundColor: c.accentDark, alignItems: 'center', justifyContent: 'center' },
   recAvatarInitial:  { fontSize: 8, fontWeight: '700', color: '#fff' },
   recUsername:       { fontSize: 11, fontWeight: '600', color: '#fff', flex: 1 },
-  recTitle:          { fontSize: 12, fontWeight: '500', color: COLORS.textPrimary, lineHeight: 17 },
+  recTitle:          { fontSize: 12, fontWeight: '500', color: c.textPrimary, lineHeight: 17 },
 
   // Categories
   catList: { paddingHorizontal: H_PAD, gap: 10 },
   catCard: {
     width: CAT_W, height: CAT_H,
     borderRadius: 14, overflow: 'hidden',
-    backgroundColor: COLORS.card,
+    backgroundColor: c.card,
     justifyContent: 'flex-end', padding: 8,
   },
   catName: { fontSize: 11, fontWeight: '700', color: '#fff', lineHeight: 15 },
