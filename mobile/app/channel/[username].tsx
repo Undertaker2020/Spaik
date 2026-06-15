@@ -11,7 +11,7 @@ import {
   Modal,
   Alert,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
@@ -36,6 +36,7 @@ import {
   IconX,
   IconVideo,
   IconCamera,
+  IconHeart,
 } from '@tabler/icons-react-native';
 import { COLORS } from '@/src/libs/constants/colors';
 import { MEDIA_SERVICE_URL } from '@/src/libs/constants/url.constants';
@@ -64,7 +65,7 @@ const COVER_HEIGHT = 90;
 const AVATAR_SIZE  = 60;
 const CLIP_W       = (SCREEN_WIDTH - 16 * 2 - 10) / 2;
 
-const CHANNEL_TABS = ['Clips', 'About'] as const;
+const CHANNEL_TABS = ['Home', 'About'] as const;
 type ChannelTab = typeof CHANNEL_TABS[number];
 
 function socialIcon(title: string) {
@@ -84,6 +85,12 @@ function fmtDuration(sec?: number | null) {
   const m = Math.floor(sec / 60);
   const s = sec % 60;
   return `${m}:${s.toString().padStart(2, '0')}`;
+}
+
+function formatCount(n: number) {
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
+  if (n >= 1000) return `${(n / 1000).toFixed(n >= 10_000 ? 0 : 1)}k`;
+  return `${n}`;
 }
 
 // ── Live/stream preview card → tap through to the watch page ────
@@ -132,7 +139,10 @@ function StreamPreviewCard({
       </View>
 
       <View style={styles.streamMeta}>
-        <Text style={styles.streamTitle} numberOfLines={1}>
+        <Text style={[styles.streamLabel, !isLive && styles.streamLabelOffline]}>
+          {isLive ? 'Live' : 'Offline'}
+        </Text>
+        <Text style={styles.streamTitle} numberOfLines={2}>
           {channel.stream?.title || (isLive ? 'Live now' : 'Stream offline')}
         </Text>
         {channel.stream?.category && (
@@ -302,9 +312,10 @@ function AboutTab({ channel }: { channel: ChannelInfo }) {
 
 export default function ChannelScreen() {
   const router   = useRouter();
+  const insets   = useSafeAreaInsets();
   const { username } = useLocalSearchParams<{ username: string }>();
   const isAuthenticated = useAuthStore(s => s.isAuthenticated);
-  const [activeTab, setActiveTab] = useState<ChannelTab>('Clips');
+  const [activeTab, setActiveTab] = useState<ChannelTab>('Home');
 
   const { data, loading, error, refetch: refetchChannel } = useQuery<{
     findChannelByUsername: ChannelInfo;
@@ -398,9 +409,14 @@ export default function ChannelScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.root} edges={['top']}>
-      {/* Back button overlay */}
-      <TouchableOpacity style={styles.backBtn} onPress={() => router.back()} activeOpacity={0.8}>
+    <SafeAreaView style={styles.root} edges={[]}>
+      {/* Back button overlay — offset below the notch/status bar; the banner
+          goes full-bleed under it (Twitch-style). */}
+      <TouchableOpacity
+        style={[styles.backBtn, { top: insets.top + 8 }]}
+        onPress={() => router.back()}
+        activeOpacity={0.8}
+      >
         <IconArrowLeft size={20} color={COLORS.textPrimary} />
       </TouchableOpacity>
 
@@ -415,8 +431,8 @@ export default function ChannelScreen() {
       ) : (
         <ScrollView showsVerticalScrollIndicator={false}>
 
-          {/* Cover (banner image, else gradient) */}
-          <View style={styles.coverWrap}>
+          {/* Cover (banner image, else gradient) — extends under the status bar */}
+          <View style={[styles.coverWrap, { height: COVER_HEIGHT + insets.top }]}>
             {bannerUrl ? (
               <Image source={{ uri: bannerUrl }} style={styles.cover} resizeMode="cover" />
             ) : (
@@ -429,7 +445,7 @@ export default function ChannelScreen() {
             )}
 
             {isOwner && (
-              <View style={styles.coverActions}>
+              <View style={[styles.coverActions, { top: insets.top + 8 }]}>
                 {channel.banner && !uploadingBanner && (
                   <TouchableOpacity
                     style={styles.coverBtn}
@@ -454,8 +470,8 @@ export default function ChannelScreen() {
             )}
           </View>
 
-          {/* Avatar row */}
-          <View style={styles.avatarRow}>
+          {/* Identity: avatar + name + live/category */}
+          <View style={styles.identityRow}>
             <View style={styles.avatarWrap}>
               {avatarUrl ? (
                 <Image source={{ uri: avatarUrl }} style={styles.avatar} />
@@ -468,68 +484,86 @@ export default function ChannelScreen() {
               )}
             </View>
 
-            {!isOwner && (
-              <TouchableOpacity
-                style={[styles.followBtn, isFollowing && styles.followBtnActive]}
-                activeOpacity={0.8}
-                disabled={isBusy}
-                onPress={() => isFollowing ? unfollow() : follow()}
-              >
-                {isBusy ? (
-                  <ActivityIndicator size="small" color={isFollowing ? COLORS.textPrimary : '#000'} />
-                ) : (
+            <View style={styles.identityMeta}>
+              <View style={styles.nameRow}>
+                <Text style={styles.displayName} numberOfLines={1}>{channel.displayName}</Text>
+                {channel.isVerified && <IconBadge size={16} color={COLORS.accent} />}
+              </View>
+              {isLive ? (
+                <View style={styles.liveLine}>
+                  <View style={styles.livePill}>
+                    <Text style={styles.liveText}>LIVE</Text>
+                  </View>
+                  {channel.stream?.category && (
+                    <Text style={styles.identityCategory} numberOfLines={1}>
+                      {channel.stream.category.title}
+                    </Text>
+                  )}
+                </View>
+              ) : (
+                <Text style={styles.username}>@{channel.username}</Text>
+              )}
+            </View>
+          </View>
+
+          {/* Bio */}
+          {channel.bio ? (
+            <Text style={styles.bioLine} numberOfLines={2}>{channel.bio}</Text>
+          ) : null}
+
+          {/* Followers */}
+          <Text style={styles.followers}>
+            <Text style={styles.followersCount}>{formatCount(channel.followers?.length ?? 0)}</Text> followers
+          </Text>
+
+          {/* Social links */}
+          {(channel.socialLinks?.length ?? 0) > 0 && (
+            <View style={styles.socialChips}>
+              {channel.socialLinks!.map(link => {
+                const Icon = socialIcon(link.title);
+                return (
+                  <TouchableOpacity
+                    key={link.id}
+                    style={styles.socialChip}
+                    onPress={() => Linking.openURL(link.url)}
+                    activeOpacity={0.7}
+                  >
+                    <Icon size={15} color={COLORS.accent} />
+                    <Text style={styles.socialChipText} numberOfLines={1}>{link.title}</Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          )}
+
+          {/* Follow */}
+          {!isOwner && (
+            <TouchableOpacity
+              style={[styles.followBtn, isFollowing && styles.followBtnActive]}
+              activeOpacity={0.85}
+              disabled={isBusy}
+              onPress={() => isFollowing ? unfollow() : follow()}
+            >
+              {isBusy ? (
+                <ActivityIndicator size="small" color={isFollowing ? COLORS.textPrimary : '#000'} />
+              ) : (
+                <>
+                  <IconHeart size={16} color={isFollowing ? COLORS.textPrimary : '#000'} fill={isFollowing ? 'transparent' : '#000'} />
                   <Text style={[styles.followBtnText, isFollowing && styles.followBtnTextActive]}>
                     {isFollowing ? 'Following' : 'Follow'}
                   </Text>
-                )}
-              </TouchableOpacity>
-            )}
-          </View>
-
-          {/* Info */}
-          <View style={styles.infoWrap}>
-            <View style={styles.nameRow}>
-              <Text style={styles.displayName}>{channel.displayName}</Text>
-              {channel.isVerified && <IconBadge size={16} color={COLORS.accent} />}
-              {isLive && (
-                <View style={styles.livePill}>
-                  <Text style={styles.liveText}>LIVE</Text>
-                </View>
+                </>
               )}
-            </View>
-            <Text style={styles.username}>@{channel.username}</Text>
-          </View>
-
-          {/* Stats */}
-          <View style={styles.statsRow}>
-            <View style={styles.stat}>
-              <Text style={styles.statVal}>{channel.followers?.length ?? 0}</Text>
-              <Text style={styles.statLabel}>Followers</Text>
-            </View>
-            <View style={styles.statDivider} />
-            <View style={styles.stat}>
-              <Text style={styles.statVal}>{channel.followings?.length ?? 0}</Text>
-              <Text style={styles.statLabel}>Following</Text>
-            </View>
-            <View style={styles.statDivider} />
-            <View style={styles.stat}>
-              <Text style={[styles.statVal, isLive && { color: COLORS.accent }]}>
-                {isLive ? 'LIVE' : 'OFFLINE'}
-              </Text>
-              <Text style={styles.statLabel}>Status</Text>
-            </View>
-          </View>
-
-          {/* Stream preview → watch page */}
-          <View style={styles.streamCardWrap}>
-            <StreamPreviewCard
-              channel={channel}
-              onPress={() => router.push(`/stream/${channel.username}` as any)}
-            />
-          </View>
+            </TouchableOpacity>
+          )}
 
           {/* Tabs */}
-          <View style={styles.tabBar}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={styles.tabBar}
+            contentContainerStyle={styles.tabBarContent}
+          >
             {CHANNEL_TABS.map(tab => (
               <TouchableOpacity
                 key={tab}
@@ -543,9 +577,19 @@ export default function ChannelScreen() {
                 {activeTab === tab && <View style={styles.tabIndicator} />}
               </TouchableOpacity>
             ))}
-          </View>
+          </ScrollView>
 
-          {activeTab === 'Clips' && <ClipsTab channelId={channel.id} isOwner={isOwner} />}
+          {activeTab === 'Home' && (
+            <>
+              <View style={styles.streamCardWrap}>
+                <StreamPreviewCard
+                  channel={channel}
+                  onPress={() => router.push(`/stream/${channel.username}` as any)}
+                />
+              </View>
+              <ClipsTab channelId={channel.id} isOwner={isOwner} />
+            </>
+          )}
           {activeTab === 'About' && <AboutTab channel={channel} />}
 
         </ScrollView>
@@ -561,7 +605,6 @@ const styles = StyleSheet.create({
 
   backBtn: {
     position: 'absolute',
-    top: 12,
     left: 12,
     zIndex: 10,
     width: 36,
@@ -572,10 +615,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 
-  coverWrap: { height: COVER_HEIGHT, position: 'relative' },
-  cover: { height: COVER_HEIGHT, width: '100%' },
+  coverWrap: { position: 'relative' },
+  cover: { height: '100%', width: '100%' },
   coverActions: {
-    position: 'absolute', top: 10, right: 10,
+    position: 'absolute', right: 10,
     flexDirection: 'row', gap: 8,
   },
   coverBtn: {
@@ -584,14 +627,13 @@ const styles = StyleSheet.create({
     alignItems: 'center', justifyContent: 'center',
   },
 
-  avatarRow: {
+  identityRow: {
     flexDirection: 'row',
     alignItems: 'flex-end',
-    justifyContent: 'space-between',
+    gap: 12,
     paddingHorizontal: 16,
     marginTop: -(AVATAR_SIZE / 2) - 4,
-    marginBottom: 10,
-    minHeight: AVATAR_SIZE / 2 + 4,
+    marginBottom: 8,
   },
   avatarWrap: {
     borderRadius: (AVATAR_SIZE + 6) / 2,
@@ -610,27 +652,10 @@ const styles = StyleSheet.create({
   },
   avatarInitial: { fontSize: 22, fontWeight: '700', color: COLORS.accent },
 
-  followBtn: {
-    paddingHorizontal: 20,
-    paddingVertical: 8,
-    borderRadius: 99,
-    backgroundColor: COLORS.accent,
-    marginBottom: 4,
-    minWidth: 90,
-    alignItems: 'center',
-  },
-  followBtnActive: {
-    backgroundColor: 'transparent',
-    borderWidth: 1.5,
-    borderColor: COLORS.border,
-  },
-  followBtnText:       { fontSize: 13, fontWeight: '700', color: '#000' },
-  followBtnTextActive: { color: COLORS.textPrimary },
-
-  infoWrap: { paddingHorizontal: 16, marginBottom: 12 },
-  nameRow:  { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 3 },
-  displayName: { fontSize: 17, fontWeight: '700', color: COLORS.textPrimary },
-  username:    { fontSize: 13, color: COLORS.textSecondary },
+  identityMeta: { flex: 1, paddingBottom: 4 },
+  nameRow:  { flexDirection: 'row', alignItems: 'center', gap: 5 },
+  displayName: { fontSize: 20, fontWeight: '800', color: COLORS.textPrimary, flexShrink: 1 },
+  liveLine: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 5 },
   livePill: {
     backgroundColor: COLORS.live,
     borderRadius: 4,
@@ -638,21 +663,38 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
   },
   liveText: { color: '#fff', fontSize: 10, fontWeight: '700' },
+  identityCategory: { flexShrink: 1, fontSize: 13, color: COLORS.textSecondary },
+  username: { fontSize: 13, color: COLORS.textSecondary, marginTop: 5 },
 
-  statsRow: {
-    flexDirection: 'row',
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: COLORS.border,
-    paddingVertical: 10,
+  bioLine: { paddingHorizontal: 16, fontSize: 13, color: COLORS.textSecondary, lineHeight: 18, marginBottom: 8 },
+
+  followers: { paddingHorizontal: 16, fontSize: 13, color: COLORS.textSecondary, marginBottom: 8 },
+  followersCount: { fontWeight: '800', color: COLORS.textPrimary },
+
+  socialChips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, paddingHorizontal: 16, marginBottom: 8 },
+  socialChip: {
+    flexDirection: 'row', alignItems: 'center', gap: 6,
+    backgroundColor: COLORS.card, borderWidth: 1, borderColor: COLORS.border,
+    borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6,
   },
-  stat:      { flex: 1, alignItems: 'center' },
-  statVal:   { fontSize: 15, fontWeight: '700', color: COLORS.textPrimary, marginBottom: 1 },
-  statLabel: { fontSize: 10, color: COLORS.textSecondary },
-  statDivider: { width: 1, backgroundColor: COLORS.border, marginVertical: 4 },
+  socialChipText: { fontSize: 12, color: COLORS.textPrimary, fontWeight: '600' },
+
+  followBtn: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
+    marginHorizontal: 16, marginBottom: 10,
+    height: 42, borderRadius: 8,
+    backgroundColor: COLORS.accent,
+  },
+  followBtnActive: {
+    backgroundColor: 'transparent',
+    borderWidth: 1.5,
+    borderColor: COLORS.border,
+  },
+  followBtnText:       { fontSize: 14, fontWeight: '700', color: '#000' },
+  followBtnTextActive: { color: COLORS.textPrimary },
 
   // ── Stream preview card
-  streamCardWrap: { paddingHorizontal: 16, paddingTop: 14, paddingBottom: 4 },
+  streamCardWrap: { paddingHorizontal: 16, paddingTop: 12, paddingBottom: 2 },
   streamCard: {
     borderRadius: 12, overflow: 'hidden',
     backgroundColor: COLORS.card, borderWidth: 1, borderColor: COLORS.border,
@@ -679,41 +721,46 @@ const styles = StyleSheet.create({
     alignItems: 'center', justifyContent: 'center',
   },
   streamMeta: { padding: 12 },
-  streamTitle: { fontSize: 14, fontWeight: '600', color: COLORS.textPrimary },
+  streamLabel: {
+    fontSize: 11, fontWeight: '700', color: COLORS.accent,
+    textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 4,
+  },
+  streamLabelOffline: { color: COLORS.textMuted },
+  streamTitle: { fontSize: 15, fontWeight: '700', color: COLORS.textPrimary, lineHeight: 20 },
   streamCategory: {
-    marginTop: 4, alignSelf: 'flex-start',
+    marginTop: 6, alignSelf: 'flex-start',
     fontSize: 11, fontWeight: '600', color: COLORS.accent,
     backgroundColor: 'rgba(24,185,174,0.12)',
     paddingHorizontal: 7, paddingVertical: 2, borderRadius: 4,
   },
 
   tabBar: {
-    flexDirection: 'row',
     borderBottomWidth: 1,
     borderBottomColor: COLORS.border,
-    marginTop: 10,
+    marginTop: 6,
+    flexGrow: 0,
   },
+  tabBarContent: { paddingHorizontal: 16, gap: 24 },
   tabItem: {
-    flex: 1,
-    alignItems: 'center',
-    paddingVertical: 10,
+    paddingVertical: 12,
     position: 'relative',
   },
-  tabLabel:       { fontSize: 12, color: COLORS.textSecondary, fontWeight: '500' },
-  tabLabelActive: { color: COLORS.accent },
+  tabLabel:       { fontSize: 14, color: COLORS.textSecondary, fontWeight: '600' },
+  tabLabelActive: { color: COLORS.textPrimary },
   tabIndicator: {
     position: 'absolute',
     bottom: 0,
-    height: 2,
-    width: '60%',
+    left: 0,
+    right: 0,
+    height: 2.5,
     backgroundColor: COLORS.accent,
-    borderRadius: 1,
+    borderRadius: 2,
   },
 
   // ── Clips grid
   clipsGrid: {
     flexDirection: 'row', flexWrap: 'wrap',
-    paddingHorizontal: 16, paddingTop: 12, gap: 10,
+    paddingHorizontal: 16, paddingTop: 12, paddingBottom: 16, gap: 10,
   },
   clipCard: { width: CLIP_W },
   clipThumb: {
@@ -741,7 +788,7 @@ const styles = StyleSheet.create({
   },
   clipDurationText: { color: '#fff', fontSize: 10, fontWeight: '600' },
   clipTitle: { marginTop: 6, fontSize: 12, color: COLORS.textPrimary, lineHeight: 16 },
-  clipsEmpty: { alignItems: 'center', justifyContent: 'center', paddingVertical: 48, gap: 8 },
+  clipsEmpty: { alignItems: 'center', justifyContent: 'center', paddingVertical: 28, gap: 8 },
   clipsEmptyText: { color: COLORS.textMuted, fontSize: 13 },
 
   // ── VOD player modal
