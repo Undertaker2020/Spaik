@@ -2,6 +2,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityInd
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState } from 'react';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { useMutation } from '@apollo/client';
 import { IconEye, IconEyeOff } from '@tabler/icons-react-native';
 import { useColors, useThemedStyles } from '@/src/libs/theme/use-theme';
@@ -41,29 +42,30 @@ function PasswordField({ label, value, onChange }: { label: string; value: strin
 export default function ChangePasswordScreen() {
   const router = useRouter();
   const styles = useThemedStyles(makeStyles);
+  const { t } = useTranslation();
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirm,     setConfirm]     = useState('');
 
   const [changePassword, { loading }] = useMutation(CHANGE_PASSWORD, {
     onCompleted: () => {
-      Alert.alert('Success', 'Password changed successfully.');
+      Alert.alert(t('common.successTitle'), t('settings.changePassword.alerts.success'));
       router.back();
     },
-    onError: (e) => Alert.alert('Error', e.message),
+    onError: (e) => Alert.alert(t('common.errorTitle'), e.message),
   });
 
   function onSubmit() {
     if (!oldPassword || !newPassword || !confirm) {
-      Alert.alert('Validation', 'Please fill in all fields.');
+      Alert.alert(t('common.validation'), t('settings.changePassword.alerts.fillAll'));
       return;
     }
     if (newPassword !== confirm) {
-      Alert.alert('Validation', 'Passwords do not match.');
+      Alert.alert(t('common.validation'), t('settings.changePassword.alerts.mismatch'));
       return;
     }
     if (newPassword.length < 8) {
-      Alert.alert('Validation', 'Password must be at least 8 characters.');
+      Alert.alert(t('common.validation'), t('settings.changePassword.alerts.tooShort'));
       return;
     }
     changePassword({ variables: { data: { oldPassword, newPassword } } });
@@ -73,14 +75,14 @@ export default function ChangePasswordScreen() {
 
   return (
     <SafeAreaView style={styles.root} edges={['top']}>
-      <SettingsHeader title="Change Password" />
+      <SettingsHeader title={t('settings.changePassword.title')} />
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
         <View style={styles.card}>
-          <PasswordField label="Current password"  value={oldPassword} onChange={setOldPassword} />
+          <PasswordField label={t('settings.changePassword.current')}  value={oldPassword} onChange={setOldPassword} />
           <View style={styles.divider} />
-          <PasswordField label="New password"      value={newPassword} onChange={setNewPassword} />
+          <PasswordField label={t('settings.changePassword.new')}      value={newPassword} onChange={setNewPassword} />
           <View style={styles.divider} />
-          <PasswordField label="Confirm password"  value={confirm}     onChange={setConfirm} />
+          <PasswordField label={t('settings.changePassword.confirm')}  value={confirm}     onChange={setConfirm} />
         </View>
 
         <TouchableOpacity
@@ -91,7 +93,7 @@ export default function ChangePasswordScreen() {
         >
           {loading
             ? <ActivityIndicator size="small" color="#000" />
-            : <Text style={styles.btnText}>Update Password</Text>
+            : <Text style={styles.btnText}>{t('settings.changePassword.submit')}</Text>
           }
         </TouchableOpacity>
       </ScrollView>

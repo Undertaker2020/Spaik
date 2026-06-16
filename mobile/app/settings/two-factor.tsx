@@ -4,6 +4,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useQuery, useMutation } from '@apollo/client';
 import { IconShieldCheck, IconShield } from '@tabler/icons-react-native';
 import { useColors, useThemedStyles } from '@/src/libs/theme/use-theme';
@@ -19,6 +20,7 @@ import { FIND_MY_PROFILE, type MyProfile } from '@/src/graphql/queries/profile.q
 export default function TwoFactorScreen() {
   const c = useColors();
   const styles = useThemedStyles(makeStyles);
+  const { t } = useTranslation();
   const { data: profileData, refetch: refetchProfile } = useQuery<{ findProfile: MyProfile }>(FIND_MY_PROFILE);
   const isEnabled = profileData?.findProfile.isTotpEnabled ?? false;
 
@@ -34,36 +36,36 @@ export default function TwoFactorScreen() {
 
   const [enableTotp, { loading: enabling }] = useMutation(ENABLE_TOTP, {
     onCompleted: () => {
-      Alert.alert('Enabled', 'Two-factor authentication is now active.');
+      Alert.alert(t('settings.twoFactor.alerts.enabledTitle'), t('settings.twoFactor.alerts.enabledMsg'));
       setStep('idle');
       setPin('');
       refetchProfile();
     },
-    onError: (e) => Alert.alert('Error', e.message),
+    onError: (e) => Alert.alert(t('common.errorTitle'), e.message),
   });
 
   const [disableTotp, { loading: disabling }] = useMutation(DISABLE_TOTP, {
     onCompleted: () => {
-      Alert.alert('Disabled', 'Two-factor authentication has been turned off.');
+      Alert.alert(t('settings.twoFactor.alerts.disabledTitle'), t('settings.twoFactor.alerts.disabledMsg'));
       refetchProfile();
     },
-    onError: (e) => Alert.alert('Error', e.message),
+    onError: (e) => Alert.alert(t('common.errorTitle'), e.message),
   });
 
   function onDisable() {
     Alert.alert(
-      'Disable 2FA',
-      'Your account will be less secure. Are you sure?',
+      t('settings.twoFactor.alerts.confirmDisableTitle'),
+      t('settings.twoFactor.alerts.confirmDisableMsg'),
       [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Disable', style: 'destructive', onPress: () => disableTotp() },
+        { text: t('common.cancel'), style: 'cancel' },
+        { text: t('common.disable'), style: 'destructive', onPress: () => disableTotp() },
       ]
     );
   }
 
   function onVerify() {
     if (pin.length !== 6) {
-      Alert.alert('Validation', 'Enter the 6-digit code from your authenticator app.');
+      Alert.alert(t('common.validation'), t('settings.twoFactor.alerts.invalidCode'));
       return;
     }
     enableTotp({ variables: { data: { pin, secret } } });
@@ -74,16 +76,14 @@ export default function TwoFactorScreen() {
   if (isEnabled) {
     return (
       <SafeAreaView style={styles.root} edges={['top']}>
-        <SettingsHeader title="Two-Factor Auth" />
+        <SettingsHeader title={t('settings.twoFactor.title')} />
         <ScrollView contentContainerStyle={styles.content}>
           <View style={styles.statusCard}>
             <View style={styles.statusIcon}>
               <IconShieldCheck size={32} color={c.accent} />
             </View>
-            <Text style={styles.statusTitle}>2FA is enabled</Text>
-            <Text style={styles.statusDesc}>
-              Your account is protected with two-factor authentication.
-            </Text>
+            <Text style={styles.statusTitle}>{t('settings.twoFactor.enabledTitle')}</Text>
+            <Text style={styles.statusDesc}>{t('settings.twoFactor.enabledDesc')}</Text>
           </View>
 
           <TouchableOpacity
@@ -94,7 +94,7 @@ export default function TwoFactorScreen() {
           >
             {disabling
               ? <ActivityIndicator size="small" color={c.danger} />
-              : <Text style={styles.dangerBtnText}>Disable Two-Factor Auth</Text>
+              : <Text style={styles.dangerBtnText}>{t('settings.twoFactor.disableBtn')}</Text>
             }
           </TouchableOpacity>
         </ScrollView>
@@ -115,10 +115,8 @@ export default function TwoFactorScreen() {
               <View style={[styles.statusIcon, styles.statusIconOff]}>
                 <IconShield size={32} color={c.textMuted} />
               </View>
-              <Text style={styles.statusTitle}>2FA is disabled</Text>
-              <Text style={styles.statusDesc}>
-                Add an extra layer of security by requiring a code from your authenticator app when signing in.
-              </Text>
+              <Text style={styles.statusTitle}>{t('settings.twoFactor.disabledTitle')}</Text>
+              <Text style={styles.statusDesc}>{t('settings.twoFactor.disabledDesc')}</Text>
             </View>
 
             <TouchableOpacity
@@ -126,17 +124,15 @@ export default function TwoFactorScreen() {
               onPress={() => setStep('setup')}
               activeOpacity={0.85}
             >
-              <Text style={styles.btnText}>Enable Two-Factor Auth</Text>
+              <Text style={styles.btnText}>{t('settings.twoFactor.enableBtn')}</Text>
             </TouchableOpacity>
           </>
         )}
 
         {step === 'setup' && (
           <>
-            <Text style={styles.stepTitle}>Step 1 — Scan QR code</Text>
-            <Text style={styles.stepDesc}>
-              Open your authenticator app (Google Authenticator, Authy, etc.) and scan this QR code.
-            </Text>
+            <Text style={styles.stepTitle}>{t('settings.twoFactor.step1Title')}</Text>
+            <Text style={styles.stepDesc}>{t('settings.twoFactor.step1Desc')}</Text>
 
             {loadingSecret ? (
               <View style={styles.qrPlaceholder}>
@@ -150,19 +146,17 @@ export default function TwoFactorScreen() {
 
             {secret ? (
               <View style={styles.secretBox}>
-                <Text style={styles.secretLabel}>Manual entry key</Text>
+                <Text style={styles.secretLabel}>{t('settings.twoFactor.manualKey')}</Text>
                 <Text style={styles.secretValue} selectable>{secret}</Text>
               </View>
             ) : null}
 
-            <Text style={styles.stepTitle}>Step 2 — Enter verification code</Text>
-            <Text style={styles.stepDesc}>
-              Enter the 6-digit code shown in your authenticator app to confirm setup.
-            </Text>
+            <Text style={styles.stepTitle}>{t('settings.twoFactor.step2Title')}</Text>
+            <Text style={styles.stepDesc}>{t('settings.twoFactor.step2Desc')}</Text>
 
             <View style={styles.card}>
               <View style={styles.pinField}>
-                <Text style={styles.fieldLabel}>Verification code</Text>
+                <Text style={styles.fieldLabel}>{t('settings.twoFactor.codeLabel')}</Text>
                 <TextInput
                   style={[styles.pinInput, { color: c.textPrimary }]}
                   value={pin}
@@ -184,12 +178,12 @@ export default function TwoFactorScreen() {
             >
               {enabling
                 ? <ActivityIndicator size="small" color="#000" />
-                : <Text style={styles.btnText}>Verify & Enable</Text>
+                : <Text style={styles.btnText}>{t('settings.twoFactor.verifyBtn')}</Text>
               }
             </TouchableOpacity>
 
             <TouchableOpacity onPress={() => setStep('idle')} style={styles.cancelBtn}>
-              <Text style={styles.cancelBtnText}>Cancel</Text>
+              <Text style={styles.cancelBtnText}>{t('common.cancel')}</Text>
             </TouchableOpacity>
           </>
         )}

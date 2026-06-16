@@ -1,6 +1,7 @@
 import { View, Text, Switch, TouchableOpacity, StyleSheet, ActivityIndicator, Alert, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useQuery, useMutation } from '@apollo/client';
 import { useColors, useThemedStyles } from '@/src/libs/theme/use-theme';
 import type { Palette } from '@/src/libs/theme/palettes';
@@ -44,6 +45,7 @@ function Toggle({
 export default function ChatSettingsScreen() {
   const c = useColors();
   const styles = useThemedStyles(makeStyles);
+  const { t } = useTranslation();
   const { data, refetch } = useQuery<{ findProfile: MyProfile }>(FIND_MY_PROFILE);
   const stream = data?.findProfile.stream;
 
@@ -62,8 +64,8 @@ export default function ChatSettingsScreen() {
   }, [stream]);
 
   const [save, { loading }] = useMutation(CHANGE_CHAT_SETTINGS, {
-    onCompleted: () => { Alert.alert('Saved', 'Chat settings updated.'); setIsDirty(false); refetch(); },
-    onError: (e) => Alert.alert('Error', e.message),
+    onCompleted: () => { Alert.alert(t('settings.chat.alerts.savedTitle'), t('settings.chat.alerts.saved')); setIsDirty(false); refetch(); },
+    onError: (e) => Alert.alert(t('common.errorTitle'), e.message),
   });
 
   function handleChange(field: 'enabled' | 'followers' | 'premium', value: boolean) {
@@ -84,13 +86,13 @@ export default function ChatSettingsScreen() {
   return (
     <SafeAreaView style={styles.root} edges={['top']}>
       <SettingsHeader
-        title="Chat Settings"
+        title={t('settings.chat.title')}
         right={
           isDirty ? (
             <TouchableOpacity onPress={onSave} disabled={loading} style={styles.saveBtn}>
               {loading
                 ? <ActivityIndicator size="small" color={c.accent} />
-                : <Text style={styles.saveBtnText}>Save</Text>
+                : <Text style={styles.saveBtnText}>{t('common.save')}</Text>
               }
             </TouchableOpacity>
           ) : undefined
@@ -99,23 +101,23 @@ export default function ChatSettingsScreen() {
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.card}>
           <Toggle
-            label="Enable chat"
-            description="Allow viewers to send messages during your stream."
+            label={t('settings.chat.enable')}
+            description={t('settings.chat.enableDesc')}
             value={enabled}
             onChange={v => handleChange('enabled', v)}
           />
           <View style={styles.divider} />
           <Toggle
-            label="Followers only"
-            description="Only followers can send messages."
+            label={t('settings.chat.followersOnly')}
+            description={t('settings.chat.followersOnlyDesc')}
             value={followersOnly}
             onChange={v => handleChange('followers', v)}
             disabled={!enabled}
           />
           <View style={styles.divider} />
           <Toggle
-            label="Sponsors only"
-            description="Only paying sponsors can send messages."
+            label={t('settings.chat.sponsorsOnly')}
+            description={t('settings.chat.sponsorsOnlyDesc')}
             value={premiumOnly}
             onChange={v => handleChange('premium', v)}
             disabled={!enabled}
@@ -124,7 +126,7 @@ export default function ChatSettingsScreen() {
 
         {!enabled && (
           <View style={styles.infoBox}>
-            <Text style={styles.infoText}>Chat is disabled. Viewers will not be able to send messages during your stream.</Text>
+            <Text style={styles.infoText}>{t('settings.chat.disabledInfo')}</Text>
           </View>
         )}
       </ScrollView>

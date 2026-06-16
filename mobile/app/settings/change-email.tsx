@@ -2,6 +2,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityInd
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState } from 'react';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { useMutation, useQuery } from '@apollo/client';
 import { IconMail } from '@tabler/icons-react-native';
 import { useColors, useThemedStyles } from '@/src/libs/theme/use-theme';
@@ -14,26 +15,27 @@ export default function ChangeEmailScreen() {
   const router = useRouter();
   const c = useColors();
   const styles = useThemedStyles(makeStyles);
+  const { t } = useTranslation();
 
   const { data } = useQuery<{ findProfile: MyProfile }>(FIND_MY_PROFILE);
   const [email, setEmail] = useState('');
 
   const [changeEmail, { loading }] = useMutation(CHANGE_EMAIL, {
     onCompleted: () => {
-      Alert.alert('Success', 'Confirmation sent to new email address.');
+      Alert.alert(t('common.successTitle'), t('settings.changeEmail.alerts.success'));
       router.back();
     },
-    onError: (e) => Alert.alert('Error', e.message),
+    onError: (e) => Alert.alert(t('common.errorTitle'), e.message),
   });
 
   function onSubmit() {
     if (!email.trim()) {
-      Alert.alert('Validation', 'Please enter an email address.');
+      Alert.alert(t('common.validation'), t('settings.changeEmail.alerts.enter'));
       return;
     }
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email.trim())) {
-      Alert.alert('Validation', 'Please enter a valid email address.');
+      Alert.alert(t('common.validation'), t('settings.changeEmail.alerts.invalid'));
       return;
     }
     changeEmail({ variables: { data: { email: email.trim() } } });
@@ -41,20 +43,20 @@ export default function ChangeEmailScreen() {
 
   return (
     <SafeAreaView style={styles.root} edges={['top']}>
-      <SettingsHeader title="Change Email" />
+      <SettingsHeader title={t('settings.changeEmail.title')} />
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
 
         {data?.findProfile.email && (
           <View style={styles.currentWrap}>
             <IconMail size={16} color={c.textMuted} />
-            <Text style={styles.currentLabel}>Current: </Text>
+            <Text style={styles.currentLabel}>{t('settings.changeEmail.current')}</Text>
             <Text style={styles.currentValue}>{data.findProfile.email}</Text>
           </View>
         )}
 
         <View style={styles.card}>
           <View style={styles.field}>
-            <Text style={styles.fieldLabel}>New email address</Text>
+            <Text style={styles.fieldLabel}>{t('settings.changeEmail.newLabel')}</Text>
             <TextInput
               style={[styles.input, { color: c.textPrimary }]}
               value={email}
@@ -69,9 +71,7 @@ export default function ChangeEmailScreen() {
           </View>
         </View>
 
-        <Text style={styles.hint}>
-          A confirmation link will be sent to the new address. Your email won't change until you confirm.
-        </Text>
+        <Text style={styles.hint}>{t('settings.changeEmail.hint')}</Text>
 
         <TouchableOpacity
           style={[styles.btn, (!email.trim() || loading) && styles.btnDisabled]}
@@ -81,7 +81,7 @@ export default function ChangeEmailScreen() {
         >
           {loading
             ? <ActivityIndicator size="small" color="#000" />
-            : <Text style={styles.btnText}>Send Confirmation</Text>
+            : <Text style={styles.btnText}>{t('settings.changeEmail.submit')}</Text>
           }
         </TouchableOpacity>
       </ScrollView>

@@ -4,6 +4,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useQuery, useMutation } from '@apollo/client';
 import { IconCopy, IconRefresh, IconEye, IconEyeOff, IconServer, IconKey } from '@tabler/icons-react-native';
 import { useColors, useThemedStyles } from '@/src/libs/theme/use-theme';
@@ -30,14 +31,15 @@ function KeyField({
 }) {
   const c = useColors();
   const styles = useThemedStyles(makeStyles);
+  const { t } = useTranslation();
   const [visible, setVisible] = useState(!secret);
-  const display = value ?? '— not generated —';
+  const display = value ?? t('settings.streamKeys.notGenerated');
   const masked  = value ? '••••••••••••••••••••' : display;
 
   function onCopy() {
     if (!value) return;
     Clipboard.setString(value);
-    Alert.alert('Copied', `${label} copied to clipboard.`);
+    Alert.alert(t('common.copied'), t('settings.streamKeys.alerts.copied', { label }));
   }
 
   return (
@@ -70,20 +72,21 @@ function KeyField({
 export default function StreamKeysScreen() {
   const c = useColors();
   const styles = useThemedStyles(makeStyles);
+  const { t } = useTranslation();
   const { data, refetch } = useQuery<{ findProfile: MyProfile }>(FIND_MY_PROFILE);
   const stream = data?.findProfile.stream;
   const [selectedType, setSelectedType] = useState(0);
 
   const [createIngress, { loading }] = useMutation(CREATE_INGRESS, {
-    onCompleted: () => { Alert.alert('Success', 'Ingress created. Keys updated.'); refetch(); },
-    onError: (e) => Alert.alert('Error', e.message),
+    onCompleted: () => { Alert.alert(t('common.successTitle'), t('settings.streamKeys.alerts.success')); refetch(); },
+    onError: (e) => Alert.alert(t('common.errorTitle'), e.message),
   });
 
   const [isRecording, setIsRecording] = useState(false);
   useEffect(() => { if (stream) setIsRecording(stream.isRecordingEnabled); }, [stream?.isRecordingEnabled]);
 
   const [changeRecording] = useMutation(CHANGE_STREAM_RECORDING, {
-    onError: (e) => Alert.alert('Error', e.message),
+    onError: (e) => Alert.alert(t('common.errorTitle'), e.message),
   });
 
   function onToggleRecording(value: boolean) {
@@ -93,29 +96,29 @@ export default function StreamKeysScreen() {
 
   function onGenerate() {
     Alert.alert(
-      'Generate new keys',
-      'This will invalidate your current stream key. Continue?',
+      t('settings.streamKeys.alerts.confirmTitle'),
+      t('settings.streamKeys.alerts.confirmMsg'),
       [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Generate', onPress: () => createIngress({ variables: { ingressType: selectedType } }) },
+        { text: t('common.cancel'), style: 'cancel' },
+        { text: t('common.generate'), onPress: () => createIngress({ variables: { ingressType: selectedType } }) },
       ]
     );
   }
 
   return (
     <SafeAreaView style={styles.root} edges={['top']}>
-      <SettingsHeader title="Stream Keys" />
+      <SettingsHeader title={t('settings.streamKeys.title')} />
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
 
         <View style={styles.card}>
           <KeyField
-            label="Server URL"
+            label={t('settings.streamKeys.serverUrl')}
             value={stream?.serverUrl ?? null}
             icon={<IconServer size={14} color={c.textMuted} />}
           />
           <View style={styles.divider} />
           <KeyField
-            label="Stream Key"
+            label={t('settings.streamKeys.streamKey')}
             value={stream?.streamKey ?? null}
             icon={<IconKey size={14} color={c.textMuted} />}
             secret
@@ -124,8 +127,8 @@ export default function StreamKeysScreen() {
 
         <View style={styles.recCard}>
           <View style={styles.recInfo}>
-            <Text style={styles.recLabel}>Record streams</Text>
-            <Text style={styles.recDesc}>Save your live streams as videos on your channel.</Text>
+            <Text style={styles.recLabel}>{t('settings.streamKeys.record')}</Text>
+            <Text style={styles.recDesc}>{t('settings.streamKeys.recordDesc')}</Text>
           </View>
           <Switch
             value={isRecording}
@@ -136,7 +139,7 @@ export default function StreamKeysScreen() {
           />
         </View>
 
-        <Text style={styles.sectionLabel}>Ingress type</Text>
+        <Text style={styles.sectionLabel}>{t('settings.streamKeys.ingressType')}</Text>
         <View style={styles.typeRow}>
           {INGRESS_TYPES.map(t => (
             <TouchableOpacity
@@ -157,14 +160,12 @@ export default function StreamKeysScreen() {
             ? <ActivityIndicator size="small" color="#000" />
             : <>
                 <IconRefresh size={16} color="#000" />
-                <Text style={styles.btnText}>Generate New Keys</Text>
+                <Text style={styles.btnText}>{t('settings.streamKeys.generateBtn')}</Text>
               </>
           }
         </TouchableOpacity>
 
-        <Text style={styles.hint}>
-          Regenerating keys will disconnect any active stream. Use these keys in OBS or a compatible encoder.
-        </Text>
+        <Text style={styles.hint}>{t('settings.streamKeys.hint')}</Text>
       </ScrollView>
     </SafeAreaView>
   );

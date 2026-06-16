@@ -1,6 +1,7 @@
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, ActivityIndicator, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useQuery, useMutation } from '@apollo/client';
 import { IconDeviceMobile, IconDeviceLaptop, IconTrash, IconMapPin, IconWifi } from '@tabler/icons-react-native';
 import { useColors, useThemedStyles } from '@/src/libs/theme/use-theme';
@@ -36,6 +37,7 @@ function SessionCard({
 }) {
   const c = useColors();
   const styles = useThemedStyles(makeStyles);
+  const { t } = useTranslation();
   const DeviceIcon = deviceIcon(session.metadata.device.type);
   return (
     <View style={[styles.card, isCurrent && styles.cardCurrent]}>
@@ -46,7 +48,7 @@ function SessionCard({
         <View style={styles.cardInfo}>
           <View style={styles.cardTitleRow}>
             <Text style={styles.cardBrowser}>{session.metadata.device.browser}</Text>
-            {isCurrent && <View style={styles.currentPill}><Text style={styles.currentPillText}>This device</Text></View>}
+            {isCurrent && <View style={styles.currentPill}><Text style={styles.currentPillText}>{t('settings.sessions.thisDevice')}</Text></View>}
           </View>
           <Text style={styles.cardOs}>{session.metadata.device.os} · {session.metadata.device.type}</Text>
           <View style={styles.cardMeta}>
@@ -82,19 +84,20 @@ function SessionCard({
 export default function SessionsScreen() {
   const c = useColors();
   const styles = useThemedStyles(makeStyles);
+  const { t } = useTranslation();
   const { data: sessionsData, loading, refetch } = useQuery<{ findSessionByUser: SessionItem[] }>(FIND_SESSIONS);
   const { data: currentData } = useQuery<{ findCurrentSession: SessionItem }>(FIND_CURRENT_SESSION);
 
   const [removingId, setRemovingId] = useState<string | null>(null);
   const [removeSession] = useMutation(REMOVE_SESSION, {
     onCompleted: () => { setRemovingId(null); refetch(); },
-    onError: (e) => { setRemovingId(null); Alert.alert('Error', e.message); },
+    onError: (e) => { setRemovingId(null); Alert.alert(t('common.errorTitle'), e.message); },
   });
 
   function onRemove(id: string) {
-    Alert.alert('Remove session', 'This will sign out that device.', [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Remove', style: 'destructive', onPress: () => {
+    Alert.alert(t('settings.sessions.alerts.removeTitle'), t('settings.sessions.alerts.removeMsg'), [
+      { text: t('common.cancel'), style: 'cancel' },
+      { text: t('common.remove'), style: 'destructive', onPress: () => {
         setRemovingId(id);
         removeSession({ variables: { id } });
       }},
@@ -109,7 +112,7 @@ export default function SessionsScreen() {
 
   return (
     <SafeAreaView style={styles.root} edges={['top']}>
-      <SettingsHeader title="Sessions" />
+      <SettingsHeader title={t('settings.sessions.title')} />
       {loading ? (
         <View style={styles.center}><ActivityIndicator size="large" color={c.accent} /></View>
       ) : (
@@ -128,7 +131,7 @@ export default function SessionsScreen() {
           )}
           ListEmptyComponent={
             <View style={styles.center}>
-              <Text style={styles.emptyText}>No sessions found</Text>
+              <Text style={styles.emptyText}>{t('settings.sessions.empty')}</Text>
             </View>
           }
         />

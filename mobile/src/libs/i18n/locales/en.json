@@ -11,7 +11,13 @@
     "loading": "Loading…",
     "error": "Something went wrong",
     "copy": "Copy",
-    "copied": "Copied"
+    "copied": "Copied",
+    "successTitle": "Success",
+    "errorTitle": "Error",
+    "validation": "Validation",
+    "remove": "Remove",
+    "generate": "Generate",
+    "disable": "Disable"
   },
   "nav": {
     "home": "Home",
@@ -99,6 +105,98 @@
       "successSub": "Redirecting you to the app…",
       "failedTitle": "Verification failed",
       "goToLogin": "Go to Sign In"
+    }
+  },
+  "settings": {
+    "changePassword": {
+      "title": "Change Password",
+      "current": "Current password",
+      "new": "New password",
+      "confirm": "Confirm password",
+      "submit": "Update Password",
+      "alerts": {
+        "success": "Password changed successfully.",
+        "fillAll": "Please fill in all fields.",
+        "mismatch": "Passwords do not match.",
+        "tooShort": "Password must be at least 8 characters."
+      }
+    },
+    "changeEmail": {
+      "title": "Change Email",
+      "current": "Current: ",
+      "newLabel": "New email address",
+      "hint": "A confirmation link will be sent to the new address. Your email won't change until you confirm.",
+      "submit": "Send Confirmation",
+      "alerts": {
+        "success": "Confirmation sent to new email address.",
+        "enter": "Please enter an email address.",
+        "invalid": "Please enter a valid email address."
+      }
+    },
+    "twoFactor": {
+      "title": "Two-Factor Auth",
+      "enabledTitle": "2FA is enabled",
+      "enabledDesc": "Your account is protected with two-factor authentication.",
+      "disableBtn": "Disable Two-Factor Auth",
+      "disabledTitle": "2FA is disabled",
+      "disabledDesc": "Add an extra layer of security by requiring a code from your authenticator app when signing in.",
+      "enableBtn": "Enable Two-Factor Auth",
+      "step1Title": "Step 1 — Scan QR code",
+      "step1Desc": "Open your authenticator app (Google Authenticator, Authy, etc.) and scan this QR code.",
+      "manualKey": "Manual entry key",
+      "step2Title": "Step 2 — Enter verification code",
+      "step2Desc": "Enter the 6-digit code shown in your authenticator app to confirm setup.",
+      "codeLabel": "Verification code",
+      "verifyBtn": "Verify & Enable",
+      "alerts": {
+        "enabledTitle": "Enabled",
+        "enabledMsg": "Two-factor authentication is now active.",
+        "disabledTitle": "Disabled",
+        "disabledMsg": "Two-factor authentication has been turned off.",
+        "confirmDisableTitle": "Disable 2FA",
+        "confirmDisableMsg": "Your account will be less secure. Are you sure?",
+        "invalidCode": "Enter the 6-digit code from your authenticator app."
+      }
+    },
+    "sessions": {
+      "title": "Sessions",
+      "thisDevice": "This device",
+      "empty": "No sessions found",
+      "alerts": {
+        "removeTitle": "Remove session",
+        "removeMsg": "This will sign out that device."
+      }
+    },
+    "streamKeys": {
+      "title": "Stream Keys",
+      "serverUrl": "Server URL",
+      "streamKey": "Stream Key",
+      "notGenerated": "— not generated —",
+      "record": "Record streams",
+      "recordDesc": "Save your live streams as videos on your channel.",
+      "ingressType": "Ingress type",
+      "generateBtn": "Generate New Keys",
+      "hint": "Regenerating keys will disconnect any active stream. Use these keys in OBS or a compatible encoder.",
+      "alerts": {
+        "copied": "{{label}} copied to clipboard.",
+        "success": "Ingress created. Keys updated.",
+        "confirmTitle": "Generate new keys",
+        "confirmMsg": "This will invalidate your current stream key. Continue?"
+      }
+    },
+    "chat": {
+      "title": "Chat Settings",
+      "enable": "Enable chat",
+      "enableDesc": "Allow viewers to send messages during your stream.",
+      "followersOnly": "Followers only",
+      "followersOnlyDesc": "Only followers can send messages.",
+      "sponsorsOnly": "Sponsors only",
+      "sponsorsOnlyDesc": "Only paying sponsors can send messages.",
+      "disabledInfo": "Chat is disabled. Viewers will not be able to send messages during your stream.",
+      "alerts": {
+        "savedTitle": "Saved",
+        "saved": "Chat settings updated."
+      }
     }
   }
 }
