@@ -11,6 +11,7 @@ import { RedisPubSub } from 'graphql-redis-subscriptions';
 import { User } from '@prisma/generated';
 import { ChatService } from './chat.service';
 import { ChatMessageModel } from '@/src/modules/chat/models/chat-message.model';
+import { StreamStatusModel } from '@/src/modules/chat/models/stream-status.model';
 import { UserModel } from '@/src/modules/chat/models/user.model';
 import { Authorization } from '@/src/shared/auth/authorization.decorator';
 import { Authorized } from '@/src/shared/auth/authorized.decorator';
@@ -60,6 +61,17 @@ export class ChatResolver {
     })
     public chatMessageAdded(@Args('streamId') streamId: string) {
         return this.pubSub.asyncIterableIterator('CHAT_MESSAGE_ADDED');
+    }
+
+    // Pushed by the monolith's LiveKit webhook (via the shared Redis channel)
+    // when a channel goes live/offline, so watchers update without refreshing.
+    @Subscription(() => StreamStatusModel, {
+        name: 'streamStatusChanged',
+        filter: (payload, variables) =>
+            payload.streamStatusChanged.channelId === variables.channelId,
+    })
+    public streamStatusChanged(@Args('channelId') channelId: string) {
+        return this.pubSub.asyncIterableIterator('STREAM_STATUS_CHANGED');
     }
 }
 

@@ -52,6 +52,7 @@ import {
   FIND_CHANNEL_BY_USERNAME,
   FIND_CHAT_MESSAGES,
   CHAT_MESSAGE_ADDED,
+  STREAM_STATUS_CHANGED,
   SEND_CHAT_MESSAGE,
   FOLLOW_CHANNEL,
   UNFOLLOW_CHANNEL,
@@ -440,12 +441,22 @@ export default function StreamViewerScreen() {
   const [text, setText] = useState('');
   const listRef = useRef<FlatList>(null);
 
-  const { data: channelData, loading: loadingChannel } = useQuery<{
+  const { data: channelData, loading: loadingChannel, refetch: refetchChannel } = useQuery<{
     findChannelByUsername: ChannelInfo;
   }>(FIND_CHANNEL_BY_USERNAME, { variables: { username }, skip: !username });
 
   const channel  = channelData?.findChannelByUsername;
   const channelId = channel?.id;
+
+  // Real-time live/offline: when the host goes live (or ends), the monolith's
+  // LiveKit webhook publishes a status event. Refetch the channel so isLive
+  // flips and the token/video effect below shows or tears down the player
+  // without the viewer needing to reload the page.
+  useSubscription(STREAM_STATUS_CHANGED, {
+    variables: { channelId },
+    skip: !channelId,
+    onData: () => { refetchChannel(); },
+  });
   const streamId = channel?.stream?.id;
   const isLive   = channel?.stream?.isLive ?? false;
   const thumbnail = getMediaSource(channel?.stream?.thumbnailUrl ?? null);

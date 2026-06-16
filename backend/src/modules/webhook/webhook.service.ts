@@ -8,6 +8,7 @@ import Stripe from "stripe";
 import {TransactionStatus, type Stream, type User} from "@prisma/generated";
 import {StripeService} from "@/src/modules/libs/stripe/stripe.service";
 import {ConfigService} from "@nestjs/config";
+import {RedisService} from "@/src/core/redis/redis.service";
 
 @Injectable()
 export class WebhookService {
@@ -20,7 +21,24 @@ export class WebhookService {
         private readonly telegramService: TelegramService,
         private readonly stripeService: StripeService,
         private readonly configService: ConfigService,
+        private readonly redisService: RedisService,
     ) {
+    }
+
+    // Notify watchers (mobile/web watch page) in real time that a channel went
+    // live/offline. Publishes to the same Redis channel the chat-service's
+    // RedisPubSub listens on for the `streamStatusChanged` GraphQL subscription.
+    // channelId === the stream owner's user id (room name === channel id).
+    private async publishStreamStatus(channelId: string | null, isLive: boolean) {
+        if (!channelId) return;
+        try {
+            await this.redisService.publish(
+                'STREAM_STATUS_CHANGED',
+                JSON.stringify({ streamStatusChanged: { channelId, isLive } }),
+            );
+        } catch (error) {
+            this.logger.error('Failed to publish stream status', error as Error);
+        }
     }
 
     public async receiveWebhookLivekit(body: string, authorization: string) {
@@ -46,6 +64,7 @@ export class WebhookService {
                 data: { isLive: true }
             })
 
+            await this.publishStreamStatus(stream.userId, true)
             await this.notifyFollowersStreamStart(stream)
             await this.startRecording(stream)
         }
@@ -68,6 +87,7 @@ export class WebhookService {
                 data: { isLive: true }
             })
 
+            await this.publishStreamStatus(stream.userId, true)
             await this.notifyFollowersStreamStart(stream)
             await this.startRecording(stream)
         }
@@ -83,6 +103,8 @@ export class WebhookService {
                 where: { id: stream.id },
                 data: { isLive: false }
             })
+
+            await this.publishStreamStatus(stream.userId, false)
 
             await this.prismaService.chatMessage.deleteMany({
                 where: { streamId: stream.id }
@@ -102,6 +124,8 @@ export class WebhookService {
                 where: { id: stream.id },
                 data: { isLive: false }
             })
+
+            await this.publishStreamStatus(stream.userId, false)
 
             await this.prismaService.chatMessage.deleteMany({
                 where: {

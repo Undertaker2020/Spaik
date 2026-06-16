@@ -65,6 +65,15 @@ export const CHAT_MESSAGE_ADDED = gql`
   }
 `;
 
+export const STREAM_STATUS_CHANGED = gql`
+  subscription StreamStatusChanged($channelId: String!) {
+    streamStatusChanged(channelId: $channelId) {
+      channelId
+      isLive
+    }
+  }
+`;
+
 export const SEND_CHAT_MESSAGE = gql`
   mutation SendChatMessage($data: SendMessageInput!) {
     sendChatMessage(data: $data) { id }
