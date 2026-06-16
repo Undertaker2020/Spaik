@@ -11,7 +11,7 @@ import {
   Dimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useCallback } from 'react';
+import { useCallback, memo } from 'react';
 import { useQuery } from '@apollo/client';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -52,7 +52,7 @@ function SectionHeader({ label, count }: { label: string; count: number }) {
 
 // ── Live channel card (full-width) ────────────────────────────
 
-function LiveCard({ channel }: { channel: FollowingChannel }) {
+const LiveCard = memo(function LiveCard({ channel }: { channel: FollowingChannel }) {
   const router    = useRouter();
   const c = useColors();
   const styles = useThemedStyles(makeStyles);
@@ -118,11 +118,11 @@ function LiveCard({ channel }: { channel: FollowingChannel }) {
       </View>
     </TouchableOpacity>
   );
-}
+});
 
 // ── Offline channel card (2-column grid) ──────────────────────
 
-function OfflineCard({ channel }: { channel: FollowingChannel }) {
+const OfflineCard = memo(function OfflineCard({ channel }: { channel: FollowingChannel }) {
   const router = useRouter();
   const styles = useThemedStyles(makeStyles);
   const avatar = getMediaSource(channel.avatar);
@@ -151,7 +151,7 @@ function OfflineCard({ channel }: { channel: FollowingChannel }) {
       <Text style={styles.offUsername} numberOfLines={1}>@{channel.username}</Text>
     </TouchableOpacity>
   );
-}
+});
 
 // ── Empty state ───────────────────────────────────────────────
 

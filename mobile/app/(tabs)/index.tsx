@@ -11,7 +11,7 @@ import {
   RefreshControl,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, memo } from 'react';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@apollo/client';
@@ -43,14 +43,14 @@ const CAT_H          = 70;
 
 // ── Featured card ─────────────────────────────────────────────
 
-function FeaturedCard({ stream, onPress }: { stream: StreamItem; onPress: () => void }) {
+const FeaturedCard = memo(function FeaturedCard({ stream, onOpen }: { stream: StreamItem; onOpen: (username: string) => void }) {
   const c = useColors();
   const styles = useThemedStyles(makeStyles);
   const thumb  = getMediaSource(stream.thumbnailUrl);
   const avatar = getMediaSource(stream.user.avatar);
 
   return (
-    <TouchableOpacity activeOpacity={0.9} style={styles.featured} onPress={onPress}>
+    <TouchableOpacity activeOpacity={0.9} style={styles.featured} onPress={() => onOpen(stream.user.username)}>
       {/* Background */}
       {thumb
         ? <Image source={{ uri: thumb }} style={StyleSheet.absoluteFill} resizeMode="cover" />
@@ -100,18 +100,18 @@ function FeaturedCard({ stream, onPress }: { stream: StreamItem; onPress: () => 
       </View>
     </TouchableOpacity>
   );
-}
+});
 
 // ── Recommended card ──────────────────────────────────────────
 
-function RecCard({ stream, onPress }: { stream: StreamItem; onPress: () => void }) {
+const RecCard = memo(function RecCard({ stream, onOpen }: { stream: StreamItem; onOpen: (username: string) => void }) {
   const c = useColors();
   const styles = useThemedStyles(makeStyles);
   const thumb  = getMediaSource(stream.thumbnailUrl);
   const avatar = getMediaSource(stream.user.avatar);
 
   return (
-    <TouchableOpacity activeOpacity={0.85} style={styles.recCard} onPress={onPress}>
+    <TouchableOpacity activeOpacity={0.85} style={styles.recCard} onPress={() => onOpen(stream.user.username)}>
       <View style={styles.recThumb}>
         {thumb
           ? <Image source={{ uri: thumb }} style={StyleSheet.absoluteFill} resizeMode="cover" />
@@ -140,15 +140,15 @@ function RecCard({ stream, onPress }: { stream: StreamItem; onPress: () => void 
       <Text style={styles.recTitle} numberOfLines={2}>{stream.title}</Text>
     </TouchableOpacity>
   );
-}
+});
 
 // ── Category card ─────────────────────────────────────────────
 
-function CatCard({ category, onPress }: { category: CategoryItem; onPress: () => void }) {
+const CatCard = memo(function CatCard({ category }: { category: CategoryItem }) {
   const styles = useThemedStyles(makeStyles);
   const thumb = getMediaSource(category.thumbnailUrl);
   return (
-    <TouchableOpacity style={styles.catCard} activeOpacity={0.8} onPress={onPress}>
+    <TouchableOpacity style={styles.catCard} activeOpacity={0.8}>
       {thumb
         ? <Image source={{ uri: thumb }} style={StyleSheet.absoluteFill} resizeMode="cover" />
         : <LinearGradient colors={['#1a2a3a','#0d1a2b']} style={StyleSheet.absoluteFill} />
@@ -160,7 +160,7 @@ function CatCard({ category, onPress }: { category: CategoryItem; onPress: () =>
       <Text style={styles.catName} numberOfLines={2}>{category.title}</Text>
     </TouchableOpacity>
   );
-}
+});
 
 // ── Section header ────────────────────────────────────────────
 
@@ -218,6 +218,16 @@ export default function HomeScreen() {
     await Promise.all([refetchStreams(), refetchCategories()]);
     setRefreshing(false);
   }, []);
+
+  // Stable list callbacks so the memoized cards don't re-render on every
+  // poll/category/refresh state change.
+  const openChannel = useCallback((username: string) => router.push(`/channel/${username}` as any), [router]);
+  const renderRec = useCallback(
+    ({ item }: { item: StreamItem }) => <RecCard stream={item} onOpen={openChannel} />,
+    [openChannel],
+  );
+  const keyExtractorRec = useCallback((item: StreamItem) => item.id ?? item.user.username, []);
+  const renderCat = useCallback(({ item }: { item: CategoryItem }) => <CatCard category={item} />, []);
 
   const { data: unreadData } = useQuery<{ findNotificationUnreadCount: number }>(
     FIND_NOTIFICATION_UNREAD_COUNT,
@@ -290,10 +300,7 @@ export default function HomeScreen() {
             {featured && (
               <View style={styles.section}>
                 <SectionHeader title={t('home.featured')} />
-                <FeaturedCard
-                  stream={featured}
-                  onPress={() => router.push(`/channel/${featured.user.username}` as any)}
-                />
+                <FeaturedCard stream={featured} onOpen={openChannel} />
               </View>
             )}
 
@@ -306,16 +313,11 @@ export default function HomeScreen() {
                 />
                 <FlatList
                   data={recommended}
-                  keyExtractor={(_, i) => i.toString()}
+                  keyExtractor={keyExtractorRec}
                   horizontal
                   showsHorizontalScrollIndicator={false}
                   contentContainerStyle={styles.recList}
-                  renderItem={({ item }) => (
-                    <RecCard
-                      stream={item}
-                      onPress={() => router.push(`/channel/${item.user.username}` as any)}
-                    />
-                  )}
+                  renderItem={renderRec}
                 />
               </View>
             )}
@@ -330,9 +332,7 @@ export default function HomeScreen() {
                   horizontal
                   showsHorizontalScrollIndicator={false}
                   contentContainerStyle={styles.catList}
-                  renderItem={({ item }) => (
-                    <CatCard category={item} onPress={() => {}} />
-                  )}
+                  renderItem={renderCat}
                 />
               </View>
             )}

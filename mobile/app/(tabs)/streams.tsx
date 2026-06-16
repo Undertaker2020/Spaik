@@ -10,7 +10,7 @@ import {
   Dimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@apollo/client';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -38,14 +38,14 @@ const CARD_H     = CARD_WIDTH * (9 / 16);
 
 // ── Stream card ───────────────────────────────────────────────
 
-function StreamCard({ stream, onPress }: { stream: StreamItem; onPress: () => void }) {
+const StreamCard = memo(function StreamCard({ stream, onOpen }: { stream: StreamItem; onOpen: (username: string) => void }) {
   const c = useColors();
   const styles = useThemedStyles(makeStyles);
   const thumb  = getMediaSource(stream.thumbnailUrl);
   const avatar = getMediaSource(stream.user.avatar);
 
   return (
-    <TouchableOpacity activeOpacity={0.88} style={styles.card} onPress={onPress}>
+    <TouchableOpacity activeOpacity={0.88} style={styles.card} onPress={() => onOpen(stream.user.username)}>
       {/* Thumbnail */}
       <View style={styles.thumb}>
         {thumb
@@ -95,7 +95,7 @@ function StreamCard({ stream, onPress }: { stream: StreamItem; onPress: () => vo
       <Text style={styles.cardTitle} numberOfLines={2}>{stream.title}</Text>
     </TouchableOpacity>
   );
-}
+});
 
 // ── Empty state ───────────────────────────────────────────────
 
@@ -202,6 +202,14 @@ export default function StreamsScreen() {
     setRefreshing(false);
   }, []);
 
+  // Stable list callbacks so memoized cards survive search-typing re-renders.
+  const openChannel = useCallback((username: string) => router.push(`/channel/${username}` as any), [router]);
+  const renderStream = useCallback(
+    ({ item }: { item: StreamItem }) => <StreamCard stream={item} onOpen={openChannel} />,
+    [openChannel],
+  );
+  const keyExtractorStream = useCallback((item: StreamItem) => item.id ?? item.user.username, []);
+
   return (
     <SafeAreaView style={styles.root} edges={['top']}>
       {/* Header */}
@@ -254,7 +262,7 @@ export default function StreamsScreen() {
       {/* Grid */}
       <FlatList
         data={allStreams}
-        keyExtractor={(_, i) => i.toString()}
+        keyExtractor={keyExtractorStream}
         numColumns={2}
         style={styles.flex}
         columnWrapperStyle={styles.gridRow}
@@ -264,12 +272,10 @@ export default function StreamsScreen() {
         onRefresh={handleRefresh}
         onEndReached={onLoadMore}
         onEndReachedThreshold={0.4}
-        renderItem={({ item }) => (
-          <StreamCard
-            stream={item}
-            onPress={() => router.push(`/channel/${item.user.username}` as any)}
-          />
-        )}
+        initialNumToRender={8}
+        maxToRenderPerBatch={8}
+        windowSize={11}
+        renderItem={renderStream}
         ListEmptyComponent={<EmptyState loading={loading} hasSearch={search.length > 0} />}
         ListFooterComponent={
           loadingMore

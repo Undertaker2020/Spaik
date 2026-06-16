@@ -15,7 +15,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { useState, useEffect, useRef, type ReactNode } from 'react';
+import { useState, useEffect, useRef, useCallback, memo, type ReactNode } from 'react';
 import { useQuery, useMutation, useSubscription } from '@apollo/client';
 import {
   LiveKitRoom,
@@ -398,7 +398,7 @@ function ChatHeader({ count }: { count: number }) {
 
 // ── Chat message ───────────────────────────────────────────────
 
-function ChatMsg({ msg }: { msg: ChatMessage }) {
+const ChatMsg = memo(function ChatMsg({ msg }: { msg: ChatMessage }) {
   const c = useColors();
   const styles = useThemedStyles(makeStyles);
   const color  = userColor(msg.user.username);
@@ -418,7 +418,7 @@ function ChatMsg({ msg }: { msg: ChatMessage }) {
       </View>
     </View>
   );
-}
+});
 
 // ── Screen ────────────────────────────────────────────────────
 
@@ -536,6 +536,11 @@ export default function StreamViewerScreen() {
 
   const chatEnabled = channel?.stream?.isChatEnabled ?? false;
 
+  // Stable list callbacks so memoized chat rows don't re-render on every
+  // keystroke / volume / menu change in this screen.
+  const renderChatMsg = useCallback(({ item }: { item: ChatMessage }) => <ChatMsg msg={item} />, []);
+  const keyExtractorMsg = useCallback((m: ChatMessage) => m.id, []);
+
   return (
     <SafeAreaView style={styles.root} edges={['top']}>
       <VideoArea isLive={isLive} thumbnail={thumbnail} onBack={() => router.back()}>
@@ -576,10 +581,13 @@ export default function StreamViewerScreen() {
               <FlatList
                 ref={listRef}
                 data={messages}
-                keyExtractor={m => m.id}
+                keyExtractor={keyExtractorMsg}
                 contentContainerStyle={styles.chatList}
                 showsVerticalScrollIndicator={false}
-                renderItem={({ item }) => <ChatMsg msg={item} />}
+                renderItem={renderChatMsg}
+                initialNumToRender={15}
+                maxToRenderPerBatch={10}
+                windowSize={11}
                 ListEmptyComponent={
                   <Text style={styles.chatEmpty}>
                     {isLive ? t('stream.chatEmptyLive') : t('stream.chatEmptyOffline')}

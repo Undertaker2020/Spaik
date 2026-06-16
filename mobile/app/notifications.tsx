@@ -6,6 +6,7 @@ import {
   StyleSheet,
   ActivityIndicator,
 } from 'react-native';
+import { memo } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -51,7 +52,7 @@ function timeAgo(isoDate: string, t: TFunction): string {
   return t('notifications.time.days', { n: Math.floor(diff / 86400) });
 }
 
-function NotificationRow({ item }: { item: NotificationItem }) {
+const NotificationRow = memo(function NotificationRow({ item }: { item: NotificationItem }) {
   const c = useColors();
   const styles = useThemedStyles(makeStyles);
   const { t } = useTranslation();
@@ -68,7 +69,7 @@ function NotificationRow({ item }: { item: NotificationItem }) {
       {!item.isRead && <View style={styles.unreadDot} />}
     </View>
   );
-}
+});
 
 export default function NotificationsScreen() {
   const router = useRouter();

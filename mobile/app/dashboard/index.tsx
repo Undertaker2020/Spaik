@@ -13,7 +13,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, memo } from 'react';
 import { useQuery, useMutation, useSubscription } from '@apollo/client';
 import { LinearGradient } from 'expo-linear-gradient';
 import {
@@ -59,7 +59,7 @@ function StatCard({ label, value, icon }: { label: string; value: string | numbe
 
 // ── Chat message row ──────────────────────────────────────────
 
-function MsgRow({ msg }: { msg: ChatMessage }) {
+const MsgRow = memo(function MsgRow({ msg }: { msg: ChatMessage }) {
   const styles = useThemedStyles(makeStyles);
   return (
     <View style={styles.msgRow}>
@@ -67,7 +67,7 @@ function MsgRow({ msg }: { msg: ChatMessage }) {
       <Text style={styles.msgText}> {msg.text}</Text>
     </View>
   );
-}
+});
 
 // ── Screen ────────────────────────────────────────────────────
 
