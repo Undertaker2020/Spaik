@@ -198,5 +198,36 @@
         "saved": "Налаштування чату оновлено."
       }
     }
+  },
+  "editProfile": {
+    "title": "Редагування профілю",
+    "removeAvatar": "Видалити аватар",
+    "usernameLabel": "Імʼя користувача",
+    "usernamePlaceholder": "your_username",
+    "usernameHint": "Унікальний ідентифікатор для URL вашого каналу.",
+    "displayNameLabel": "Відображуване імʼя",
+    "displayNamePlaceholder": "Ваше імʼя",
+    "displayNameHint": "Так ваше імʼя бачитимуть інші.",
+    "bioLabel": "Про себе",
+    "bioPlaceholder": "Розкажіть про себе…",
+    "alerts": {
+      "permissionTitle": "Потрібен дозвіл",
+      "permissionMsg": "Надайте доступ до галереї, щоб змінити аватар.",
+      "uploadFailed": "Не вдалося завантажити",
+      "usernameEmpty": "Імʼя користувача не може бути порожнім.",
+      "displayNameEmpty": "Відображуване імʼя не може бути порожнім.",
+      "removeAvatarTitle": "Видалити аватар",
+      "removeAvatarMsg": "Ви впевнені, що хочете видалити аватар?"
+    }
+  },
+  "notifications": {
+    "title": "Сповіщення",
+    "empty": "Поки що немає сповіщень",
+    "time": {
+      "seconds": "{{n}} с тому",
+      "minutes": "{{n}} хв тому",
+      "hours": "{{n}} год тому",
+      "days": "{{n}} дн тому"
+    }
   }
 }

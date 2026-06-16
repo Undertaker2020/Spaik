@@ -8,6 +8,8 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 import { useQuery } from '@apollo/client';
 import {
   IconArrowLeft,
@@ -41,17 +43,18 @@ function stripHtml(html: string): string {
   return html.replace(/<[^>]*>/g, '');
 }
 
-function timeAgo(isoDate: string): string {
+function timeAgo(isoDate: string, t: TFunction): string {
   const diff = Math.floor((Date.now() - new Date(isoDate).getTime()) / 1000);
-  if (diff < 60)        return `${diff}s ago`;
-  if (diff < 3600)      return `${Math.floor(diff / 60)}m ago`;
-  if (diff < 86400)     return `${Math.floor(diff / 3600)}h ago`;
-  return `${Math.floor(diff / 86400)}d ago`;
+  if (diff < 60)        return t('notifications.time.seconds', { n: diff });
+  if (diff < 3600)      return t('notifications.time.minutes', { n: Math.floor(diff / 60) });
+  if (diff < 86400)     return t('notifications.time.hours', { n: Math.floor(diff / 3600) });
+  return t('notifications.time.days', { n: Math.floor(diff / 86400) });
 }
 
 function NotificationRow({ item }: { item: NotificationItem }) {
   const c = useColors();
   const styles = useThemedStyles(makeStyles);
+  const { t } = useTranslation();
   const Icon = getNotificationIcon(item.type);
   return (
     <View style={[styles.row, !item.isRead && styles.rowUnread]}>
@@ -60,7 +63,7 @@ function NotificationRow({ item }: { item: NotificationItem }) {
       </View>
       <View style={styles.rowContent}>
         <Text style={styles.message}>{stripHtml(item.message)}</Text>
-        <Text style={styles.time}>{timeAgo(item.createdAt)}</Text>
+        <Text style={styles.time}>{timeAgo(item.createdAt, t)}</Text>
       </View>
       {!item.isRead && <View style={styles.unreadDot} />}
     </View>
@@ -71,6 +74,7 @@ export default function NotificationsScreen() {
   const router = useRouter();
   const c = useColors();
   const styles = useThemedStyles(makeStyles);
+  const { t } = useTranslation();
 
   const { data, loading, error, refetch } = useQuery<{
     findNotificationByUser: NotificationItem[];
@@ -87,7 +91,7 @@ export default function NotificationsScreen() {
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} activeOpacity={0.7}>
           <IconArrowLeft size={22} color={c.textPrimary} />
         </TouchableOpacity>
-        <Text style={styles.title}>Notifications</Text>
+        <Text style={styles.title}>{t('notifications.title')}</Text>
         <View style={{ width: 38 }} />
       </View>
 
@@ -99,13 +103,13 @@ export default function NotificationsScreen() {
         <View style={styles.center}>
           <Text style={styles.errorText}>{error.message}</Text>
           <TouchableOpacity onPress={() => refetch()} style={styles.retryBtn}>
-            <Text style={styles.retryText}>Retry</Text>
+            <Text style={styles.retryText}>{t('common.retry')}</Text>
           </TouchableOpacity>
         </View>
       ) : notifications.length === 0 ? (
         <View style={styles.center}>
           <IconBell size={48} color={c.textMuted} strokeWidth={1.2} />
-          <Text style={styles.emptyText}>No notifications yet</Text>
+          <Text style={styles.emptyText}>{t('notifications.empty')}</Text>
         </View>
       ) : (
         <FlatList

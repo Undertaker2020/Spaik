@@ -198,5 +198,36 @@
         "saved": "Chat settings updated."
       }
     }
+  },
+  "editProfile": {
+    "title": "Edit Profile",
+    "removeAvatar": "Remove avatar",
+    "usernameLabel": "Username",
+    "usernamePlaceholder": "your_username",
+    "usernameHint": "Unique identifier for your channel URL.",
+    "displayNameLabel": "Display name",
+    "displayNamePlaceholder": "Your Name",
+    "displayNameHint": "This is how your name appears to others.",
+    "bioLabel": "Bio",
+    "bioPlaceholder": "Tell people about yourself…",
+    "alerts": {
+      "permissionTitle": "Permission required",
+      "permissionMsg": "Allow access to your photo library to change the avatar.",
+      "uploadFailed": "Upload failed",
+      "usernameEmpty": "Username cannot be empty.",
+      "displayNameEmpty": "Display name cannot be empty.",
+      "removeAvatarTitle": "Remove avatar",
+      "removeAvatarMsg": "Are you sure you want to remove your avatar?"
+    }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "empty": "No notifications yet",
+    "time": {
+      "seconds": "{{n}}s ago",
+      "minutes": "{{n}}m ago",
+      "hours": "{{n}}h ago",
+      "days": "{{n}}d ago"
+    }
   }
 }

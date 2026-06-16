@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
 import * as ImagePicker from 'expo-image-picker';
@@ -36,6 +37,7 @@ export default function EditProfileScreen() {
   const router = useRouter();
   const c = useColors();
   const styles = useThemedStyles(makeStyles);
+  const { t } = useTranslation();
 
   const { data, loading: profileLoading, refetch } = useQuery<{
     findProfile: MyProfile;
@@ -60,12 +62,12 @@ export default function EditProfileScreen() {
 
   const [changeInfo, { loading: savingInfo }] = useMutation(CHANGE_PROFILE_INFO, {
     onCompleted: () => { refetch(); router.back(); },
-    onError: (e) => Alert.alert('Error', e.message),
+    onError: (e) => Alert.alert(t('common.errorTitle'), e.message),
   });
 
   const [removeAvatar, { loading: removingAvatar }] = useMutation(REMOVE_PROFILE_AVATAR, {
     onCompleted: () => { setAvatarUri(null); setAvatarChanged(true); refetch(); },
-    onError: (e) => Alert.alert('Error', e.message),
+    onError: (e) => Alert.alert(t('common.errorTitle'), e.message),
   });
 
   const textIsDirty =
@@ -78,7 +80,7 @@ export default function EditProfileScreen() {
   async function pickAvatar() {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
-      Alert.alert('Permission required', 'Allow access to your photo library to change the avatar.');
+      Alert.alert(t('editProfile.alerts.permissionTitle'), t('editProfile.alerts.permissionMsg'));
       return;
     }
 
@@ -122,7 +124,7 @@ export default function EditProfileScreen() {
       setAvatarChanged(true);
       refetch();
     } catch (e: any) {
-      Alert.alert('Upload failed', e.message);
+      Alert.alert(t('editProfile.alerts.uploadFailed'), e.message);
     } finally {
       setUploadingAvatar(false);
     }
@@ -134,11 +136,11 @@ export default function EditProfileScreen() {
       return;
     }
     if (!username.trim()) {
-      Alert.alert('Validation', 'Username cannot be empty.');
+      Alert.alert(t('common.validation'), t('editProfile.alerts.usernameEmpty'));
       return;
     }
     if (!displayName.trim()) {
-      Alert.alert('Validation', 'Display name cannot be empty.');
+      Alert.alert(t('common.validation'), t('editProfile.alerts.displayNameEmpty'));
       return;
     }
     changeInfo({ variables: { data: { username: username.trim(), displayName: displayName.trim(), bio: bio.trim() } } });
@@ -164,7 +166,7 @@ export default function EditProfileScreen() {
         <TouchableOpacity onPress={() => router.back()} style={styles.headerBtn} activeOpacity={0.7}>
           <IconArrowLeft size={22} color={c.textPrimary} />
         </TouchableOpacity>
-        <Text style={styles.title}>Edit Profile</Text>
+        <Text style={styles.title}>{t('editProfile.title')}</Text>
         <TouchableOpacity
           onPress={handleSave}
           disabled={!isDirty || isBusy}
@@ -174,7 +176,7 @@ export default function EditProfileScreen() {
           {savingInfo ? (
             <ActivityIndicator size="small" color="#000" />
           ) : (
-            <Text style={styles.saveBtnText}>Save</Text>
+            <Text style={styles.saveBtnText}>{t('common.save')}</Text>
           )}
         </TouchableOpacity>
       </View>
@@ -210,11 +212,11 @@ export default function EditProfileScreen() {
           {(user?.avatar || avatarUri) && (
             <TouchableOpacity
               onPress={() => Alert.alert(
-                'Remove avatar',
-                'Are you sure you want to remove your avatar?',
+                t('editProfile.alerts.removeAvatarTitle'),
+                t('editProfile.alerts.removeAvatarMsg'),
                 [
-                  { text: 'Cancel', style: 'cancel' },
-                  { text: 'Remove', style: 'destructive', onPress: () => removeAvatar() },
+                  { text: t('common.cancel'), style: 'cancel' },
+                  { text: t('common.remove'), style: 'destructive', onPress: () => removeAvatar() },
                 ]
               )}
               disabled={isBusy}
@@ -222,7 +224,7 @@ export default function EditProfileScreen() {
               activeOpacity={0.7}
             >
               <IconTrash size={14} color={c.danger} />
-              <Text style={styles.removeAvatarText}>Remove avatar</Text>
+              <Text style={styles.removeAvatarText}>{t('editProfile.removeAvatar')}</Text>
             </TouchableOpacity>
           )}
         </View>
@@ -230,29 +232,29 @@ export default function EditProfileScreen() {
         {/* Form */}
         <View style={styles.form}>
           <Field
-            label="Username"
+            label={t('editProfile.usernameLabel')}
             value={username}
             onChangeText={setUsername}
-            placeholder="your_username"
+            placeholder={t('editProfile.usernamePlaceholder')}
             autoCapitalize="none"
-            hint="Unique identifier for your channel URL."
+            hint={t('editProfile.usernameHint')}
             editable={!isBusy}
           />
           <View style={styles.divider} />
           <Field
-            label="Display name"
+            label={t('editProfile.displayNameLabel')}
             value={displayName}
             onChangeText={setDisplayName}
-            placeholder="Your Name"
-            hint="This is how your name appears to others."
+            placeholder={t('editProfile.displayNamePlaceholder')}
+            hint={t('editProfile.displayNameHint')}
             editable={!isBusy}
           />
           <View style={styles.divider} />
           <Field
-            label="Bio"
+            label={t('editProfile.bioLabel')}
             value={bio}
             onChangeText={setBio}
-            placeholder="Tell people about yourself…"
+            placeholder={t('editProfile.bioPlaceholder')}
             multiline
             inputStyle={styles.bioInput}
             editable={!isBusy}
