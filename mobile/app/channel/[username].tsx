@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -108,6 +109,7 @@ function StreamPreviewCard({
 }) {
   const c = useColors();
   const styles = useThemedStyles(makeStyles);
+  const { t } = useTranslation();
   const isLive = channel.stream?.isLive ?? false;
   const thumb = getMediaSource(channel.stream?.thumbnailUrl ?? null);
 
@@ -149,7 +151,7 @@ function StreamPreviewCard({
           {isLive ? 'Live' : 'Offline'}
         </Text>
         <Text style={styles.streamTitle} numberOfLines={2}>
-          {channel.stream?.title || (isLive ? 'Live now' : 'Stream offline')}
+          {channel.stream?.title || (isLive ? t('channel.liveNow') : t('channel.streamOffline'))}
         </Text>
         {channel.stream?.category && (
           <Text style={styles.streamCategory}>{channel.stream.category.title}</Text>
@@ -187,6 +189,7 @@ function VodPlayerModal({ recording, onClose }: { recording: Recording; onClose:
 function ClipsTab({ channelId, isOwner }: { channelId: string; isOwner: boolean }) {
   const c = useColors();
   const styles = useThemedStyles(makeStyles);
+  const { t } = useTranslation();
   const { data, refetch, loading } = useQuery<{ findRecordingsByChannel: Recording[] }>(
     FIND_RECORDINGS_BY_CHANNEL,
     { variables: { channelId }, skip: !channelId },
@@ -197,17 +200,17 @@ function ClipsTab({ channelId, isOwner }: { channelId: string; isOwner: boolean 
   const recordings = data?.findRecordingsByChannel ?? [];
 
   const confirmDelete = (recording: Recording) => {
-    Alert.alert('Delete video', `Delete "${recording.title}"? This can't be undone.`, [
-      { text: 'Cancel', style: 'cancel' },
+    Alert.alert(t('channel.alerts.deleteTitle'), t('channel.alerts.deleteMsg', { title: recording.title }), [
+      { text: t('common.cancel'), style: 'cancel' },
       {
-        text: 'Delete',
+        text: t('common.delete'),
         style: 'destructive',
         onPress: async () => {
           try {
             await deleteRecording({ variables: { id: recording.id } });
             await refetch();
           } catch {
-            Alert.alert('Error', 'Could not delete the video. Try again.');
+            Alert.alert(t('common.errorTitle'), t('channel.alerts.deleteFailed'));
           }
         },
       },
@@ -226,7 +229,7 @@ function ClipsTab({ channelId, isOwner }: { channelId: string; isOwner: boolean 
     return (
       <View style={styles.clipsEmpty}>
         <IconVideo size={28} color={c.textMuted} />
-        <Text style={styles.clipsEmptyText}>No clips yet</Text>
+        <Text style={styles.clipsEmptyText}>{t('channel.clips.empty')}</Text>
       </View>
     );
   }
@@ -275,18 +278,19 @@ function ClipsTab({ channelId, isOwner }: { channelId: string; isOwner: boolean 
 function AboutTab({ channel }: { channel: ChannelInfo }) {
   const c = useColors();
   const styles = useThemedStyles(makeStyles);
+  const { t } = useTranslation();
   return (
     <View style={styles.aboutWrap}>
       {channel.bio ? (
         <View style={styles.aboutSection}>
-          <Text style={styles.aboutSectionTitle}>Bio</Text>
+          <Text style={styles.aboutSectionTitle}>{t('channel.about.bio')}</Text>
           <Text style={styles.aboutBio}>{channel.bio}</Text>
         </View>
       ) : null}
 
       {channel.stream?.title ? (
         <View style={styles.aboutSection}>
-          <Text style={styles.aboutSectionTitle}>Stream</Text>
+          <Text style={styles.aboutSectionTitle}>{t('channel.about.stream')}</Text>
           <View style={styles.streamRow}>
             <IconBroadcast size={14} color={c.accent} />
             <Text style={styles.streamRowText}>{channel.stream.title}</Text>
@@ -299,7 +303,7 @@ function AboutTab({ channel }: { channel: ChannelInfo }) {
 
       {(channel.socialLinks?.length ?? 0) > 0 && (
         <View style={styles.aboutSection}>
-          <Text style={styles.aboutSectionTitle}>Links</Text>
+          <Text style={styles.aboutSectionTitle}>{t('channel.about.links')}</Text>
           {channel.socialLinks!.map(link => {
             const Icon = socialIcon(link.title);
             return (
@@ -325,6 +329,7 @@ function AboutTab({ channel }: { channel: ChannelInfo }) {
 export default function ChannelScreen() {
   const c = useColors();
   const styles = useThemedStyles(makeStyles);
+  const { t } = useTranslation();
   const router   = useRouter();
   const insets   = useSafeAreaInsets();
   const { username } = useLocalSearchParams<{ username: string }>();
@@ -396,7 +401,7 @@ export default function ChannelScreen() {
   async function pickBanner() {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
-      Alert.alert('Permission required', 'Allow photo library access to set a banner.');
+      Alert.alert(t('channel.alerts.bannerPermissionTitle'), t('channel.alerts.bannerPermissionMsg'));
       return;
     }
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -434,7 +439,7 @@ export default function ChannelScreen() {
 
       await refetchChannel();
     } catch (e: any) {
-      Alert.alert('Upload failed', e.message);
+      Alert.alert(t('channel.alerts.uploadFailed'), e.message);
     } finally {
       setUploadingBanner(false);
     }
@@ -458,7 +463,7 @@ export default function ChannelScreen() {
         </View>
       ) : error || !channel ? (
         <View style={styles.center}>
-          <Text style={styles.errorText}>{error?.message ?? 'Channel not found'}</Text>
+          <Text style={styles.errorText}>{error?.message ?? t('channel.notFound')}</Text>
         </View>
       ) : (
         <ScrollView showsVerticalScrollIndicator={false}>
@@ -545,7 +550,7 @@ export default function ChannelScreen() {
 
           {/* Followers */}
           <Text style={styles.followers}>
-            <Text style={styles.followersCount}>{formatCount(channel.followers?.length ?? 0)}</Text> followers
+            <Text style={styles.followersCount}>{formatCount(channel.followers?.length ?? 0)}</Text> {t('channel.followers')}
           </Text>
 
           {/* Social links */}
@@ -583,7 +588,7 @@ export default function ChannelScreen() {
                   <>
                     <IconHeart size={16} color={isFollowing ? c.textPrimary : '#000'} />
                     <Text style={[styles.followBtnText, isFollowing && styles.followBtnTextActive]}>
-                      {isFollowing ? 'Following' : 'Follow'}
+                      {isFollowing ? t('channel.following') : t('channel.follow')}
                     </Text>
                   </>
                 )}
@@ -593,7 +598,7 @@ export default function ChannelScreen() {
                 isSponsor ? (
                   <View style={[styles.subscribeBtn, styles.actionFlex, styles.subscribedBtn]}>
                     <IconStar size={16} color={c.textSecondary} />
-                    <Text style={styles.subscribedText}>Subscribed</Text>
+                    <Text style={styles.subscribedText}>{t('channel.subscribed')}</Text>
                   </View>
                 ) : (
                   <TouchableOpacity
@@ -602,7 +607,7 @@ export default function ChannelScreen() {
                     onPress={() => setSubscribeOpen(true)}
                   >
                     <IconStar size={16} color="#fff" />
-                    <Text style={styles.subscribeText}>Subscribe</Text>
+                    <Text style={styles.subscribeText}>{t('channel.subscribe')}</Text>
                   </TouchableOpacity>
                 )
               )}
@@ -624,7 +629,7 @@ export default function ChannelScreen() {
                 activeOpacity={0.7}
               >
                 <Text style={[styles.tabLabel, activeTab === tab && styles.tabLabelActive]}>
-                  {tab}
+                  {tab === 'Home' ? t('channel.tabs.home') : t('channel.tabs.about')}
                 </Text>
                 {activeTab === tab && <View style={styles.tabIndicator} />}
               </TouchableOpacity>
@@ -657,7 +662,7 @@ export default function ChannelScreen() {
           <View style={styles.subBackdrop}>
             <View style={styles.subSheet}>
               <View style={styles.subHeader}>
-                <Text style={styles.subTitle} numberOfLines={1}>Support {channel.displayName}</Text>
+                <Text style={styles.subTitle} numberOfLines={1}>{t('channel.subscribeModal.support', { name: channel.displayName })}</Text>
                 <TouchableOpacity onPress={() => setSubscribeOpen(false)} hitSlop={8}>
                   <IconX size={22} color={c.textPrimary} />
                 </TouchableOpacity>
@@ -677,12 +682,12 @@ export default function ChannelScreen() {
                       <Text style={styles.planDesc} numberOfLines={2}>{plan.description}</Text>
                     ) : null}
                   </View>
-                  <Text style={styles.planPrice}>${plan.price.toFixed(2)}/mo</Text>
+                  <Text style={styles.planPrice}>${plan.price.toFixed(2)}{t('channel.subscribeModal.perMonth')}</Text>
                 </TouchableOpacity>
               ))}
 
               {paying && <ActivityIndicator color={c.accent} style={{ marginTop: 8 }} />}
-              <Text style={styles.subHint}>Payment opens securely in your browser.</Text>
+              <Text style={styles.subHint}>{t('channel.subscribeModal.hint')}</Text>
             </View>
           </View>
         </Modal>

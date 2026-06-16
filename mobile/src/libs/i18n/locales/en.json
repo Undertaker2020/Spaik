@@ -322,5 +322,40 @@
     "sponsorsOnly": "Sponsors only",
     "liveChat": "Live Chat",
     "noMessages": "No messages yet"
+  },
+  "channel": {
+    "notFound": "Channel not found",
+    "liveNow": "Live now",
+    "streamOffline": "Stream offline",
+    "followers": "followers",
+    "follow": "Follow",
+    "following": "Following",
+    "subscribe": "Subscribe",
+    "subscribed": "Subscribed",
+    "tabs": {
+      "home": "Home",
+      "about": "About"
+    },
+    "clips": {
+      "empty": "No clips yet"
+    },
+    "about": {
+      "bio": "Bio",
+      "stream": "Stream",
+      "links": "Links"
+    },
+    "subscribeModal": {
+      "support": "Support {{name}}",
+      "perMonth": "/mo",
+      "hint": "Payment opens securely in your browser."
+    },
+    "alerts": {
+      "deleteTitle": "Delete video",
+      "deleteMsg": "Delete \"{{title}}\"? This can't be undone.",
+      "deleteFailed": "Could not delete the video. Try again.",
+      "bannerPermissionTitle": "Permission required",
+      "bannerPermissionMsg": "Allow photo library access to set a banner.",
+      "uploadFailed": "Upload failed"
+    }
   }
 }

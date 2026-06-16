@@ -322,5 +322,40 @@
     "sponsorsOnly": "Лише спонсори",
     "liveChat": "Чат наживо",
     "noMessages": "Поки що немає повідомлень"
+  },
+  "channel": {
+    "notFound": "Канал не знайдено",
+    "liveNow": "Наживо",
+    "streamOffline": "Трансляція офлайн",
+    "followers": "підписників",
+    "follow": "Підписатися",
+    "following": "Ви підписані",
+    "subscribe": "Підтримати",
+    "subscribed": "Ви спонсор",
+    "tabs": {
+      "home": "Головна",
+      "about": "Про канал"
+    },
+    "clips": {
+      "empty": "Поки що немає кліпів"
+    },
+    "about": {
+      "bio": "Про себе",
+      "stream": "Стрім",
+      "links": "Посилання"
+    },
+    "subscribeModal": {
+      "support": "Підтримати {{name}}",
+      "perMonth": "/міс",
+      "hint": "Оплата безпечно відкриється у вашому браузері."
+    },
+    "alerts": {
+      "deleteTitle": "Видалити відео",
+      "deleteMsg": "Видалити «{{title}}»? Цю дію не можна скасувати.",
+      "deleteFailed": "Не вдалося видалити відео. Спробуйте ще раз.",
+      "bannerPermissionTitle": "Потрібен дозвіл",
+      "bannerPermissionMsg": "Надайте доступ до галереї, щоб встановити банер.",
+      "uploadFailed": "Не вдалося завантажити"
+    }
   }
 }
