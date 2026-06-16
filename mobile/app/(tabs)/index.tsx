@@ -22,6 +22,7 @@ import {
 } from '@/src/graphql/queries/notifications.queries';
 import { useColors, useThemedStyles } from '@/src/libs/theme/use-theme';
 import type { Palette } from '@/src/libs/theme/palettes';
+import { CategoryPill } from '@/src/components/ui/CategoryPill';
 import { getMediaSource } from '@/src/libs/utils/get-media-source';
 import {
   FIND_RANDOM_STREAMS,
@@ -37,19 +38,6 @@ const REC_W          = 160;
 const REC_H          = REC_W * (9 / 16);
 const CAT_W          = 110;
 const CAT_H          = 70;
-
-// ── Category pill ─────────────────────────────────────────────
-
-function CategoryPill({ label, active, onPress }: {
-  label: string; active: boolean; onPress: () => void;
-}) {
-  const styles = useThemedStyles(makeStyles);
-  return (
-    <TouchableOpacity onPress={onPress} style={[styles.pill, active && styles.pillActive]} activeOpacity={0.75}>
-      <Text style={[styles.pillText, active && styles.pillTextActive]}>{label}</Text>
-    </TouchableOpacity>
-  );
-}
 
 // ── Featured card ─────────────────────────────────────────────
 
@@ -384,13 +372,6 @@ const makeStyles = (c: Palette) =>
 
   // Pills
   pills: { paddingHorizontal: H_PAD, paddingBottom: 14, gap: 8 },
-  pill: {
-    paddingHorizontal: 15, paddingVertical: 7, borderRadius: 99,
-    borderWidth: 1, borderColor: c.border, backgroundColor: c.card,
-  },
-  pillActive:     { backgroundColor: c.accent, borderColor: c.accent },
-  pillText:       { fontSize: 13, fontWeight: '500', color: c.textSecondary },
-  pillTextActive: { color: '#000', fontWeight: '600' },
 
   loader: { paddingTop: 60, alignItems: 'center' },
 

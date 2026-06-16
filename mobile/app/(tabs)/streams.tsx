@@ -18,6 +18,7 @@ import { IconSearch, IconX, IconDeviceTv } from '@tabler/icons-react-native';
 import { useRouter } from 'expo-router';
 import { useColors, useThemedStyles } from '@/src/libs/theme/use-theme';
 import type { Palette } from '@/src/libs/theme/palettes';
+import { CategoryPill } from '@/src/components/ui/CategoryPill';
 import { getMediaSource } from '@/src/libs/utils/get-media-source';
 import {
   FIND_ALL_STREAMS,
@@ -32,19 +33,6 @@ const GAP        = 10;
 const H_PAD      = 16;
 const CARD_WIDTH = (SCREEN_WIDTH - H_PAD * 2 - GAP) / 2;
 const CARD_H     = CARD_WIDTH * (9 / 16);
-
-// ── Category pill ─────────────────────────────────────────────
-
-function CategoryPill({ label, active, onPress }: {
-  label: string; active: boolean; onPress: () => void;
-}) {
-  const styles = useThemedStyles(makeStyles);
-  return (
-    <TouchableOpacity onPress={onPress} style={[styles.pill, active && styles.pillActive]} activeOpacity={0.75}>
-      <Text style={[styles.pillText, active && styles.pillTextActive]}>{label}</Text>
-    </TouchableOpacity>
-  );
-}
 
 // ── Stream card ───────────────────────────────────────────────
 
@@ -328,15 +316,6 @@ const makeStyles = (c: Palette) =>
   // Pills
   pillsRow: { flexGrow: 0, marginBottom: 14 },
   pills:    { paddingHorizontal: H_PAD, gap: 8 },
-  pill: {
-    paddingHorizontal: 15, paddingVertical: 7,
-    borderRadius: 99,
-    borderWidth: 1, borderColor: c.border,
-    backgroundColor: c.card,
-  },
-  pillActive:     { backgroundColor: c.accent, borderColor: c.accent },
-  pillText:       { fontSize: 13, fontWeight: '500', color: c.textSecondary },
-  pillTextActive: { color: '#000', fontWeight: '600' },
 
   // Grid
   grid:    { paddingHorizontal: H_PAD, paddingBottom: 20 },
