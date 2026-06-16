@@ -3,7 +3,6 @@ import {
   Text,
   ScrollView,
   TouchableOpacity,
-  Image,
   StyleSheet,
   ActivityIndicator,
   RefreshControl,
@@ -30,6 +29,7 @@ import {
 import { getMediaSource } from '@/src/libs/utils/get-media-source';
 import { useColors, useThemedStyles } from '@/src/libs/theme/use-theme';
 import type { Palette } from '@/src/libs/theme/palettes';
+import { Avatar } from '@/src/components/ui/Avatar';
 import { useAuthStore } from '@/src/store/auth/auth.store';
 import { clearTokens } from '@/src/libs/auth/token-storage';
 import {
@@ -155,15 +155,7 @@ export default function ProfileScreen() {
           activeOpacity={0.75}
           onPress={() => router.push('/edit-profile' as any)}
         >
-          {avatarUrl ? (
-            <Image source={{ uri: avatarUrl }} style={styles.profileAvatar} />
-          ) : (
-            <View style={[styles.profileAvatar, styles.profileAvatarFallback]}>
-              <Text style={styles.profileAvatarInitial}>
-                {user.username.charAt(0).toUpperCase()}
-              </Text>
-            </View>
-          )}
+          <Avatar uri={avatarUrl} name={user.username} size={AVATAR_SIZE} fallbackColor={c.outer} />
           <View style={styles.profileInfo}>
             <Text style={styles.profileName}>{user.displayName}</Text>
             <Text style={styles.profileEmail}>{user.email}</Text>
@@ -248,17 +240,6 @@ const makeStyles = (c: Palette) =>
       backgroundColor: c.card,
       borderRadius: 14,
     },
-    profileAvatar: {
-      width: AVATAR_SIZE,
-      height: AVATAR_SIZE,
-      borderRadius: AVATAR_SIZE / 2,
-    },
-    profileAvatarFallback: {
-      backgroundColor: c.outer,
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    profileAvatarInitial: { fontSize: 18, fontWeight: '700', color: c.accent },
     profileInfo: { flex: 1 },
     profileName:  { fontSize: 17, fontWeight: '600', color: c.textPrimary },
     profileEmail: { fontSize: 14, color: c.textSecondary, marginTop: 2 },

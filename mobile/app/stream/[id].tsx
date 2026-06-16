@@ -45,6 +45,7 @@ import { useColors, useThemedStyles } from '@/src/libs/theme/use-theme';
 import type { Palette } from '@/src/libs/theme/palettes';
 import { LIVEKIT_WS_URL } from '@/src/libs/constants/url.constants';
 import { getMediaSource } from '@/src/libs/utils/get-media-source';
+import { Avatar } from '@/src/components/ui/Avatar';
 import { useAuthStore } from '@/src/store/auth/auth.store';
 import { FIND_MY_PROFILE, type MyProfile } from '@/src/graphql/queries/profile.queries';
 import { GENERATE_STREAM_TOKEN } from '@/src/graphql/queries/stream.queries';
@@ -337,15 +338,7 @@ function StreamInfo({
       {/* Row: avatar + name/category + follow */}
       <View style={styles.infoRow}>
         <View style={styles.avatarWrap}>
-          {avatar ? (
-            <Image source={{ uri: avatar }} style={styles.avatar} />
-          ) : (
-            <View style={[styles.avatar, styles.avatarFallback]}>
-              <Text style={styles.avatarInitial}>
-                {channel.username.charAt(0).toUpperCase()}
-              </Text>
-            </View>
-          )}
+          <Avatar uri={avatar} name={channel.username} size={AVATAR_SIZE} />
           {isLive && <View style={styles.liveRing} />}
         </View>
 
@@ -726,9 +719,6 @@ const makeStyles = (c: Palette) =>
   },
   infoRow:     { flexDirection: 'row', alignItems: 'center', gap: 10 },
   avatarWrap:  { position: 'relative' },
-  avatar:      { width: AVATAR_SIZE, height: AVATAR_SIZE, borderRadius: AVATAR_SIZE / 2 },
-  avatarFallback: { backgroundColor: c.card, alignItems: 'center', justifyContent: 'center' },
-  avatarInitial:  { fontSize: 18, fontWeight: '700', color: c.accent },
   liveRing: {
     position: 'absolute', top: -2, left: -2,
     width: AVATAR_SIZE + 4, height: AVATAR_SIZE + 4,

@@ -45,6 +45,7 @@ import type { Palette } from '@/src/libs/theme/palettes';
 import { MEDIA_SERVICE_URL } from '@/src/libs/constants/url.constants';
 import { getMediaSource } from '@/src/libs/utils/get-media-source';
 import { getRecordingSource } from '@/src/libs/utils/get-recording-source';
+import { Avatar } from '@/src/components/ui/Avatar';
 import { getAccessToken } from '@/src/libs/auth/token-storage';
 import { useAuthStore } from '@/src/store/auth/auth.store';
 import {
@@ -510,15 +511,7 @@ export default function ChannelScreen() {
           {/* Identity: avatar + name + live/category */}
           <View style={styles.identityRow}>
             <View style={styles.avatarWrap}>
-              {avatarUrl ? (
-                <Image source={{ uri: avatarUrl }} style={styles.avatar} />
-              ) : (
-                <View style={[styles.avatar, styles.avatarFallback]}>
-                  <Text style={styles.avatarInitial}>
-                    {channel.username.charAt(0).toUpperCase()}
-                  </Text>
-                </View>
-              )}
+              <Avatar uri={avatarUrl} name={channel.username} size={AVATAR_SIZE} initialStyle={{ fontSize: 22 }} />
             </View>
 
             <View style={styles.identityMeta}>
@@ -742,17 +735,6 @@ const makeStyles = (c: Palette) =>
     padding: 3,
     backgroundColor: c.bg,
   },
-  avatar: {
-    width: AVATAR_SIZE,
-    height: AVATAR_SIZE,
-    borderRadius: AVATAR_SIZE / 2,
-  },
-  avatarFallback: {
-    backgroundColor: c.card,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  avatarInitial: { fontSize: 22, fontWeight: '700', color: c.accent },
 
   identityMeta: { flex: 1, paddingBottom: 4 },
   nameRow:  { flexDirection: 'row', alignItems: 'center', gap: 5 },

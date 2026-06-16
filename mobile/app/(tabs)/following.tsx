@@ -19,6 +19,7 @@ import { IconBadge, IconUsers } from '@tabler/icons-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useColors, useThemedStyles } from '@/src/libs/theme/use-theme';
 import type { Palette } from '@/src/libs/theme/palettes';
+import { Avatar } from '@/src/components/ui/Avatar';
 import { getMediaSource } from '@/src/libs/utils/get-media-source';
 import {
   FIND_MY_FOLLOWINGS,
@@ -97,14 +98,14 @@ function LiveCard({ channel }: { channel: FollowingChannel }) {
       <View style={styles.liveCardInfo}>
         <View style={styles.liveCardRow}>
           <View>
-            {avatar
-              ? <Image source={{ uri: avatar }} style={styles.liveAvatar} />
-              : <View style={[styles.liveAvatar, styles.avatarFallback]}>
-                  <Text style={styles.avatarInitial}>
-                    {channel.username.charAt(0).toUpperCase()}
-                  </Text>
-                </View>
-            }
+            <Avatar
+              uri={avatar}
+              name={channel.username}
+              size={36}
+              style={styles.liveAvatar}
+              fallbackColor="#2A2D3A"
+              initialStyle={{ fontSize: 14 }}
+            />
           </View>
           <View style={styles.liveCardMeta}>
             <View style={styles.liveNameRow}>
@@ -136,14 +137,14 @@ function OfflineCard({ channel }: { channel: FollowingChannel }) {
     >
       {/* Avatar */}
       <View style={styles.offAvatarWrap}>
-        {avatar
-          ? <Image source={{ uri: avatar }} style={styles.offAvatar} />
-          : <View style={[styles.offAvatar, styles.avatarFallback]}>
-              <Text style={styles.offAvatarInitial}>
-                {channel.username.charAt(0).toUpperCase()}
-              </Text>
-            </View>
-        }
+        <Avatar
+          uri={avatar}
+          name={channel.username}
+          size={52}
+          style={styles.offAvatar}
+          fallbackColor="#2A2D3A"
+          initialStyle={{ fontSize: 18 }}
+        />
         {/* Offline indicator */}
         <View style={styles.offIndicator} />
       </View>
@@ -366,9 +367,6 @@ const makeStyles = (c: Palette) =>
   offName:     { fontSize: 13, fontWeight: '600', color: c.textPrimary, textAlign: 'center' },
   offUsername: { fontSize: 11, color: c.textSecondary, textAlign: 'center' },
 
-  avatarFallback: { backgroundColor: '#2A2D3A', alignItems: 'center', justifyContent: 'center' },
-  avatarInitial:      { fontSize: 14, fontWeight: '700', color: c.accent },
-  offAvatarInitial:   { fontSize: 18, fontWeight: '700', color: c.accent },
 
   // Empty
   empty: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12, paddingHorizontal: 40 },

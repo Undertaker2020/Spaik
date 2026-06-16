@@ -23,6 +23,7 @@ import {
 import { useColors, useThemedStyles } from '@/src/libs/theme/use-theme';
 import type { Palette } from '@/src/libs/theme/palettes';
 import { CategoryPill } from '@/src/components/ui/CategoryPill';
+import { Avatar } from '@/src/components/ui/Avatar';
 import { getMediaSource } from '@/src/libs/utils/get-media-source';
 import {
   FIND_RANDOM_STREAMS,
@@ -42,6 +43,7 @@ const CAT_H          = 70;
 // ── Featured card ─────────────────────────────────────────────
 
 function FeaturedCard({ stream, onPress }: { stream: StreamItem; onPress: () => void }) {
+  const c = useColors();
   const styles = useThemedStyles(makeStyles);
   const thumb  = getMediaSource(stream.thumbnailUrl);
   const avatar = getMediaSource(stream.user.avatar);
@@ -83,14 +85,15 @@ function FeaturedCard({ stream, onPress }: { stream: StreamItem; onPress: () => 
       {/* Bottom info */}
       <View style={styles.featuredInfo}>
         <View style={styles.featuredRow}>
-          {avatar
-            ? <Image source={{ uri: avatar }} style={styles.featuredAvatar} />
-            : <View style={[styles.featuredAvatar, styles.featuredAvatarFallback]}>
-                <Text style={styles.featuredAvatarInitial}>
-                  {stream.user.username.charAt(0).toUpperCase()}
-                </Text>
-              </View>
-          }
+          <Avatar
+            uri={avatar}
+            name={stream.user.username}
+            size={36}
+            style={styles.featuredAvatar}
+            fallbackColor={c.accentDark}
+            initialColor="#fff"
+            initialStyle={{ fontSize: 14 }}
+          />
           <View style={styles.featuredMeta}>
             <Text style={styles.featuredTitle} numberOfLines={1}>{stream.title}</Text>
             <Text style={styles.featuredUsername}>{stream.user.username}</Text>
@@ -104,6 +107,7 @@ function FeaturedCard({ stream, onPress }: { stream: StreamItem; onPress: () => 
 // ── Recommended card ──────────────────────────────────────────
 
 function RecCard({ stream, onPress }: { stream: StreamItem; onPress: () => void }) {
+  const c = useColors();
   const styles = useThemedStyles(makeStyles);
   const thumb  = getMediaSource(stream.thumbnailUrl);
   const avatar = getMediaSource(stream.user.avatar);
@@ -126,14 +130,15 @@ function RecCard({ stream, onPress }: { stream: StreamItem; onPress: () => void 
           </View>
         )}
         <View style={styles.recBottom}>
-          {avatar
-            ? <Image source={{ uri: avatar }} style={styles.recAvatar} />
-            : <View style={[styles.recAvatar, styles.recAvatarFallback]}>
-                <Text style={styles.recAvatarInitial}>
-                  {stream.user.username.charAt(0).toUpperCase()}
-                </Text>
-              </View>
-          }
+          <Avatar
+            uri={avatar}
+            name={stream.user.username}
+            size={18}
+            style={styles.recAvatar}
+            fallbackColor={c.accentDark}
+            initialColor="#fff"
+            initialStyle={{ fontSize: 8 }}
+          />
           <Text style={styles.recUsername} numberOfLines={1}>{stream.user.username}</Text>
         </View>
       </View>
@@ -414,8 +419,6 @@ const makeStyles = (c: Palette) =>
     borderWidth: 2, borderColor: 'rgba(255,255,255,0.3)',
     flexShrink: 0,
   },
-  featuredAvatarFallback: { backgroundColor: c.accentDark, alignItems: 'center', justifyContent: 'center' },
-  featuredAvatarInitial:  { fontSize: 14, fontWeight: '700', color: '#fff' },
   featuredMeta:    { flex: 1 },
   featuredTitle:   { fontSize: 15, fontWeight: '700', color: '#fff', marginBottom: 2 },
   featuredUsername: { fontSize: 12, color: 'rgba(255,255,255,0.65)' },
@@ -440,8 +443,6 @@ const makeStyles = (c: Palette) =>
     flexDirection: 'row', alignItems: 'center', gap: 5,
   },
   recAvatar: { width: 18, height: 18, borderRadius: 9, borderWidth: 1, borderColor: 'rgba(255,255,255,0.3)' },
-  recAvatarFallback: { backgroundColor: c.accentDark, alignItems: 'center', justifyContent: 'center' },
-  recAvatarInitial:  { fontSize: 8, fontWeight: '700', color: '#fff' },
   recUsername:       { fontSize: 11, fontWeight: '600', color: '#fff', flex: 1 },
   recTitle:          { fontSize: 12, fontWeight: '500', color: c.textPrimary, lineHeight: 17 },
 

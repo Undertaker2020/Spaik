@@ -7,7 +7,6 @@ import {
   ActivityIndicator,
   ScrollView,
   Alert,
-  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -24,6 +23,7 @@ import { useColors, useThemedStyles } from '@/src/libs/theme/use-theme';
 import type { Palette } from '@/src/libs/theme/palettes';
 import { SERVER_URL } from '@/src/libs/constants/url.constants';
 import { getMediaSource } from '@/src/libs/utils/get-media-source';
+import { Avatar } from '@/src/components/ui/Avatar';
 import {
   FIND_MY_PROFILE,
   CHANGE_PROFILE_INFO,
@@ -186,15 +186,12 @@ export default function EditProfileScreen() {
         {/* Avatar section */}
         <View style={styles.avatarSection}>
           <View style={styles.avatarWrap}>
-            {currentAvatar ? (
-              <Image source={{ uri: currentAvatar }} style={styles.avatar} />
-            ) : (
-              <View style={[styles.avatar, styles.avatarFallback]}>
-                <Text style={styles.avatarInitial}>
-                  {(user?.username ?? '?').charAt(0).toUpperCase()}
-                </Text>
-              </View>
-            )}
+            <Avatar
+              uri={currentAvatar}
+              name={user?.username}
+              size={AVATAR_SIZE}
+              initialStyle={{ fontSize: 32 }}
+            />
             <TouchableOpacity
               style={styles.cameraBtn}
               onPress={pickAvatar}
@@ -329,12 +326,6 @@ const makeStyles = (c: Palette) =>
   // Avatar
   avatarSection: { alignItems: 'center', paddingVertical: 28, gap: 12 },
   avatarWrap: { position: 'relative' },
-  avatar: { width: AVATAR_SIZE, height: AVATAR_SIZE, borderRadius: AVATAR_SIZE / 2 },
-  avatarFallback: {
-    backgroundColor: c.card,
-    alignItems: 'center', justifyContent: 'center',
-  },
-  avatarInitial: { fontSize: 32, fontWeight: '700', color: c.accent },
   cameraBtn: {
     position: 'absolute',
     bottom: 0, right: 0,

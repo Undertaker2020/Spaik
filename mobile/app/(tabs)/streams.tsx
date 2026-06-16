@@ -19,6 +19,7 @@ import { useRouter } from 'expo-router';
 import { useColors, useThemedStyles } from '@/src/libs/theme/use-theme';
 import type { Palette } from '@/src/libs/theme/palettes';
 import { CategoryPill } from '@/src/components/ui/CategoryPill';
+import { Avatar } from '@/src/components/ui/Avatar';
 import { getMediaSource } from '@/src/libs/utils/get-media-source';
 import {
   FIND_ALL_STREAMS,
@@ -37,6 +38,7 @@ const CARD_H     = CARD_WIDTH * (9 / 16);
 // ── Stream card ───────────────────────────────────────────────
 
 function StreamCard({ stream, onPress }: { stream: StreamItem; onPress: () => void }) {
+  const c = useColors();
   const styles = useThemedStyles(makeStyles);
   const thumb  = getMediaSource(stream.thumbnailUrl);
   const avatar = getMediaSource(stream.user.avatar);
@@ -77,14 +79,15 @@ function StreamCard({ stream, onPress }: { stream: StreamItem; onPress: () => vo
         {/* Bottom info inside card */}
         <View style={styles.thumbBottom}>
           <View style={styles.thumbUser}>
-            {avatar
-              ? <Image source={{ uri: avatar }} style={styles.thumbAvatar} />
-              : <View style={[styles.thumbAvatar, styles.thumbAvatarFallback]}>
-                  <Text style={styles.thumbAvatarInitial}>
-                    {stream.user.username.charAt(0).toUpperCase()}
-                  </Text>
-                </View>
-            }
+            <Avatar
+              uri={avatar}
+              name={stream.user.username}
+              size={20}
+              style={styles.thumbAvatar}
+              fallbackColor={c.accentDark}
+              initialColor="#fff"
+              initialStyle={{ fontSize: 9 }}
+            />
             <Text style={styles.thumbUsername} numberOfLines={1}>
               {stream.user.username}
             </Text>
@@ -358,10 +361,6 @@ const makeStyles = (c: Palette) =>
     width: 20, height: 20, borderRadius: 10,
     borderWidth: 1, borderColor: 'rgba(255,255,255,0.3)',
   },
-  thumbAvatarFallback: {
-    backgroundColor: c.accentDark, alignItems: 'center', justifyContent: 'center',
-  },
-  thumbAvatarInitial: { fontSize: 9, fontWeight: '700', color: '#fff' },
   thumbUsername: { fontSize: 11, fontWeight: '600', color: '#fff', flex: 1 },
 
   cardTitle: { fontSize: 12, fontWeight: '500', color: c.textPrimary, lineHeight: 17 },
