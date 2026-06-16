@@ -454,7 +454,7 @@ export default function ChannelScreen() {
         onPress={() => router.back()}
         activeOpacity={0.8}
       >
-        <IconArrowLeft size={20} color={c.textPrimary} />
+        <IconArrowLeft size={20} color="#fff" />
       </TouchableOpacity>
 
       {loading ? (
@@ -709,7 +709,7 @@ const makeStyles = (c: Palette) =>
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: 'rgba(0,0,0,0.45)',
+    backgroundColor: 'rgba(0,0,0,0.55)',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -731,7 +731,10 @@ const makeStyles = (c: Palette) =>
     alignItems: 'flex-end',
     gap: 12,
     paddingHorizontal: 16,
-    marginTop: -(AVATAR_SIZE / 2) - 4,
+    // Only a small overlap into the banner: the name sits beside the avatar
+    // (bottom-aligned), so pulling the row up further would push the name
+    // onto the dark banner. Keep the whole row's text below the banner edge.
+    marginTop: -16,
     marginBottom: 8,
   },
   avatarWrap: {
