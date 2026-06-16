@@ -357,5 +357,16 @@
       "bannerPermissionMsg": "Allow photo library access to set a banner.",
       "uploadFailed": "Upload failed"
     }
+  },
+  "stream": {
+    "connecting": "Connecting…",
+    "offline": "Stream offline",
+    "follow": "Follow",
+    "following": "Following",
+    "liveChat": "Live Chat",
+    "chatEmptyLive": "Be the first to chat!",
+    "chatEmptyOffline": "Chat unavailable while offline",
+    "messagePlaceholder": "Send a message…",
+    "chatDisabled": "Chat is disabled for this stream"
   }
 }

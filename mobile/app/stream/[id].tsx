@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { useState, useEffect, useRef, type ReactNode } from 'react';
 import { useQuery, useMutation, useSubscription } from '@apollo/client';
 import {
@@ -90,6 +91,7 @@ function VideoArea({
 }) {
   const c = useColors();
   const styles = useThemedStyles(makeStyles);
+  const { t } = useTranslation();
   const hasVideo = !!children;
 
   return (
@@ -123,7 +125,7 @@ function VideoArea({
                 : <IconVideoOff size={36} color="rgba(255,255,255,0.2)" />
               }
               <Text style={styles.videoLabel}>
-                {isLive ? 'Connecting…' : 'Stream offline'}
+                {isLive ? t('stream.connecting') : t('stream.offline')}
               </Text>
             </View>
           )}
@@ -324,6 +326,7 @@ function StreamInfo({
 }) {
   const c = useColors();
   const styles = useThemedStyles(makeStyles);
+  const { t } = useTranslation();
   const avatar = getMediaSource(channel.avatar);
   const stream = channel.stream;
   const isLive = stream?.isLive ?? false;
@@ -365,7 +368,7 @@ function StreamInfo({
             <ActivityIndicator size="small" color={isFollowing ? c.textPrimary : '#000'} />
           ) : (
             <Text style={[styles.followBtnText, isFollowing && styles.followBtnTextActive]}>
-              {isFollowing ? 'Following' : 'Follow'}
+              {isFollowing ? t('stream.following') : t('stream.follow')}
             </Text>
           )}
         </TouchableOpacity>
@@ -384,11 +387,12 @@ function StreamInfo({
 function ChatHeader({ count }: { count: number }) {
   const c = useColors();
   const styles = useThemedStyles(makeStyles);
+  const { t } = useTranslation();
   return (
     <View style={styles.chatHeader}>
       <View style={styles.chatHeaderLeft}>
         <IconUsers size={14} color={c.accent} />
-        <Text style={styles.chatHeaderText}>Live Chat</Text>
+        <Text style={styles.chatHeaderText}>{t('stream.liveChat')}</Text>
       </View>
       <View style={styles.chatHeaderRight}>
         <IconEye size={12} color={c.textMuted} />
@@ -431,6 +435,7 @@ export default function StreamViewerScreen() {
   const router = useRouter();
   const isAuthenticated = useAuthStore(s => s.isAuthenticated);
 
+  const { t } = useTranslation();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [text, setText] = useState('');
   const listRef = useRef<FlatList>(null);
@@ -573,7 +578,7 @@ export default function StreamViewerScreen() {
                 renderItem={({ item }) => <ChatMsg msg={item} />}
                 ListEmptyComponent={
                   <Text style={styles.chatEmpty}>
-                    {isLive ? 'Be the first to chat!' : 'Chat unavailable while offline'}
+                    {isLive ? t('stream.chatEmptyLive') : t('stream.chatEmptyOffline')}
                   </Text>
                 }
               />
@@ -584,7 +589,7 @@ export default function StreamViewerScreen() {
                     style={styles.input}
                     value={text}
                     onChangeText={setText}
-                    placeholder="Send a message…"
+                    placeholder={t('stream.messagePlaceholder')}
                     placeholderTextColor={c.textMuted}
                     onSubmitEditing={onSend}
                     returnKeyType="send"
@@ -606,7 +611,7 @@ export default function StreamViewerScreen() {
             </>
           ) : (
             <View style={styles.center}>
-              <Text style={styles.chatDisabledText}>Chat is disabled for this stream</Text>
+              <Text style={styles.chatDisabledText}>{t('stream.chatDisabled')}</Text>
             </View>
           )}
         </KeyboardAvoidingView>

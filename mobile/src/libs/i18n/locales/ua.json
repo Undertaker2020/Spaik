@@ -357,5 +357,16 @@
       "bannerPermissionMsg": "Надайте доступ до галереї, щоб встановити банер.",
       "uploadFailed": "Не вдалося завантажити"
     }
+  },
+  "stream": {
+    "connecting": "Підключення…",
+    "offline": "Трансляція офлайн",
+    "follow": "Підписатися",
+    "following": "Ви підписані",
+    "liveChat": "Чат наживо",
+    "chatEmptyLive": "Будьте першим у чаті!",
+    "chatEmptyOffline": "Чат недоступний поза ефіром",
+    "messagePlaceholder": "Напишіть повідомлення…",
+    "chatDisabled": "Чат вимкнено для цієї трансляції"
   }
 }
