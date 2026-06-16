@@ -20,6 +20,7 @@ import { useColors, useThemedStyles } from '@/src/libs/theme/use-theme';
 import type { Palette } from '@/src/libs/theme/palettes';
 import { CategoryPill } from '@/src/components/ui/CategoryPill';
 import { Avatar } from '@/src/components/ui/Avatar';
+import { LiveBadge } from '@/src/components/ui/LiveBadge';
 import { getMediaSource } from '@/src/libs/utils/get-media-source';
 import {
   FIND_ALL_STREAMS,
@@ -63,12 +64,7 @@ function StreamCard({ stream, onPress }: { stream: StreamItem; onPress: () => vo
 
         {/* Top badges */}
         <View style={styles.thumbTop}>
-          {stream.isLive && (
-            <View style={styles.liveBadge}>
-              <View style={styles.liveDot} />
-              <Text style={styles.liveBadgeText}>LIVE</Text>
-            </View>
-          )}
+          {stream.isLive && <LiveBadge size="sm" />}
           {stream.category && (
             <View style={styles.catBadge}>
               <Text style={styles.catBadgeText} numberOfLines={1}>{stream.category.title}</Text>
@@ -339,13 +335,6 @@ const makeStyles = (c: Palette) =>
     flexDirection: 'row', alignItems: 'flex-start',
     justifyContent: 'space-between', gap: 4,
   },
-  liveBadge: {
-    flexDirection: 'row', alignItems: 'center', gap: 4,
-    backgroundColor: c.live,
-    borderRadius: 5, paddingHorizontal: 6, paddingVertical: 3,
-  },
-  liveDot:       { width: 5, height: 5, borderRadius: 3, backgroundColor: '#fff' },
-  liveBadgeText: { color: '#fff', fontSize: 9, fontWeight: '800', letterSpacing: 0.4 },
   catBadge: {
     backgroundColor: 'rgba(0,0,0,0.55)',
     borderRadius: 5, paddingHorizontal: 6, paddingVertical: 3,

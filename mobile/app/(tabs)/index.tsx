@@ -24,6 +24,7 @@ import { useColors, useThemedStyles } from '@/src/libs/theme/use-theme';
 import type { Palette } from '@/src/libs/theme/palettes';
 import { CategoryPill } from '@/src/components/ui/CategoryPill';
 import { Avatar } from '@/src/components/ui/Avatar';
+import { LiveBadge } from '@/src/components/ui/LiveBadge';
 import { getMediaSource } from '@/src/libs/utils/get-media-source';
 import {
   FIND_RANDOM_STREAMS,
@@ -69,10 +70,7 @@ function FeaturedCard({ stream, onPress }: { stream: StreamItem; onPress: () => 
 
       {/* LIVE badge */}
       {stream.isLive && (
-        <View style={styles.featuredLive}>
-          <View style={styles.liveDot} />
-          <Text style={styles.liveBadgeText}>LIVE</Text>
-        </View>
+        <LiveBadge size="md" style={styles.featuredLive} />
       )}
 
       {/* Category top-right */}
@@ -124,10 +122,7 @@ function RecCard({ stream, onPress }: { stream: StreamItem; onPress: () => void 
           style={styles.recGrad}
         />
         {stream.isLive && (
-          <View style={styles.recLive}>
-            <View style={styles.liveDot} />
-            <Text style={styles.liveBadgeText}>LIVE</Text>
-          </View>
+          <LiveBadge size="md" style={styles.recLive} />
         )}
         <View style={styles.recBottom}>
           <Avatar
@@ -404,8 +399,6 @@ const makeStyles = (c: Palette) =>
     backgroundColor: c.live, borderRadius: 6,
     paddingHorizontal: 9, paddingVertical: 4,
   },
-  liveDot:       { width: 6, height: 6, borderRadius: 3, backgroundColor: '#fff' },
-  liveBadgeText: { color: '#fff', fontSize: 10, fontWeight: '800', letterSpacing: 0.4 },
   featuredCat: {
     position: 'absolute', top: 12, right: 12,
     backgroundColor: 'rgba(0,0,0,0.5)', borderRadius: 6,

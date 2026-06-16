@@ -20,6 +20,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useColors, useThemedStyles } from '@/src/libs/theme/use-theme';
 import type { Palette } from '@/src/libs/theme/palettes';
 import { Avatar } from '@/src/components/ui/Avatar';
+import { LiveBadge } from '@/src/components/ui/LiveBadge';
 import { getMediaSource } from '@/src/libs/utils/get-media-source';
 import {
   FIND_MY_FOLLOWINGS,
@@ -82,10 +83,7 @@ function LiveCard({ channel }: { channel: FollowingChannel }) {
       />
 
       {/* LIVE badge */}
-      <View style={styles.liveBadge}>
-        <View style={styles.liveDot} />
-        <Text style={styles.liveBadgeText}>LIVE</Text>
-      </View>
+      <LiveBadge size="md" style={styles.liveBadge} />
 
       {/* Category */}
       {channel.stream?.category && (
@@ -322,8 +320,6 @@ const makeStyles = (c: Palette) =>
     backgroundColor: c.live, borderRadius: 6,
     paddingHorizontal: 9, paddingVertical: 4,
   },
-  liveDot:       { width: 6, height: 6, borderRadius: 3, backgroundColor: '#fff' },
-  liveBadgeText: { color: '#fff', fontSize: 10, fontWeight: '800', letterSpacing: 0.4 },
 
   catBadge: {
     position: 'absolute', top: 11, right: 11,
