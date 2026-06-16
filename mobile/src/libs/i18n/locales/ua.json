@@ -297,5 +297,30 @@
       "createIngressTitle": "Створити WHIP-вхід",
       "createIngressMsg": "Це скине поточний ключ трансляції та URL сервера. Продовжити?"
     }
+  },
+  "dashboard": {
+    "title": "Панель",
+    "liveBanner": "Трансляція наживо",
+    "offlineBanner": "Трансляція офлайн",
+    "stats": {
+      "messages": "Повідомлення",
+      "status": "Статус",
+      "category": "Категорія"
+    },
+    "statusLive": "Наживо",
+    "statusOffline": "Офлайн",
+    "streamInfo": "Інформація про стрім",
+    "edit": "Редагувати",
+    "titleLabel": "Назва",
+    "titlePlaceholder": "Назва трансляції…",
+    "categoryLabel": "Категорія",
+    "selectCategory": "Оберіть категорію",
+    "saveChanges": "Зберегти зміни",
+    "chatSettings": "Налаштування чату",
+    "enableChat": "Увімкнути чат",
+    "followersOnly": "Лише підписники",
+    "sponsorsOnly": "Лише спонсори",
+    "liveChat": "Чат наживо",
+    "noMessages": "Поки що немає повідомлень"
   }
 }

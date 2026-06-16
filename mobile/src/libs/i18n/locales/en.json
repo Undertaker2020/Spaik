@@ -297,5 +297,30 @@
       "createIngressTitle": "Create WHIP Ingress",
       "createIngressMsg": "This will reset your current stream key and server URL. Continue?"
     }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "liveBanner": "Stream is Live",
+    "offlineBanner": "Stream is Offline",
+    "stats": {
+      "messages": "Messages",
+      "status": "Status",
+      "category": "Category"
+    },
+    "statusLive": "Live",
+    "statusOffline": "Offline",
+    "streamInfo": "Stream Info",
+    "edit": "Edit",
+    "titleLabel": "Title",
+    "titlePlaceholder": "Stream title…",
+    "categoryLabel": "Category",
+    "selectCategory": "Select category",
+    "saveChanges": "Save Changes",
+    "chatSettings": "Chat Settings",
+    "enableChat": "Enable chat",
+    "followersOnly": "Followers only",
+    "sponsorsOnly": "Sponsors only",
+    "liveChat": "Live Chat",
+    "noMessages": "No messages yet"
   }
 }

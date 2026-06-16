@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useSubscription } from '@apollo/client';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -74,6 +75,7 @@ export default function DashboardScreen() {
   const router = useRouter();
   const c = useColors();
   const styles = useThemedStyles(makeStyles);
+  const { t } = useTranslation();
 
   const { data: profileData, loading, refetch } = useQuery<{
     findProfile: { id: string; stream: StreamSettings };
@@ -131,7 +133,7 @@ export default function DashboardScreen() {
 
   const [changeInfo, { loading: savingInfo }] = useMutation(CHANGE_STREAM_INFO, {
     onCompleted: () => { setEditing(false); refetch(); },
-    onError: (e) => Alert.alert('Error', e.message),
+    onError: (e) => Alert.alert(t('common.errorTitle'), e.message),
   });
 
   // ── Chat settings ─────────────────────────────────────────
@@ -149,7 +151,7 @@ export default function DashboardScreen() {
   }, [stream]);
 
   const [changeChatSettings, { loading: savingChat }] = useMutation(CHANGE_CHAT_SETTINGS, {
-    onError: (e) => Alert.alert('Error', e.message),
+    onError: (e) => Alert.alert(t('common.errorTitle'), e.message),
   });
 
   function saveChatSetting(field: 'chat' | 'followers' | 'premium', value: boolean) {
@@ -181,7 +183,7 @@ export default function DashboardScreen() {
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} activeOpacity={0.7}>
           <IconArrowLeft size={20} color={c.textPrimary} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Dashboard</Text>
+        <Text style={styles.headerTitle}>{t('dashboard.title')}</Text>
         {isLive ? (
           <View style={styles.livePill}>
             <View style={styles.liveDot} />
@@ -202,31 +204,31 @@ export default function DashboardScreen() {
           >
             <IconBroadcast size={20} color={c.live} />
             <View style={styles.bannerInfo}>
-              <Text style={styles.bannerTitle}>Stream is Live</Text>
+              <Text style={styles.bannerTitle}>{t('dashboard.liveBanner')}</Text>
               <Text style={styles.bannerSub} numberOfLines={1}>{stream?.title}</Text>
             </View>
           </LinearGradient>
         ) : (
           <View style={styles.offlineBanner}>
             <IconBroadcast size={20} color={c.textMuted} />
-            <Text style={styles.offlineText}>Stream is Offline</Text>
+            <Text style={styles.offlineText}>{t('dashboard.offlineBanner')}</Text>
           </View>
         )}
 
         {/* ── Stats ── */}
         <View style={styles.statsRow}>
           <StatCard
-            label="Messages"
+            label={t('dashboard.stats.messages')}
             value={messages.length}
             icon={<IconMessage2 size={18} color={c.accent} />}
           />
           <StatCard
-            label="Status"
-            value={isLive ? 'Live' : 'Offline'}
+            label={t('dashboard.stats.status')}
+            value={isLive ? t('dashboard.statusLive') : t('dashboard.statusOffline')}
             icon={<IconBroadcast size={18} color={isLive ? c.live : c.textMuted} />}
           />
           <StatCard
-            label="Category"
+            label={t('dashboard.stats.category')}
             value={stream?.category?.title ?? '—'}
             icon={<IconSettings size={18} color={c.accent} />}
           />
@@ -235,30 +237,30 @@ export default function DashboardScreen() {
         {/* ── Stream info ── */}
         <View style={styles.card}>
           <View style={styles.cardHeader}>
-            <Text style={styles.cardTitle}>Stream Info</Text>
+            <Text style={styles.cardTitle}>{t('dashboard.streamInfo')}</Text>
             <TouchableOpacity onPress={() => setEditing(e => !e)} style={styles.editBtn} activeOpacity={0.7}>
               <IconEdit size={15} color={c.accent} />
-              <Text style={styles.editBtnText}>{editing ? 'Cancel' : 'Edit'}</Text>
+              <Text style={styles.editBtnText}>{editing ? t('common.cancel') : t('dashboard.edit')}</Text>
             </TouchableOpacity>
           </View>
 
           {editing ? (
             <>
-              <Text style={styles.fieldLabel}>Title</Text>
+              <Text style={styles.fieldLabel}>{t('dashboard.titleLabel')}</Text>
               <TextInput
                 style={[styles.input, { color: c.textPrimary }]}
                 value={title}
                 onChangeText={setTitle}
-                placeholder="Stream title…"
+                placeholder={t('dashboard.titlePlaceholder')}
                 placeholderTextColor={c.textMuted}
                 maxLength={100}
                 selectionColor={c.accent}
               />
 
-              <Text style={styles.fieldLabel}>Category</Text>
+              <Text style={styles.fieldLabel}>{t('dashboard.categoryLabel')}</Text>
               <TouchableOpacity style={styles.picker} onPress={() => setCatOpen(o => !o)} activeOpacity={0.8}>
                 <Text style={[styles.pickerText, !selectedCat && styles.pickerPlaceholder]}>
-                  {selectedCat?.title ?? 'Select category'}
+                  {selectedCat?.title ?? t('dashboard.selectCategory')}
                 </Text>
                 <IconChevronDown size={15} color={c.textSecondary} />
               </TouchableOpacity>
@@ -289,32 +291,32 @@ export default function DashboardScreen() {
               >
                 {savingInfo
                   ? <ActivityIndicator size="small" color="#000" />
-                  : <Text style={styles.saveBtnText}>Save Changes</Text>
+                  : <Text style={styles.saveBtnText}>{t('dashboard.saveChanges')}</Text>
                 }
               </TouchableOpacity>
             </>
           ) : (
             <View style={styles.infoRows}>
-              <InfoRow label="Title"    value={stream?.title ?? '—'} />
-              <InfoRow label="Category" value={stream?.category?.title ?? '—'} />
+              <InfoRow label={t('dashboard.titleLabel')}    value={stream?.title ?? '—'} />
+              <InfoRow label={t('dashboard.categoryLabel')} value={stream?.category?.title ?? '—'} />
             </View>
           )}
         </View>
 
         {/* ── Chat settings ── */}
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>Chat Settings</Text>
+          <Text style={styles.cardTitle}>{t('dashboard.chatSettings')}</Text>
 
           <ToggleRow
             icon={<IconMessageCircle size={16} color={c.textSecondary} />}
-            label="Enable chat"
+            label={t('dashboard.enableChat')}
             value={chatEnabled}
             onChange={v => saveChatSetting('chat', v)}
             loading={savingChat}
           />
           <ToggleRow
             icon={<IconUsers size={16} color={c.textSecondary} />}
-            label="Followers only"
+            label={t('dashboard.followersOnly')}
             value={followersOnly}
             onChange={v => saveChatSetting('followers', v)}
             disabled={!chatEnabled}
@@ -322,7 +324,7 @@ export default function DashboardScreen() {
           />
           <ToggleRow
             icon={<IconCrown size={16} color={c.textSecondary} />}
-            label="Sponsors only"
+            label={t('dashboard.sponsorsOnly')}
             value={premiumOnly}
             onChange={v => saveChatSetting('premium', v)}
             disabled={!chatEnabled}
@@ -334,14 +336,14 @@ export default function DashboardScreen() {
         {isLive && (
           <View style={styles.card}>
             <View style={styles.cardHeader}>
-              <Text style={styles.cardTitle}>Live Chat</Text>
+              <Text style={styles.cardTitle}>{t('dashboard.liveChat')}</Text>
               <View style={styles.chatCountBadge}>
                 <Text style={styles.chatCountText}>{messages.length}</Text>
               </View>
             </View>
 
             {messages.length === 0 ? (
-              <Text style={styles.emptyChat}>No messages yet</Text>
+              <Text style={styles.emptyChat}>{t('dashboard.noMessages')}</Text>
             ) : (
               <FlatList
                 data={[...messages].reverse()}
