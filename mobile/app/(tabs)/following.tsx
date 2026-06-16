@@ -11,8 +11,9 @@ import {
   Dimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useCallback } from 'react';
 import { useQuery } from '@apollo/client';
-import { useRouter } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { IconBadge, IconUsers } from '@tabler/icons-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -177,9 +178,17 @@ export default function FollowingScreen() {
   const c = useColors();
   const styles = useThemedStyles(makeStyles);
   const { t } = useTranslation();
-  const { data, loading, error, refetch } = useQuery<{ findMyFollowings: FollowItem[] }>(
+  const { data, loading, error, refetch, startPolling, stopPolling } = useQuery<{ findMyFollowings: FollowItem[] }>(
     FIND_MY_FOLLOWINGS,
     { fetchPolicy: 'cache-and-network' }
+  );
+
+  // Auto-refresh followed channels' live status while focused (paused on blur).
+  useFocusEffect(
+    useCallback(() => {
+      startPolling(15000);
+      return () => stopPolling();
+    }, [startPolling, stopPolling]),
   );
 
   const followings = data?.findMyFollowings ?? [];

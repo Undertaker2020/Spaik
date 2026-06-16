@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState, useCallback } from 'react';
-import { useRouter } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@apollo/client';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -205,11 +205,20 @@ export default function HomeScreen() {
 
   const categoryFilter = activeCategory === 'All' ? undefined : activeCategory;
 
-  const { data: streamsData, loading: streamsLoading, refetch: refetchStreams } = useQuery<{
+  const { data: streamsData, loading: streamsLoading, refetch: refetchStreams, startPolling, stopPolling } = useQuery<{
     findRandomStreams: StreamItem[];
   }>(FIND_RANDOM_STREAMS, {
     variables: { filters: categoryFilter ? { categoryName: categoryFilter } : {} },
   });
+
+  // Auto-refresh live status while the tab is focused (paused on blur to save
+  // battery/network). Picks up streams going live/offline without a manual pull.
+  useFocusEffect(
+    useCallback(() => {
+      startPolling(15000);
+      return () => stopPolling();
+    }, [startPolling, stopPolling]),
+  );
 
   const { data: categoriesData, refetch: refetchCategories } = useQuery<{
     findRandomCategories: CategoryItem[];

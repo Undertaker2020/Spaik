@@ -338,7 +338,7 @@ export default function ChannelScreen() {
 
   const { data, loading, error, refetch: refetchChannel } = useQuery<{
     findChannelByUsername: ChannelInfo;
-  }>(FIND_CHANNEL_BY_USERNAME, { variables: { username } });
+  }>(FIND_CHANNEL_BY_USERNAME, { variables: { username }, pollInterval: 15000 });
 
   const { data: profileData } = useQuery<{ findProfile: MyProfile }>(
     FIND_MY_PROFILE,
