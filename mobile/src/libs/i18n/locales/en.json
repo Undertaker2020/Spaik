@@ -18,7 +18,10 @@
     "remove": "Remove",
     "generate": "Generate",
     "disable": "Disable",
-    "all": "All"
+    "all": "All",
+    "create": "Create",
+    "show": "Show",
+    "hide": "Hide"
   },
   "nav": {
     "home": "Home",
@@ -258,6 +261,41 @@
     "empty": {
       "title": "Nobody here yet",
       "sub": "Follow channels you like\nand they'll appear here"
+    }
+  },
+  "goLive": {
+    "title": "Go Live",
+    "dashboard": "Dashboard",
+    "startingCamera": "Starting camera…",
+    "endStream": "End Stream",
+    "broadcastFromPhone": "Broadcast live from your phone",
+    "goLiveBtn": "Go Live",
+    "orUseKeys": "or use the stream keys below with OBS",
+    "streamInfo": "Stream Info",
+    "titleLabel": "Title",
+    "titlePlaceholder": "Add a title for your stream...",
+    "categoryLabel": "Category",
+    "selectCategory": "Select category",
+    "selectCategoryTitle": "Select Category",
+    "chatSettings": "Chat Settings",
+    "enableChat": "Enable chat",
+    "followersOnly": "Followers only",
+    "subscribersOnly": "Subscribers only",
+    "streamKeys": "Stream Keys",
+    "newIngress": "New Ingress",
+    "serverUrl": "Server URL",
+    "streamKey": "Stream Key",
+    "createIngress": "Create WHIP Ingress",
+    "saveSettings": "Save Settings",
+    "savedBtn": "Saved!",
+    "alerts": {
+      "addCategoryTitle": "Add a category",
+      "addCategoryMsg": "Select a category before going live.",
+      "permissionsTitle": "Permissions required",
+      "permissionsMsg": "Camera and microphone access are needed to go live.",
+      "startFailed": "Could not start the stream. Try again.",
+      "createIngressTitle": "Create WHIP Ingress",
+      "createIngressMsg": "This will reset your current stream key and server URL. Continue?"
     }
   }
 }

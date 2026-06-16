@@ -17,6 +17,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { useQuery, useMutation } from '@apollo/client';
 import {
   LiveKitRoom,
@@ -88,6 +89,7 @@ function KeyField({ label, value, icon: Icon }: {
 }) {
   const c = useColors();
   const styles = useThemedStyles(makeStyles);
+  const { t } = useTranslation();
   const [visible, setVisible] = useState(false);
   const display = value ?? '—';
   const masked = value ? '•'.repeat(Math.min(value.length, 24)) : '—';
@@ -103,7 +105,7 @@ function KeyField({ label, value, icon: Icon }: {
           {visible ? display : masked}
         </Text>
         <TouchableOpacity onPress={() => setVisible(v => !v)} style={styles.copyBtn} activeOpacity={0.7}>
-          <Text style={styles.toggleText}>{visible ? 'Hide' : 'Show'}</Text>
+          <Text style={styles.toggleText}>{visible ? t('common.hide') : t('common.show')}</Text>
         </TouchableOpacity>
         {value && <CopyButton value={value} />}
       </View>
@@ -120,6 +122,7 @@ function CategoryPicker({ categories, selectedId, onSelect }: {
 }) {
   const c = useColors();
   const styles = useThemedStyles(makeStyles);
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const selected = categories.find(c => c.id === selectedId);
 
@@ -127,7 +130,7 @@ function CategoryPicker({ categories, selectedId, onSelect }: {
     <>
       <TouchableOpacity style={styles.picker} onPress={() => setOpen(true)} activeOpacity={0.8}>
         <Text style={[styles.pickerText, !selected && styles.pickerPlaceholder]}>
-          {selected?.title ?? 'Select category'}
+          {selected?.title ?? t('goLive.selectCategory')}
         </Text>
         <IconChevronDown size={16} color={c.textSecondary} />
       </TouchableOpacity>
@@ -136,7 +139,7 @@ function CategoryPicker({ categories, selectedId, onSelect }: {
         <TouchableOpacity style={styles.modalOverlay} onPress={() => setOpen(false)} activeOpacity={1}>
           <View style={styles.modalSheet}>
             <View style={styles.modalHandle} />
-            <Text style={styles.modalTitle}>Select Category</Text>
+            <Text style={styles.modalTitle}>{t('goLive.selectCategoryTitle')}</Text>
             <FlatList
               data={categories}
               keyExtractor={c => c.id}
@@ -165,6 +168,7 @@ function CategoryPicker({ categories, selectedId, onSelect }: {
 function BroadcastView({ onEnd, aspect }: { onEnd: () => void; aspect: '16:9' | '4:3' }) {
   const c = useColors();
   const styles = useThemedStyles(makeStyles);
+  const { t } = useTranslation();
   const tracks = useTracks([Track.Source.Camera]);
   const localCam = tracks.find(t => isTrackReference(t) && t.participant.isLocal);
   const { localParticipant } = useLocalParticipant();
@@ -183,7 +187,7 @@ function BroadcastView({ onEnd, aspect }: { onEnd: () => void; aspect: '16:9' | 
       ) : (
         <View style={[StyleSheet.absoluteFill, styles.broadcastConnecting]}>
           <ActivityIndicator color="#fff" />
-          <Text style={styles.cameraNote}>Starting camera…</Text>
+          <Text style={styles.cameraNote}>{t('goLive.startingCamera')}</Text>
         </View>
       )}
 
@@ -200,7 +204,7 @@ function BroadcastView({ onEnd, aspect }: { onEnd: () => void; aspect: '16:9' | 
         </TouchableOpacity>
         <TouchableOpacity onPress={onEnd} style={styles.endBtn} activeOpacity={0.85}>
           <IconPlayerStopFilled size={16} color="#fff" />
-          <Text style={styles.endBtnText}>End Stream</Text>
+          <Text style={styles.endBtnText}>{t('goLive.endStream')}</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -213,6 +217,7 @@ export default function GoLiveScreen() {
   const router = useRouter();
   const c = useColors();
   const styles = useThemedStyles(makeStyles);
+  const { t } = useTranslation();
   const [title, setTitle] = useState('');
   const [categoryId, setCategoryId] = useState('');
   const [isChatEnabled, setIsChatEnabled] = useState(true);
@@ -263,7 +268,7 @@ export default function GoLiveScreen() {
   const startBroadcast = async () => {
     if (!userId) return;
     if (!categoryId) {
-      Alert.alert('Add a category', 'Select a category before going live.');
+      Alert.alert(t('goLive.alerts.addCategoryTitle'), t('goLive.alerts.addCategoryMsg'));
       return;
     }
 
@@ -279,7 +284,7 @@ export default function GoLiveScreen() {
           res['android.permission.CAMERA'] === 'granted' &&
           res['android.permission.RECORD_AUDIO'] === 'granted';
         if (!granted) {
-          Alert.alert('Permissions required', 'Camera and microphone access are needed to go live.');
+          Alert.alert(t('goLive.alerts.permissionsTitle'), t('goLive.alerts.permissionsMsg'));
           return;
         }
       }
@@ -294,13 +299,13 @@ export default function GoLiveScreen() {
       const tokenRes = await generateToken({ variables: { data: { userId, channelId: userId, asHost: true } } });
       const token = tokenRes.data?.generateStreamToken?.token;
       if (!token) {
-        Alert.alert('Error', 'Could not start the stream. Try again.');
+        Alert.alert(t('common.errorTitle'), t('goLive.alerts.startFailed'));
         return;
       }
       setHostToken(token);
       setBroadcasting(true);
     } catch {
-      Alert.alert('Error', 'Could not start the stream. Try again.');
+      Alert.alert(t('common.errorTitle'), t('goLive.alerts.startFailed'));
     } finally {
       setStarting(false);
     }
@@ -326,12 +331,12 @@ export default function GoLiveScreen() {
 
   const onCreateIngress = () => {
     Alert.alert(
-      'Create WHIP Ingress',
-      'This will reset your current stream key and server URL. Continue?',
+      t('goLive.alerts.createIngressTitle'),
+      t('goLive.alerts.createIngressMsg'),
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: t('common.cancel'), style: 'cancel' },
         {
-          text: 'Create',
+          text: t('common.create'),
           style: 'destructive',
           onPress: async () => {
             await createIngress({ variables: { ingressType: 1 } });
@@ -345,7 +350,7 @@ export default function GoLiveScreen() {
   return (
     <SafeAreaView style={styles.root} edges={['top']}>
       <View style={styles.header}>
-        <Text style={styles.title}>Go Live</Text>
+        <Text style={styles.title}>{t('goLive.title')}</Text>
         <View style={styles.headerRight}>
           {stream?.isLive && (
             <View style={styles.livePill}>
@@ -358,7 +363,7 @@ export default function GoLiveScreen() {
             onPress={() => router.push('/dashboard' as any)}
             activeOpacity={0.75}
           >
-            <Text style={styles.dashBtnText}>Dashboard</Text>
+            <Text style={styles.dashBtnText}>{t('goLive.dashboard')}</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -386,7 +391,7 @@ export default function GoLiveScreen() {
           ) : (
             <View style={styles.cameraPlaceholder}>
               <IconVideo size={36} color={c.textMuted} />
-              <Text style={styles.cameraNote}>Broadcast live from your phone</Text>
+              <Text style={styles.cameraNote}>{t('goLive.broadcastFromPhone')}</Text>
 
               <View style={styles.aspectRow}>
                 {(['16:9', '4:3'] as const).map(a => (
@@ -409,27 +414,27 @@ export default function GoLiveScreen() {
               >
                 {starting
                   ? <ActivityIndicator size="small" color="#000" />
-                  : <Text style={styles.goLiveBtnText}>Go Live</Text>}
+                  : <Text style={styles.goLiveBtnText}>{t('goLive.goLiveBtn')}</Text>}
               </TouchableOpacity>
-              <Text style={styles.cameraNoteSub}>or use the stream keys below with OBS</Text>
+              <Text style={styles.cameraNoteSub}>{t('goLive.orUseKeys')}</Text>
             </View>
           )}
 
           {/* Stream Info */}
           <View style={styles.card}>
-            <Text style={styles.cardTitle}>Stream Info</Text>
+            <Text style={styles.cardTitle}>{t('goLive.streamInfo')}</Text>
 
-            <Text style={styles.fieldLabel}>Title</Text>
+            <Text style={styles.fieldLabel}>{t('goLive.titleLabel')}</Text>
             <TextInput
               style={styles.input}
               value={title}
               onChangeText={setTitle}
-              placeholder="Add a title for your stream..."
+              placeholder={t('goLive.titlePlaceholder')}
               placeholderTextColor={c.textMuted}
               maxLength={100}
             />
 
-            <Text style={styles.fieldLabel}>Category</Text>
+            <Text style={styles.fieldLabel}>{t('goLive.categoryLabel')}</Text>
             <CategoryPicker
               categories={categories}
               selectedId={categoryId}
@@ -439,12 +444,12 @@ export default function GoLiveScreen() {
 
           {/* Chat settings */}
           <View style={styles.card}>
-            <Text style={styles.cardTitle}>Chat Settings</Text>
+            <Text style={styles.cardTitle}>{t('goLive.chatSettings')}</Text>
 
             <View style={styles.toggle}>
               <View style={styles.toggleLeft}>
                 <IconMessageCircle size={16} color={c.textSecondary} />
-                <Text style={styles.toggleLabel}>Enable chat</Text>
+                <Text style={styles.toggleLabel}>{t('goLive.enableChat')}</Text>
               </View>
               <Switch
                 value={isChatEnabled}
@@ -457,7 +462,7 @@ export default function GoLiveScreen() {
             <View style={styles.toggle}>
               <View style={styles.toggleLeft}>
                 <IconUsers size={16} color={c.textSecondary} />
-                <Text style={styles.toggleLabel}>Followers only</Text>
+                <Text style={styles.toggleLabel}>{t('goLive.followersOnly')}</Text>
               </View>
               <Switch
                 value={isChatFollowersOnly}
@@ -471,7 +476,7 @@ export default function GoLiveScreen() {
             <View style={styles.toggle}>
               <View style={styles.toggleLeft}>
                 <IconCrown size={16} color={c.textSecondary} />
-                <Text style={styles.toggleLabel}>Subscribers only</Text>
+                <Text style={styles.toggleLabel}>{t('goLive.subscribersOnly')}</Text>
               </View>
               <Switch
                 value={isChatPremiumFollowersOnly}
@@ -486,7 +491,7 @@ export default function GoLiveScreen() {
           {/* Stream Keys */}
           <View style={styles.card}>
             <View style={styles.cardTitleRow}>
-              <Text style={styles.cardTitle}>Stream Keys</Text>
+              <Text style={styles.cardTitle}>{t('goLive.streamKeys')}</Text>
               <TouchableOpacity
                 onPress={onCreateIngress}
                 style={styles.refreshBtn}
@@ -497,16 +502,16 @@ export default function GoLiveScreen() {
                   ? <ActivityIndicator size="small" color={c.accent} />
                   : <IconRefresh size={16} color={c.accent} />
                 }
-                <Text style={styles.refreshBtnText}>New Ingress</Text>
+                <Text style={styles.refreshBtnText}>{t('goLive.newIngress')}</Text>
               </TouchableOpacity>
             </View>
 
-            <KeyField label="Server URL" value={stream?.serverUrl ?? null} icon={IconServer} />
-            <KeyField label="Stream Key" value={stream?.streamKey ?? null} icon={IconKey} />
+            <KeyField label={t('goLive.serverUrl')} value={stream?.serverUrl ?? null} icon={IconServer} />
+            <KeyField label={t('goLive.streamKey')} value={stream?.streamKey ?? null} icon={IconKey} />
 
             {!stream?.serverUrl && (
               <TouchableOpacity style={styles.createIngressBtn} onPress={onCreateIngress} activeOpacity={0.85}>
-                <Text style={styles.createIngressBtnText}>Create WHIP Ingress</Text>
+                <Text style={styles.createIngressBtnText}>{t('goLive.createIngress')}</Text>
               </TouchableOpacity>
             )}
           </View>
@@ -521,8 +526,8 @@ export default function GoLiveScreen() {
             {saving
               ? <ActivityIndicator size="small" color="#000" />
               : saved
-              ? <><IconCheck size={18} color="#000" /><Text style={styles.saveBtnText}>Saved!</Text></>
-              : <Text style={styles.saveBtnText}>Save Settings</Text>
+              ? <><IconCheck size={18} color="#000" /><Text style={styles.saveBtnText}>{t('goLive.savedBtn')}</Text></>
+              : <Text style={styles.saveBtnText}>{t('goLive.saveSettings')}</Text>
             }
           </TouchableOpacity>
 

@@ -18,7 +18,10 @@
     "remove": "Видалити",
     "generate": "Згенерувати",
     "disable": "Вимкнути",
-    "all": "Усі"
+    "all": "Усі",
+    "create": "Створити",
+    "show": "Показати",
+    "hide": "Сховати"
   },
   "nav": {
     "home": "Головна",
@@ -258,6 +261,41 @@
     "empty": {
       "title": "Тут поки що порожньо",
       "sub": "Підписуйтесь на канали, які вам до вподоби,\nі вони зʼявляться тут"
+    }
+  },
+  "goLive": {
+    "title": "Почати трансляцію",
+    "dashboard": "Панель",
+    "startingCamera": "Запуск камери…",
+    "endStream": "Завершити",
+    "broadcastFromPhone": "Транслюйте наживо з телефона",
+    "goLiveBtn": "В ефір",
+    "orUseKeys": "або використайте ключі трансляції нижче з OBS",
+    "streamInfo": "Інформація про стрім",
+    "titleLabel": "Назва",
+    "titlePlaceholder": "Додайте назву трансляції...",
+    "categoryLabel": "Категорія",
+    "selectCategory": "Оберіть категорію",
+    "selectCategoryTitle": "Оберіть категорію",
+    "chatSettings": "Налаштування чату",
+    "enableChat": "Увімкнути чат",
+    "followersOnly": "Лише підписники",
+    "subscribersOnly": "Лише спонсори",
+    "streamKeys": "Ключі трансляції",
+    "newIngress": "Новий вхід",
+    "serverUrl": "URL сервера",
+    "streamKey": "Ключ трансляції",
+    "createIngress": "Створити WHIP-вхід",
+    "saveSettings": "Зберегти налаштування",
+    "savedBtn": "Збережено!",
+    "alerts": {
+      "addCategoryTitle": "Додайте категорію",
+      "addCategoryMsg": "Оберіть категорію, перш ніж виходити в ефір.",
+      "permissionsTitle": "Потрібні дозволи",
+      "permissionsMsg": "Для виходу в ефір потрібен доступ до камери та мікрофона.",
+      "startFailed": "Не вдалося почати трансляцію. Спробуйте ще раз.",
+      "createIngressTitle": "Створити WHIP-вхід",
+      "createIngressMsg": "Це скине поточний ключ трансляції та URL сервера. Продовжити?"
     }
   }
 }
