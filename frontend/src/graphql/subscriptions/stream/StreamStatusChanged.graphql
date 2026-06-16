@@ -1,0 +1,6 @@
+subscription StreamStatusChanged($channelId: String!) {
+	streamStatusChanged(channelId: $channelId) {
+		channelId
+		isLive
+	}
+}

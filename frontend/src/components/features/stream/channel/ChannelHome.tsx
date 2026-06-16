@@ -2,7 +2,7 @@
 
 import { Play, Radio } from 'lucide-react'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { AboutChannel } from '@/components/features/stream/overview/info/AboutChannel'
 import { FollowButton } from '@/components/features/stream/overview/info/FollowButton'
@@ -13,7 +13,8 @@ import { ChannelVerified } from '@/components/ui/elements/ChannelVerified'
 
 import {
 	type FindChannelByUsernameQuery,
-	useFindFollowersCountByChannelQuery
+	useFindFollowersCountByChannelQuery,
+	useStreamStatusChangedSubscription
 } from '@/graphql/generated/output'
 
 import { getMediaSource } from '@/utils/get-media-source'
@@ -29,8 +30,20 @@ interface ChannelHomeProps {
 export function ChannelHome({ channel }: ChannelHomeProps) {
 	const [tab, setTab] = useState<Tab>('Home')
 
-	const isLive = channel.stream?.isLive ?? false
+	// Live status comes from the server-rendered snapshot; keep it in sync in
+	// real time so the channel goes live/offline here without a page refresh.
+	const [isLive, setIsLive] = useState(channel.stream?.isLive ?? false)
 	const thumbnail = channel.stream?.thumbnailUrl
+
+	const { data: statusData } = useStreamStatusChangedSubscription({
+		variables: { channelId: channel.id }
+	})
+
+	useEffect(() => {
+		if (statusData?.streamStatusChanged) {
+			setIsLive(statusData.streamStatusChanged.isLive)
+		}
+	}, [statusData])
 
 	const { data: followersData } = useFindFollowersCountByChannelQuery({
 		variables: { channelId: channel.id }
