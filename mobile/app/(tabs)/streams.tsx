@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useQuery } from '@apollo/client';
 import { LinearGradient } from 'expo-linear-gradient';
 import { IconSearch, IconX, IconDeviceTv } from '@tabler/icons-react-native';
@@ -114,6 +115,7 @@ function StreamCard({ stream, onPress }: { stream: StreamItem; onPress: () => vo
 function EmptyState({ loading, hasSearch }: { loading: boolean; hasSearch: boolean }) {
   const c = useColors();
   const styles = useThemedStyles(makeStyles);
+  const { t } = useTranslation();
   if (loading) return (
     <View style={styles.center}>
       <ActivityIndicator size="large" color={c.accent} />
@@ -125,10 +127,10 @@ function EmptyState({ loading, hasSearch }: { loading: boolean; hasSearch: boole
         <IconDeviceTv size={28} color={c.textMuted} strokeWidth={1.4} />
       </View>
       <Text style={styles.emptyTitle}>
-        {hasSearch ? 'No streams found' : 'No streams yet'}
+        {hasSearch ? t('streams.found.title') : t('streams.empty.title')}
       </Text>
       <Text style={styles.emptySub}>
-        {hasSearch ? 'Try a different search term' : 'Check back soon'}
+        {hasSearch ? t('streams.found.sub') : t('streams.empty.sub')}
       </Text>
     </View>
   );
@@ -140,6 +142,7 @@ export default function StreamsScreen() {
   const router = useRouter();
   const c = useColors();
   const styles = useThemedStyles(makeStyles);
+  const { t } = useTranslation();
   const [search,         setSearch]         = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
   const [allStreams,     setAllStreams]      = useState<StreamItem[]>([]);
@@ -216,11 +219,11 @@ export default function StreamsScreen() {
     <SafeAreaView style={styles.root} edges={['top']}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.title}>Streams</Text>
+        <Text style={styles.title}>{t('streams.title')}</Text>
         {liveCount > 0 && (
           <View style={styles.liveCount}>
             <View style={styles.liveCountDot} />
-            <Text style={styles.liveCountText}>{liveCount} live</Text>
+            <Text style={styles.liveCountText}>{t('streams.liveCount', { count: liveCount })}</Text>
           </View>
         )}
       </View>
@@ -230,7 +233,7 @@ export default function StreamsScreen() {
         <IconSearch size={16} color={c.textMuted} />
         <TextInput
           style={styles.searchInput}
-          placeholder="Search streams…"
+          placeholder={t('streams.searchPlaceholder')}
           placeholderTextColor={c.textMuted}
           value={search}
           onChangeText={onSearch}
@@ -254,7 +257,7 @@ export default function StreamsScreen() {
         style={styles.pillsRow}
         renderItem={({ item }) => (
           <CategoryPill
-            label={item}
+            label={item === 'All' ? t('common.all') : item}
             active={activeCategory === item}
             onPress={() => onCategoryChange(item)}
           />

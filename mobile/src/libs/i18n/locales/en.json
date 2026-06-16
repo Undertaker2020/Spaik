@@ -17,7 +17,8 @@
     "validation": "Validation",
     "remove": "Remove",
     "generate": "Generate",
-    "disable": "Disable"
+    "disable": "Disable",
+    "all": "All"
   },
   "nav": {
     "home": "Home",
@@ -228,6 +229,35 @@
       "minutes": "{{n}}m ago",
       "hours": "{{n}}h ago",
       "days": "{{n}}d ago"
+    }
+  },
+  "home": {
+    "featured": "Featured",
+    "recommended": "Recommended",
+    "categories": "Categories",
+    "seeAll": "See all"
+  },
+  "streams": {
+    "title": "Streams",
+    "liveCount": "{{count}} live",
+    "searchPlaceholder": "Search streams…",
+    "found": {
+      "title": "No streams found",
+      "sub": "Try a different search term"
+    },
+    "empty": {
+      "title": "No streams yet",
+      "sub": "Check back soon"
+    }
+  },
+  "following": {
+    "title": "Following",
+    "liveNow": "Live Now",
+    "offline": "Offline",
+    "liveStreamFallback": "Live stream",
+    "empty": {
+      "title": "Nobody here yet",
+      "sub": "Follow channels you like\nand they'll appear here"
     }
   }
 }

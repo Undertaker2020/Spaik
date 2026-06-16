@@ -13,6 +13,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useQuery } from '@apollo/client';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { IconBadge, IconUsers } from '@tabler/icons-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useColors, useThemedStyles } from '@/src/libs/theme/use-theme';
@@ -52,6 +53,7 @@ function LiveCard({ channel }: { channel: FollowingChannel }) {
   const router    = useRouter();
   const c = useColors();
   const styles = useThemedStyles(makeStyles);
+  const { t } = useTranslation();
   const thumb     = getMediaSource(channel.stream?.thumbnailUrl ?? null);
   const avatar    = getMediaSource(channel.avatar);
 
@@ -109,7 +111,7 @@ function LiveCard({ channel }: { channel: FollowingChannel }) {
               {channel.isVerified && <IconBadge size={12} color={c.accent} />}
             </View>
             <Text style={styles.liveStreamTitle} numberOfLines={1}>
-              {channel.stream?.title ?? 'Live stream'}
+              {channel.stream?.title ?? t('following.liveStreamFallback')}
             </Text>
           </View>
         </View>
@@ -156,13 +158,14 @@ function OfflineCard({ channel }: { channel: FollowingChannel }) {
 function EmptyState() {
   const c = useColors();
   const styles = useThemedStyles(makeStyles);
+  const { t } = useTranslation();
   return (
     <View style={styles.empty}>
       <View style={styles.emptyIconWrap}>
         <IconUsers size={34} color={c.textMuted} strokeWidth={1.2} />
       </View>
-      <Text style={styles.emptyTitle}>Nobody here yet</Text>
-      <Text style={styles.emptySub}>Follow channels you like{'\n'}and they'll appear here</Text>
+      <Text style={styles.emptyTitle}>{t('following.empty.title')}</Text>
+      <Text style={styles.emptySub}>{t('following.empty.sub')}</Text>
     </View>
   );
 }
@@ -173,6 +176,7 @@ export default function FollowingScreen() {
   const router = useRouter();
   const c = useColors();
   const styles = useThemedStyles(makeStyles);
+  const { t } = useTranslation();
   const { data, loading, error, refetch } = useQuery<{ findMyFollowings: FollowItem[] }>(
     FIND_MY_FOLLOWINGS,
     { fetchPolicy: 'cache-and-network' }
@@ -192,7 +196,7 @@ export default function FollowingScreen() {
     <SafeAreaView style={styles.root} edges={['top']}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.title}>Following</Text>
+        <Text style={styles.title}>{t('following.title')}</Text>
         {followings.length > 0 && (
           <View style={styles.totalBadge}>
             <Text style={styles.totalBadgeText}>{followings.length}</Text>
@@ -226,7 +230,7 @@ export default function FollowingScreen() {
           {/* ── Live section ── */}
           {live.length > 0 && (
             <View style={styles.section}>
-              <SectionHeader label="Live Now" count={live.length} />
+              <SectionHeader label={t('following.liveNow')} count={live.length} />
               <View style={styles.liveList}>
                 {live.map(ch => <LiveCard key={ch.id} channel={ch} />)}
               </View>
@@ -236,7 +240,7 @@ export default function FollowingScreen() {
           {/* ── Offline section ── */}
           {offline.length > 0 && (
             <View style={styles.section}>
-              <SectionHeader label="Offline" count={offline.length} />
+              <SectionHeader label={t('following.offline')} count={offline.length} />
               <View style={styles.offGrid}>
                 {offlinePairs.map(([a, b], i) => (
                   <View key={i} style={styles.offRow}>

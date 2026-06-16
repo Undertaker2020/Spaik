@@ -13,6 +13,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState, useCallback } from 'react';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { useQuery } from '@apollo/client';
 import { LinearGradient } from 'expo-linear-gradient';
 import { IconBell, IconSearch } from '@tabler/icons-react-native';
@@ -177,6 +178,7 @@ function CatCard({ category, onPress }: { category: CategoryItem; onPress: () =>
 
 function SectionHeader({ title, onSeeAll }: { title: string; onSeeAll?: () => void }) {
   const styles = useThemedStyles(makeStyles);
+  const { t } = useTranslation();
   return (
     <View style={styles.sectionHeader}>
       <View style={styles.sectionTitleWrap}>
@@ -185,7 +187,7 @@ function SectionHeader({ title, onSeeAll }: { title: string; onSeeAll?: () => vo
       </View>
       {onSeeAll && (
         <TouchableOpacity onPress={onSeeAll} activeOpacity={0.7}>
-          <Text style={styles.seeAll}>See all</Text>
+          <Text style={styles.seeAll}>{t('home.seeAll')}</Text>
         </TouchableOpacity>
       )}
     </View>
@@ -198,6 +200,7 @@ export default function HomeScreen() {
   const router = useRouter();
   const c = useColors();
   const styles = useThemedStyles(makeStyles);
+  const { t } = useTranslation();
   const [activeCategory, setActiveCategory] = useState('All');
 
   const categoryFilter = activeCategory === 'All' ? undefined : activeCategory;
@@ -273,7 +276,7 @@ export default function HomeScreen() {
           {categoryLabels.map(label => (
             <CategoryPill
               key={label}
-              label={label}
+              label={label === 'All' ? t('common.all') : label}
               active={activeCategory === label}
               onPress={() => setActiveCategory(label)}
             />
@@ -289,7 +292,7 @@ export default function HomeScreen() {
             {/* ── Featured ── */}
             {featured && (
               <View style={styles.section}>
-                <SectionHeader title="Featured" />
+                <SectionHeader title={t('home.featured')} />
                 <FeaturedCard
                   stream={featured}
                   onPress={() => router.push(`/channel/${featured.user.username}` as any)}
@@ -301,7 +304,7 @@ export default function HomeScreen() {
             {recommended.length > 0 && (
               <View style={styles.section}>
                 <SectionHeader
-                  title="Recommended"
+                  title={t('home.recommended')}
                   onSeeAll={() => router.push('/(tabs)/streams' as any)}
                 />
                 <FlatList
@@ -323,7 +326,7 @@ export default function HomeScreen() {
             {/* ── Categories ── */}
             {categories.length > 0 && (
               <View style={styles.section}>
-                <SectionHeader title="Categories" />
+                <SectionHeader title={t('home.categories')} />
                 <FlatList
                   data={categories}
                   keyExtractor={c => c.slug}
